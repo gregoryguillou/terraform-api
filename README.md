@@ -43,4 +43,4 @@ If you want to know more, jump to:
 - [Frequently Asked Question](docs/FAQ.md)
 
 Last and not least, if you have any question, open issues and PR on Github and refer to
-the [Code of Conduct](docs/CODEOFCONDUCT.md)
+the [Code of Conduct](docs/CODE_OF_CONDUCT.md)
