@@ -1,0 +1,1 @@
+# Guidelines to develop and deploy Terraform scripts for Lineup

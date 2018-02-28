@@ -1,0 +1,20 @@
+version: '3.2'
+
+services:
+  lineup-service:
+    image: lineup-service:alpha1
+    ports:
+      - 80:80
+    volumes:
+     - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - consul
+    environment:
+      SECRETORKEY: secret
+
+  consul:
+    image: consul:1.0.6
+    environment:
+      CONSUL_BIND_INTERFACE: eth0
+    ports:
+     - 8500:8500

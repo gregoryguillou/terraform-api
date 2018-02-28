@@ -1,0 +1,15 @@
+{
+  "name": "lineup-docker",
+  "description": "Build docker artefact for the lineup service",
+  "version": "0.0.1",
+  "main": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Gregory Guillou",
+  "license": "MIT",
+  "devDependencies": {
+    "runjs": "^4.3.0"
+  }
+}

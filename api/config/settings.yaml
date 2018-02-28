@@ -1,18 +1,14 @@
 api-keys:
   - username: 'gregory'
     apikey: 'bm9wcXJzdHV2d3h5ego='
-  - username: 'jeremie'
-    apikey: 'YWJjZGVmZ2hpamtsbQo='
-  - username: 'raphael'
-    apikey: 'MDEyMzQ1Njc4OTAxMgo='
 projects:
-  - name: Demonstration
+  - type: terraform
+    name: Demonstration
     description: A demonstration project
-    type: terraform
     git:
-      repository: https://github.com/gregoryguillou/felidae.git
+      repository: https://github.com/gregoryguillou/lineup.git
       branch: master
-      directory: /demonstrations/terraform/starter
+      directory: /demo/terraform/starter
     workspaces:
       - staging
       - qa
