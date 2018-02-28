@@ -1,0 +1,29 @@
+api-keys:
+  - username: 'gregory'
+    apikey: 'bm9wcXJzdHV2d3h5ego='
+projects:
+  - type: terraform
+    name: Demonstration
+    description: A demonstration project
+    git:
+      repository: https://github.com/gregoryguillou/lineup.git
+      branch: master
+      directory: /demo/terraform/starter
+    workspaces:
+      - staging
+      - qa
+      - test
+      - development
+    lifecycle:
+      before-start:
+        - echo "Ready to kick-off a creation container..."
+      pre-start:
+        - echo "Ready to begin..."
+      on-success:
+        - echo "The environment was successful"
+      on-failure:
+        - echo "You've screwed up!"
+      post-finish:
+        - echo "Ready to begin..."
+      status:
+        - echo "{{WORKSPACE}} is currently running..."
