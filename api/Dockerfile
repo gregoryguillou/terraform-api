@@ -6,9 +6,13 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
 RUN curl -sL https://deb.nodesource.com/setup_9.x | bash - && \
     apt-get install -y nodejs
 
+EXPOSE 10010
+
 COPY package.json package-lock.json app.js /app/
 WORKDIR /app
 RUN npm install 
 CMD [ "npm", "start" ]
 
-COPY app.js api /app/
+COPY app.js /app/
+COPY api /app/api
+COPY config /app/config

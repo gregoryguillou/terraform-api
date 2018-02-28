@@ -18,6 +18,11 @@ const container = process.env.LINEUP_CONTAINER || 'lineup-service'
 const version = process.env.LINEUP_VERSION || containers[container]['version']
 const path = containers[container]['path']
 
+function buildall () {
+  process.chdir(path)
+  run(util.format('docker build -t %s:%s .', container, version))
+}
+
 function build () {
   process.chdir(path)
   run(util.format('docker build -t %s:%s .', container, version))
@@ -29,6 +34,7 @@ function clean () {
 }
 
 module.exports = {
+  buildall,
   build,
   clean
 }
