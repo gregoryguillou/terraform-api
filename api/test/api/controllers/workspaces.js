@@ -6,7 +6,7 @@ const server = require('../../../app')
 let token = ''
 
 describe('controllers', () => {
-  describe('projects', () => {
+  describe('workspace', () => {
     before(() => {
       request(server)
         .get('/login')
@@ -21,10 +21,10 @@ describe('controllers', () => {
         })
     })
 
-    describe('GET /projects and GET /projects/{project}', () => {
-      it('should list all the projects and include one with {name: "demonstration"...', (done) => {
+    describe('GET /projects/{project}/workspaces/{workspace}', () => {
+      it('should describe the detail of a given workspace', (done) => {
         request(server)
-          .get('/projects')
+          .get('/projects/demonstration/workspaces/staging')
           .set('Accept', 'application/json')
           .set('Authorization', token)
           .expect('Content-Type', /json/)
@@ -32,38 +32,30 @@ describe('controllers', () => {
           .end((err, res) => {
             should.not.exist(err)
             res.body.should.containEql({
-              type: 'terraform',
-              name: 'demonstration',
-              description: 'A demonstration project that relies on Terraform/Consul'
+              name: 'staging',
+              status: 'stopped'
             })
             done()
           })
       })
 
-      it('should describe the detail of the demonstration project', (done) => {
+      it('should fail with 404 in case of a query to an non-existing workspace', (done) => {
         request(server)
-          .get('/projects/demonstration')
+          .get('/projects/demonstration/workspace/doesnotexist')
           .set('Accept', 'application/json')
           .set('Authorization', token)
-          .expect('Content-Type', /json/)
-          .expect(200)
+          .expect(404)
           .end((err, res) => {
             should.not.exist(err)
-            res.body.should.containEql({
-              type: 'terraform',
-              name: 'demonstration',
-              description: 'A demonstration project that relies on Terraform/Consul'
-            })
             done()
           })
       })
 
       it('should fail with 404 in case of a query to an non-existing project', (done) => {
         request(server)
-          .get('/projects/doesnotexit')
+          .get('/projects/doesnotexist/workspace/staging')
           .set('Accept', 'application/json')
           .set('Authorization', token)
-          .expect('Content-Type', /json/)
           .expect(404)
           .end((err, res) => {
             should.not.exist(err)
@@ -72,25 +64,10 @@ describe('controllers', () => {
       })
     })
 
-    describe('GET /projects/{project}/branches, /projects/{project}/events and /projects/{project}/tags', () => {
-      it('should list branches associated with a project', (done) => {
-        request(server)
-          .get('/projects/demonstration/branches')
-          .set('Accept', 'application/json')
-          .set('Authorization', token)
-          .expect('Content-Type', /json/)
-          .expect(200)
-          .end((err, res) => {
-            should.not.exist(err)
-            res.body.should.containEql({
-              name: 'master'
-            })
-            done()
-          })
-      })
+    describe('GET /projects/{project}/workspaces/{workspace}/events', () => {
       it('should list events associated with a project', (done) => {
         request(server)
-          .get('/projects/demonstration/events')
+          .get('/projects/demonstration/workspaces/staging/events')
           .set('Accept', 'application/json')
           .set('Authorization', token)
           .expect('Content-Type', /json/)
@@ -105,18 +82,47 @@ describe('controllers', () => {
             done()
           })
       })
-      it('should list tags associated with a project', (done) => {
+    })
+
+    describe('POST /projects/{project}/workspaces/{workspace} with {action: "action"}', () => {
+      it('should succeed when project/workspace exists and action in [apply, destroy]', (done) => {
         request(server)
-          .get('/projects/demonstration/tags')
+          .post('/projects/demonstration/workspaces/staging')
+          .send({'action': 'apply'})
           .set('Accept', 'application/json')
           .set('Authorization', token)
           .expect('Content-Type', /json/)
-          .expect(200)
+          .expect(201)
           .end((err, res) => {
             should.not.exist(err)
-            res.body.should.containEql({
-              name: 'v0.0.1'
-            })
+            done()
+          })
+      })
+
+      it('should fail with HTTP-400 when project/workspace exists and action not in [apply, destroy]', (done) => {
+        request(server)
+          .post('/projects/demonstration/workspaces/staging')
+          .send({'action': 'doesnotexist'})
+          .set('Accept', 'application/json')
+          .set('Authorization', token)
+          .expect('Content-Type', /json/)
+          .expect(400)
+          .end((err, res) => {
+            should.not.exist(err)
+            done()
+          })
+      })
+
+      it('should fail with HTTP-404 when project/workspace doesn\'t exist', (done) => {
+        request(server)
+          .post('/projects/doesnotexist/workspaces/staging')
+          .send({'action': 'apply'})
+          .set('Accept', 'application/json')
+          .set('Authorization', token)
+          .expect('Content-Type', /json/)
+          .expect(404)
+          .end((err, res) => {
+            should.not.exist(err)
             done()
           })
       })

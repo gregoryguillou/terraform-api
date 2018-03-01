@@ -12,7 +12,7 @@ function list (req, res) {
   res.status(200).json(output)
 }
 
-function description (req, res) {
+function describe (req, res) {
   var pproject = req.swagger.params.project.value
   let project = {}
   for (var i = 0, size = projects.length; i < size; i++) {
@@ -30,50 +30,58 @@ function description (req, res) {
   }
 }
 
-function workspace (req, res) {
+function events (req, res) {
   var pproject = req.swagger.params.project.value
-  var pworkspace = req.swagger.params.workspace.value
-  let workspace = {}
+  let event = {}
   for (var i = 0, size = projects.length; i < size; i++) {
     if (projects[i].name === pproject) {
-      for (var j = 0, wsize = projects[i].workspaces.length; j < wsize; j++) {
-        if (projects[i].workspaces[j] === pworkspace) {
-          workspace = {name: projects[i].workspaces[j], status: 'stopped'}
-        }
-      }
+      event = {time: '1970-01-01 00:00:00', description: 'The environment has been registered', reference: util.format('/projects/%s/workspace/staging', pproject)}
     }
   }
-  if (workspace.name) {
-    res.status(200).json(workspace)
+
+  if (event.time) {
+    res.status(200).json([event])
   } else {
-    res.status(404).json({message: util.format('Project/Workspace {%s/%s} not found', pproject, pworkspace)})
+    res.status(404).json({message: util.format('Project {%s} not found', pproject)})
   }
 }
 
-function action (req, res) {
+function branches (req, res) {
   var pproject = req.swagger.params.project.value
-  var pworkspace = req.swagger.params.workspace.value
-  var paction = req.swagger.params.action.value
-  let workspace = {}
+  let branch = {}
   for (var i = 0, size = projects.length; i < size; i++) {
     if (projects[i].name === pproject) {
-      for (var j = 0, wsize = projects[i].workspaces.length; j < wsize; j++) {
-        if (projects[i].workspaces[j] === pworkspace) {
-          workspace = {name: projects[i].workspaces[j], status: 'stopped'}
-        }
-      }
+      branch = {name: 'master'}
     }
   }
-  if (workspace.name) {
-    res.status(201).json()
+
+  if (branch.name) {
+    res.status(200).json([branch])
   } else {
-    res.status(404).json({message: util.format('Project/Workspace {%s/%s} not found', pproject, pworkspace)})
+    res.status(404).json({message: util.format('Project {%s} not found', pproject)})
+  }
+}
+
+function tags (req, res) {
+  var pproject = req.swagger.params.project.value
+  let tag = {}
+  for (var i = 0, size = projects.length; i < size; i++) {
+    if (projects[i].name === pproject) {
+      tag = {name: 'v0.0.1'}
+    }
+  }
+
+  if (tag.name) {
+    res.status(200).json([tag])
+  } else {
+    res.status(404).json({message: util.format('Project {%s} not found', pproject)})
   }
 }
 
 module.exports = {
+  project_branches: branches,
+  project_describe: describe,
+  project_events: events,
   projects_list: list,
-  project_description: description,
-  project_workspace: workspace,
-  workspace_action: action
+  project_tags: tags
 }

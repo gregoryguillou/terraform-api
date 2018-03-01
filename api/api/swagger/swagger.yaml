@@ -77,7 +77,7 @@ paths:
       tags:
         - main
       description: Returns the description of a given project
-      operationId: project_description
+      operationId: project_describe
       parameters:
         - in: path
           name: project
@@ -93,13 +93,85 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-  /projects/{project}/workspaces/{workspace}:
+  /projects/{project}/branches:
     x-swagger-router-controller: projects
     get:
       tags:
         - main
-      description: Returns the description of a given project
-      operationId: project_workspace
+      description: Returns a list of branches associated with a given project
+      operationId: project_branches
+      parameters:
+        - in: path
+          name: project
+          type: string
+          required: true
+          description: Project to get events from.
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Branch"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /projects/{project}/events:
+    x-swagger-router-controller: projects
+    get:
+      tags:
+        - main
+      description: Returns a list of events associated with a given project
+      operationId: project_events
+      parameters:
+        - in: path
+          name: project
+          type: string
+          required: true
+          description: Project to get events from.
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Event"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /projects/{project}/tags:
+    x-swagger-router-controller: projects
+    get:
+      tags:
+        - main
+      description: Returns a list of tags associated with a given project
+      operationId: project_tags
+      parameters:
+        - in: path
+          name: project
+          type: string
+          required: true
+          description: Project to get tags from.
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Tag"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /projects/{project}/workspaces/{workspace}:
+    x-swagger-router-controller: workspaces
+    get:
+      tags:
+        - main
+      description: Returns the description of a given project/workspace
+      operationId: workspace_describe
       parameters:
         - in: path
           name: project
@@ -151,6 +223,35 @@ paths:
       responses:
         "201":
           description: Created
+  /projects/{project}/workspaces/{workspace}/events:
+    x-swagger-router-controller: workspaces
+    get:
+      tags:
+        - main
+      description: Returns a list of events associated with a given project/workspace
+      operationId: workspace_events
+      parameters:
+        - in: path
+          name: project
+          type: string
+          required: true
+          description: Project to get events from.
+        - in: path
+          name: workspace
+          type: string
+          required: true
+          description: Workspace to get events from.
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Event"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
   /user:
     x-swagger-router-controller: login
     get:
@@ -162,7 +263,7 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: "#/definitions/UserResponse"
+            $ref: "#/definitions/User"
         default:
           description: Error
           schema:
@@ -171,6 +272,12 @@ paths:
     x-swagger-pipe: swagger_raw
 # complex objects have schema definitions
 definitions:
+  Branch:
+    required:
+      - name
+    properties:
+      name:
+        type: string
   Container:
     required:
       - identifier
@@ -186,6 +293,18 @@ definitions:
       - message
     properties:
       message:
+        type: string
+  Event:
+    required:
+      - time
+      - description
+      - reference
+    properties:
+      time:
+        type: string
+      description:
+        type: string
+      reference:
         type: string
   JwtResponse:
     required:
@@ -228,7 +347,13 @@ definitions:
               type: string
             status:
               type: string
-  UserResponse:
+  Tag:
+    required:
+      - name
+    properties:
+      name:
+        type: string
+  User:
     required:
       - username
     properties:
