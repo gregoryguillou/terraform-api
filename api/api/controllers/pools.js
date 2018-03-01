@@ -25,7 +25,6 @@ function list (req, res) {
       } else {
         let output = []
         for (var i = 0, size = containers.length; i < size; i++) {
-          console.log(containers[i].Id)
           output.push({identifier: containers[i].Id, name: containers[i].Names[0], image: containers[i].Image})
         }
         res.status(200).json(output)
@@ -35,5 +34,5 @@ function list (req, res) {
 }
 
 module.exports = {
-  docker_list: list
+  pools_list: list
 }

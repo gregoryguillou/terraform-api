@@ -18,19 +18,19 @@ consumes:
 produces:
   - application/json
 paths:
-  /monitor/docker:
-    x-swagger-router-controller: docker
+  /manage/pools:
+    x-swagger-router-controller: pools
     get:
       tags:
         - admin
       description: Returns 'Unauthorized Access' to the caller
-      operationId: docker_list
+      operationId: pools_list
       responses:
         "200":
           description: Success
           schema:
             type: array
-            items: 
+            items:
               $ref: "#/definitions/Container"
         # responses may fall through to errors
         default:
@@ -53,15 +53,69 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-  /unauthorized:
-    # binds a127 app logic to a route
-    x-swagger-router-controller: login
+  /projects:
+    x-swagger-router-controller: projects
     get:
       tags:
-        - auth
-      description: Returns 'Unauthorized Access' to the caller
-      operationId: login_unauthorized
+        - main
+      description: Return a list of projects managed by the API
+      operationId: projects_list
       responses:
+        "200":
+          description: Success
+          schema:
+            type: array
+            items: 
+              $ref: "#/definitions/Project"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /projects/{project}:
+    x-swagger-router-controller: projects
+    get:
+      tags:
+        - main
+      description: Returns the description of a given project
+      operationId: project_description
+      parameters:
+        - in: path
+          name: project
+          type: string
+          required: true
+          description: Project to get.
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/ProjectDescription"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /projects/{project}/workspaces/{workspace}:
+    x-swagger-router-controller: projects
+    get:
+      tags:
+        - main
+      description: Returns the description of a given project
+      operationId: project_workspace
+      parameters:
+        - in: path
+          name: project
+          type: string
+          required: true
+          description: Project to get the workspace from.
+        - in: path
+          name: workspace
+          type: string
+          required: true
+          description: Workspace to get
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Workspace"
         default:
           description: Error
           schema:
@@ -110,9 +164,51 @@ definitions:
         type: string
       token:
         type: string
+  Project:
+    required:
+      - name
+      - type
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      type:
+        type: string
+  ProjectDescription:
+    required:
+      - name
+      - type
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      type:
+        type: string
+      workspaces:
+        type: array
+        items:
+          type: object
+          required:
+            - name
+          properties:
+            name:
+              type: string
+            status:
+              type: string
   UserResponse:
     required:
       - username
     properties:
       username:
+        type: string
+  Workspace:
+    required:
+      - name
+      - status
+    properties:
+      name:
+        type: string
+      status:
         type: string
