@@ -10,7 +10,7 @@ EXPOSE 10010
 
 COPY package.json package-lock.json /app/
 WORKDIR /app
-RUN npm install 
+RUN npm install
 CMD [ "npm", "start" ]
 
 COPY app.js entrypoint.sh /app/
