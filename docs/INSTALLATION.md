@@ -39,3 +39,4 @@ not be too difficult.
 
 Remarks:
 - Mind the memory/cpu to avoid OOM
+- Make sure you enforce the API with a SSL certificate

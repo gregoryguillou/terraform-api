@@ -120,6 +120,37 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+    post:
+      tags:
+        - main
+      description: Send an action to a given workspace
+      operationId: workspace_action
+      parameters:
+        - in: path
+          name: project
+          type: string
+          required: true
+          description: Project to get the workspace from.
+        - in: path
+          name: workspace
+          type: string
+          required: true
+          description: Workspace to get
+        - in: body
+          name: action
+          description: The action to execute
+          required: true
+          schema:
+            type: object
+            required:
+              - action
+            properties:
+              action:
+                type: string
+                enum: ["apply", "destroy"]
+      responses:
+        "201":
+          description: Created
   /user:
     x-swagger-router-controller: login
     get:

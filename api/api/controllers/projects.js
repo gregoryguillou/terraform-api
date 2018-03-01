@@ -50,8 +50,30 @@ function workspace (req, res) {
   }
 }
 
+function action (req, res) {
+  var pproject = req.swagger.params.project.value
+  var pworkspace = req.swagger.params.workspace.value
+  var paction = req.swagger.params.action.value
+  let workspace = {}
+  for (var i = 0, size = projects.length; i < size; i++) {
+    if (projects[i].name === pproject) {
+      for (var j = 0, wsize = projects[i].workspaces.length; j < wsize; j++) {
+        if (projects[i].workspaces[j] === pworkspace) {
+          workspace = {name: projects[i].workspaces[j], status: 'stopped'}
+        }
+      }
+    }
+  }
+  if (workspace.name) {
+    res.status(201).json()
+  } else {
+    res.status(404).json({message: util.format('Project/Workspace {%s/%s} not found', pproject, pworkspace)})
+  }
+}
+
 module.exports = {
   projects_list: list,
   project_description: description,
-  project_workspace: workspace
+  project_workspace: workspace,
+  workspace_action: action
 }

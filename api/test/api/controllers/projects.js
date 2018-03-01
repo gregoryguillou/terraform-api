@@ -114,5 +114,49 @@ describe('controllers', () => {
           })
       })
     })
+
+    describe('POST /projects/{project}/workspaces/{workspace} with {action: "action"}', () => {
+      it('should succeed when project/workspace exists and action in [apply, destroy]', (done) => {
+        request(server)
+          .post('/projects/demonstration/workspaces/staging')
+          .send({'action': 'apply'})
+          .set('Accept', 'application/json')
+          .set('Authorization', token)
+          .expect('Content-Type', /json/)
+          .expect(201)
+          .end((err, res) => {
+            should.not.exist(err)
+            done()
+          })
+      })
+
+      it('should fail with HTTP-400 when project/workspace exists and action not in [apply, destroy]', (done) => {
+        request(server)
+          .post('/projects/demonstration/workspaces/staging')
+          .send({'action': 'doesnotexist'})
+          .set('Accept', 'application/json')
+          .set('Authorization', token)
+          .expect('Content-Type', /json/)
+          .expect(400)
+          .end((err, res) => {
+            should.not.exist(err)
+            done()
+          })
+      })
+
+      it('should fail with HTTP-404 when project/workspace doesn\'t exist', (done) => {
+        request(server)
+          .post('/projects/doesnotexist/workspaces/staging')
+          .send({'action': 'apply'})
+          .set('Accept', 'application/json')
+          .set('Authorization', token)
+          .expect('Content-Type', /json/)
+          .expect(404)
+          .end((err, res) => {
+            should.not.exist(err)
+            done()
+          })
+      })
+    })
   })
 })
