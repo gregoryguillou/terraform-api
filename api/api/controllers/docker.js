@@ -3,14 +3,18 @@
 const Docker = require('dockerode')
 const fs = require('fs')
 
-var socket = process.env.DOCKER_SOCKET || '/var/run/docker.sock'
-var stats = fs.statSync(socket)
+const YAML = require('yamljs')
+let dockerconf = YAML.load('config/settings.yaml')['docker']
 
-if (!stats.isSocket()) {
-  throw new Error('Are you sure the docker is running?')
+if (dockerconf['socketPath']) {
+  var stats = fs.statSync(dockerconf['socketPath'])
+
+  if (!stats.isSocket()) {
+    throw new Error('Are you sure the docker is running?')
+  }
 }
 
-const docker = new Docker({socketPath: socket})
+const docker = new Docker(dockerconf)
 
 function list (req, res) {
   docker.listContainers(

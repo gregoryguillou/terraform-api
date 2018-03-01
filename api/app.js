@@ -62,7 +62,9 @@ app.use(
     '/user',
     passport.authenticate(
       'jwt', { session: false, failureRedirect: '/unauthorized' }),
-      (req, res, next) => { res.json({ message: 'Authenticated', username: req.user.username }) }
+      (req, res, next) => {
+        res.json({ message: 'Authenticated', username: req.user.username })
+      }
     )
 
 SwaggerExpress.create(config, (err, swaggerExpress) => {

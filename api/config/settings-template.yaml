@@ -1,4 +1,6 @@
-api-keys:
+docker:
+  socketPath: '/var/run/docker.sock'
+users:
   - username: 'gregory'
     apikey: 'bm9wcXJzdHV2d3h5ego='
     role: administrator
