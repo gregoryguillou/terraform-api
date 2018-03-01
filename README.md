@@ -22,18 +22,20 @@ command. It can be used:
   SaaS environment.
 - to do more... Terraform Lineup is what you want it to be...
 
-    Important notes:
-    There are a few things we discourage you from doing. This is because
-    Terraform Lineup remains new and is extremely sensitive to the quality
-    of the Terraform scripts you are writing. As a result, you should not
-    mix the creation/update/deletion of an environment from Terraform
-    Lineup and from another set of tools. We also 
-    with your CI/CD or for your production environment. It also includes
-    managing your Terraform environment from Lineup and by another mean.
+> **Important**:
+  There are a few things we discourage you from doing! This is because
+  Terraform Lineup remains new and is extremely sensitive to the quality
+  of the Terraform scripts you are writing. As a result, you should not
+  mix the creation/update/deletion of an environment from Terraform
+  Lineup and from another set of tools. We also 
+  with your CI/CD or for your production environment. It also includes
+  managing your Terraform environment from Lineup and by another mean.
 
-## For more informations
+---
+# Do you want to play with it?
 
-If you want to know more, jump to:
+If you want to work with Terraform lineup, you'll find below a set of
+documentation to help you:
 
 - [A step-by-step demonstration of Terraform Lineup with Consul](docs/TUTORIAL.md)
 - [The concept guide](docs/CONCEPT.md)

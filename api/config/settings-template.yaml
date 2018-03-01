@@ -1,10 +1,16 @@
 api-keys:
   - username: 'gregory'
     apikey: 'bm9wcXJzdHV2d3h5ego='
+    role: administrator
+  - username: 'kilian'
+    apikey: 'YWJjZGVmZ2hpamtsbQo='
+    role: user
 projects:
   - type: terraform
     name: Demonstration
     description: A demonstration project
+    docker: 
+      image: "lineup-terraform:alpha1"
     git:
       repository: https://github.com/gregoryguillou/lineup.git
       branch: master

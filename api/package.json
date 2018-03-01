@@ -9,6 +9,7 @@
   "main": "app.js",
   "dependencies": {
     "body-parser": "^1.18.2",
+    "dockerode": "^2.5.4",
     "express": "^4.12.3",
     "jsonwebtoken": "^8.1.1",
     "passport": "^0.4.0",
@@ -18,8 +19,8 @@
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
-    "jest": "^22.4.2",
     "nodemon": "^1.17.1",
+    "pretty-swag": "^0.1.144",
     "should": "^7.1.0",
     "supertest": "^1.0.0",
     "swagger": "^0.7.5"
