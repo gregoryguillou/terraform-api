@@ -93,6 +93,32 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+    post:
+      tags:
+        - main
+      description: Send an action to a given project
+      operationId: project_action
+      parameters:
+        - in: path
+          name: project
+          type: string
+          required: true
+          description: Project to apply the action too.
+        - in: body
+          name: action
+          description: The action to execute
+          required: true
+          schema:
+            type: object
+            required:
+              - action
+            properties:
+              action:
+                type: string
+                enum: ["reserve", "release"]
+      responses:
+        "201":
+          description: Created
   /projects/{project}/branches:
     x-swagger-router-controller: projects
     get:

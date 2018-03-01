@@ -121,5 +121,49 @@ describe('controllers', () => {
           })
       })
     })
+
+    describe('POST /projects/{project} with {action: "action"}', () => {
+      it('should succeed when project exists and action in [reserve, release]', (done) => {
+        request(server)
+          .post('/projects/demonstration')
+          .send({'action': 'reserve'})
+          .set('Accept', 'application/json')
+          .set('Authorization', token)
+          .expect('Content-Type', /json/)
+          .expect(201)
+          .end((err, res) => {
+            should.not.exist(err)
+            done()
+          })
+      })
+
+      it('should fail with HTTP-400 when project exists and action not in [reserve, release]', (done) => {
+        request(server)
+          .post('/projects/demonstration')
+          .send({'action': 'doesnotexist'})
+          .set('Accept', 'application/json')
+          .set('Authorization', token)
+          .expect('Content-Type', /json/)
+          .expect(400)
+          .end((err, res) => {
+            should.not.exist(err)
+            done()
+          })
+      })
+
+      it('should fail with HTTP-404 when project doesn\'t exist', (done) => {
+        request(server)
+          .post('/projects/doesnotexist')
+          .send({'action': 'reserve'})
+          .set('Accept', 'application/json')
+          .set('Authorization', token)
+          .expect('Content-Type', /json/)
+          .expect(404)
+          .end((err, res) => {
+            should.not.exist(err)
+            done()
+          })
+      })
+    })
   })
 })

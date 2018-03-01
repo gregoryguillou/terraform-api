@@ -4,12 +4,35 @@ const util = require('util')
 const YAML = require('yamljs')
 const projects = YAML.load('config/settings.yaml')['projects']
 
-function list (req, res) {
-  let output = []
+function action (req, res) {
+  var pproject = req.swagger.params.project.value
+  let project = {}
   for (var i = 0, size = projects.length; i < size; i++) {
-    output.push({type: projects[i].type, name: projects[i].name, description: projects[i].description})
+    if (projects[i].name === pproject) {
+      project = {name: projects[i].name}
+    }
   }
-  res.status(200).json(output)
+  if (project.name) {
+    res.status(201).json()
+  } else {
+    res.status(404).json({message: util.format('Project {%s} not found', pproject)})
+  }
+}
+
+function branches (req, res) {
+  var pproject = req.swagger.params.project.value
+  let branch = {}
+  for (var i = 0, size = projects.length; i < size; i++) {
+    if (projects[i].name === pproject) {
+      branch = {name: 'master'}
+    }
+  }
+
+  if (branch.name) {
+    res.status(200).json([branch])
+  } else {
+    res.status(404).json({message: util.format('Project {%s} not found', pproject)})
+  }
 }
 
 function describe (req, res) {
@@ -46,20 +69,12 @@ function events (req, res) {
   }
 }
 
-function branches (req, res) {
-  var pproject = req.swagger.params.project.value
-  let branch = {}
+function list (req, res) {
+  let output = []
   for (var i = 0, size = projects.length; i < size; i++) {
-    if (projects[i].name === pproject) {
-      branch = {name: 'master'}
-    }
+    output.push({type: projects[i].type, name: projects[i].name, description: projects[i].description})
   }
-
-  if (branch.name) {
-    res.status(200).json([branch])
-  } else {
-    res.status(404).json({message: util.format('Project {%s} not found', pproject)})
-  }
+  res.status(200).json(output)
 }
 
 function tags (req, res) {
@@ -79,6 +94,7 @@ function tags (req, res) {
 }
 
 module.exports = {
+  project_action: action,
   project_branches: branches,
   project_describe: describe,
   project_events: events,
