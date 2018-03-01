@@ -25,7 +25,7 @@ Terraform Lineup supports the following set of operations:
 
 - An authentication model based on an API Key that grant a JWT token to manage
 - The ability to list the environments and workspaces that can be provisionned
-- For a given environment, the ability to list all the tags, branches and commits that can be used to create and update it
+- For a given project, the ability to list all the tags and branches that can be used to create and update it
 - The ability to describe in details the status of an environment/workspace, including its progress
 - The ability to create or update a given environment/workspace
 - The ability to destroy a given environment/workspace

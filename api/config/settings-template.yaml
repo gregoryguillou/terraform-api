@@ -1,16 +1,15 @@
-api-keys:
-  - username: 'gregory'
-    apikey: 'bm9wcXJzdHV2d3h5ego='
-    role: administrator
-  - username: 'kilian'
-    apikey: 'YWJjZGVmZ2hpamtsbQo='
-    role: user
+docker:
+  socketPath: '/var/run/docker.sock'
+jwt:
+  secretOrKey: secret
+pool:
+  type: docker
+  max: 3
 projects:
   - type: terraform
-    name: Demonstration
-    description: A demonstration project
-    docker: 
-      image: "lineup-terraform:alpha1"
+    name: demonstration
+    description: A demonstration project that relies on Terraform/Consul
+    docker-image: "lineup-terraform:alpha1"
     git:
       repository: https://github.com/gregoryguillou/lineup.git
       branch: master
@@ -33,3 +32,10 @@ projects:
         - echo "Ready to begin..."
       status:
         - echo "{{WORKSPACE}} is currently running..."
+users:
+  - username: 'gregory'
+    apikey: 'bm9wcXJzdHV2d3h5ego='
+    role: administrator
+  - username: 'kilian'
+    apikey: 'YWJjZGVmZ2hpamtsbQo='
+    role: user

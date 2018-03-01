@@ -1,13 +1,13 @@
 'use strict'
 
 const YAML = require('yamljs')
-const keys = YAML.load('config/settings.yaml')['api-keys']
+let users = YAML.load('config/settings.yaml')['users']
 
 function findbyapikey (key, callback) {
   let username = null
-  for (var i = 0, size = keys.length; i < size; i++) {
-    if (key['apikey'] === keys[i]['apikey']) {
-      username = keys[i]['username']
+  for (var i = 0, size = users.length; i < size; i++) {
+    if (key['apikey'] === users[i]['apikey']) {
+      username = users[i]['username']
     }
   }
 

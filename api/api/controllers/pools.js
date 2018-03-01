@@ -3,14 +3,18 @@
 const Docker = require('dockerode')
 const fs = require('fs')
 
-var socket = process.env.DOCKER_SOCKET || '/var/run/docker.sock'
-var stats = fs.statSync(socket)
+const YAML = require('yamljs')
+let dockerconf = YAML.load('config/settings.yaml')['docker']
 
-if (!stats.isSocket()) {
-  throw new Error('Are you sure the docker is running?')
+if (dockerconf['socketPath']) {
+  var stats = fs.statSync(dockerconf['socketPath'])
+
+  if (!stats.isSocket()) {
+    throw new Error('Are you sure the docker is running?')
+  }
 }
 
-const docker = new Docker({socketPath: socket})
+const docker = new Docker(dockerconf)
 
 function list (req, res) {
   docker.listContainers(
@@ -21,7 +25,6 @@ function list (req, res) {
       } else {
         let output = []
         for (var i = 0, size = containers.length; i < size; i++) {
-          console.log(containers[i].Id)
           output.push({identifier: containers[i].Id, name: containers[i].Names[0], image: containers[i].Image})
         }
         res.status(200).json(output)
@@ -31,5 +34,5 @@ function list (req, res) {
 }
 
 module.exports = {
-  list: list
+  pools_list: list
 }

@@ -18,30 +18,278 @@ consumes:
 produces:
   - application/json
 paths:
-  /docker:
-    x-swagger-router-controller: docker
+  /manage/pools:
+    x-swagger-router-controller: pools
     get:
+      tags:
+        - admin
       description: Returns 'Unauthorized Access' to the caller
-      operationId: list
+      operationId: pools_list
       responses:
         "200":
           description: Success
           schema:
             type: array
-            items: 
+            items:
               $ref: "#/definitions/Container"
         # responses may fall through to errors
         default:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-  /unauthorized:
-    # binds a127 app logic to a route
-    x-swagger-router-controller: unauthorized
+  /login:
+    x-swagger-router-controller: login
     get:
-      description: Returns 'Unauthorized Access' to the caller
-      operationId: unauthorized
+      tags:
+        - auth
+      description: Returns the JWT token to the caller
+      operationId: login_token
       responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/JwtResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /projects:
+    x-swagger-router-controller: projects
+    get:
+      tags:
+        - main
+      description: Return a list of projects managed by the API
+      operationId: projects_list
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: array
+            items: 
+              $ref: "#/definitions/Project"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /projects/{project}:
+    x-swagger-router-controller: projects
+    get:
+      tags:
+        - main
+      description: Returns the description of a given project
+      operationId: project_describe
+      parameters:
+        - in: path
+          name: project
+          type: string
+          required: true
+          description: Project to get.
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/ProjectDescription"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      tags:
+        - main
+      description: Send an action to a given project
+      operationId: project_action
+      parameters:
+        - in: path
+          name: project
+          type: string
+          required: true
+          description: Project to apply the action too.
+        - in: body
+          name: action
+          description: The action to execute
+          required: true
+          schema:
+            type: object
+            required:
+              - action
+            properties:
+              action:
+                type: string
+                enum: ["reserve", "release"]
+      responses:
+        "201":
+          description: Created
+  /projects/{project}/branches:
+    x-swagger-router-controller: projects
+    get:
+      tags:
+        - main
+      description: Returns a list of branches associated with a given project
+      operationId: project_branches
+      parameters:
+        - in: path
+          name: project
+          type: string
+          required: true
+          description: Project to get events from.
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Branch"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /projects/{project}/events:
+    x-swagger-router-controller: projects
+    get:
+      tags:
+        - main
+      description: Returns a list of events associated with a given project
+      operationId: project_events
+      parameters:
+        - in: path
+          name: project
+          type: string
+          required: true
+          description: Project to get events from.
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Event"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /projects/{project}/tags:
+    x-swagger-router-controller: projects
+    get:
+      tags:
+        - main
+      description: Returns a list of tags associated with a given project
+      operationId: project_tags
+      parameters:
+        - in: path
+          name: project
+          type: string
+          required: true
+          description: Project to get tags from.
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Tag"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /projects/{project}/workspaces/{workspace}:
+    x-swagger-router-controller: workspaces
+    get:
+      tags:
+        - main
+      description: Returns the description of a given project/workspace
+      operationId: workspace_describe
+      parameters:
+        - in: path
+          name: project
+          type: string
+          required: true
+          description: Project to get the workspace from.
+        - in: path
+          name: workspace
+          type: string
+          required: true
+          description: Workspace to get
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Workspace"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      tags:
+        - main
+      description: Send an action to a given workspace
+      operationId: workspace_action
+      parameters:
+        - in: path
+          name: project
+          type: string
+          required: true
+          description: Project to get the workspace from.
+        - in: path
+          name: workspace
+          type: string
+          required: true
+          description: Workspace to get
+        - in: body
+          name: action
+          description: The action to execute
+          required: true
+          schema:
+            type: object
+            required:
+              - action
+            properties:
+              action:
+                type: string
+                enum: ["apply", "destroy"]
+      responses:
+        "201":
+          description: Created
+  /projects/{project}/workspaces/{workspace}/events:
+    x-swagger-router-controller: workspaces
+    get:
+      tags:
+        - main
+      description: Returns a list of events associated with a given project/workspace
+      operationId: workspace_events
+      parameters:
+        - in: path
+          name: project
+          type: string
+          required: true
+          description: Project to get events from.
+        - in: path
+          name: workspace
+          type: string
+          required: true
+          description: Workspace to get events from.
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Event"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /user:
+    x-swagger-router-controller: login
+    get:
+      tags:
+        - auth
+      description: Return the username of the caller based on the JWT token
+      operationId: login_user
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/User"
         default:
           description: Error
           schema:
@@ -50,6 +298,12 @@ paths:
     x-swagger-pipe: swagger_raw
 # complex objects have schema definitions
 definitions:
+  Branch:
+    required:
+      - name
+    properties:
+      name:
+        type: string
   Container:
     required:
       - identifier
@@ -65,4 +319,78 @@ definitions:
       - message
     properties:
       message:
+        type: string
+  Event:
+    required:
+      - time
+      - description
+      - reference
+    properties:
+      time:
+        type: string
+      description:
+        type: string
+      reference:
+        type: string
+  JwtResponse:
+    required:
+      - token
+    properties:
+      message:
+        type: string
+      token:
+        type: string
+  Project:
+    required:
+      - name
+      - type
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      type:
+        type: string
+  ProjectDescription:
+    required:
+      - name
+      - type
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      type:
+        type: string
+      workspaces:
+        type: array
+        items:
+          type: object
+          required:
+            - name
+          properties:
+            name:
+              type: string
+            status:
+              type: string
+  Tag:
+    required:
+      - name
+    properties:
+      name:
+        type: string
+  User:
+    required:
+      - username
+    properties:
+      username:
+        type: string
+  Workspace:
+    required:
+      - name
+      - status
+    properties:
+      name:
+        type: string
+      status:
         type: string

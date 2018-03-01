@@ -2,20 +2,14 @@
 
 const SwaggerExpress = require('swagger-express-mw')
 const passport = require('passport')
-const jwt = require('jsonwebtoken')
-const { ExtractJwt, Strategy } = require('passport-jwt')
+const params = require('./api/models/jwt')
+const { Strategy } = require('passport-jwt')
 const { HeaderAPIKeyStrategy } = require('passport-headerapikey')
 const app = require('express')()
 const user = require('./api/models/user')
-const secretOrKey = process.env.SECRETORKEY || 'secret'
 
 const config = {
   appRoot: __dirname
-}
-
-const params = {
-  secretOrKey: secretOrKey,
-  jwtFromRequest: ExtractJwt.versionOneCompatibility({authScheme: 'Bearer'})
 }
 
 passport.use(new HeaderAPIKeyStrategy(
@@ -49,20 +43,21 @@ passport.use(new Strategy(
 
 app.use(passport.initialize())
 app.use(
-  '/auth',
+  '/login',
   passport.authenticate(
-    'headerapikey', { session: false, failureRedirect: '/unauthorized' }),
+    'headerapikey', { session: false }),
     (req, res, next) => {
-      const token = jwt.sign({username: req.user.username}, params['secretOrKey'], {expiresIn: 120})
-      res.json({ message: 'Authenticated', token: token })
+      next()
     }
   )
 
 app.use(
     '/user',
     passport.authenticate(
-      'jwt', { session: false, failureRedirect: '/unauthorized' }),
-      (req, res, next) => { res.json({ message: 'Authenticated', username: req.user.username }) }
+      'jwt', { session: false }),
+      (req, res, next) => {
+        next()
+      }
     )
 
 SwaggerExpress.create(config, (err, swaggerExpress) => {
