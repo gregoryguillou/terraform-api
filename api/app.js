@@ -7,6 +7,7 @@ const { Strategy } = require('passport-jwt')
 const { HeaderAPIKeyStrategy } = require('passport-headerapikey')
 const app = require('express')()
 const user = require('./api/models/user')
+const { updateAll } = require('./api/models/git')
 
 const config = {
   appRoot: __dirname
@@ -60,12 +61,16 @@ app.use(
       }
     )
 
-SwaggerExpress.create(config, (err, swaggerExpress) => {
-  if (err) { throw err }
-  swaggerExpress.register(app)
-  const port = process.env.PORT || 10010
-  app.listen(port)
-  console.log('Connected to http://127.0.0.1:' + port)
+updateAll(() => {
+  SwaggerExpress.create(config, (err, swaggerExpress) => {
+    if (err) { throw err }
+    swaggerExpress.register(app)
+    const port = process.env.PORT || 10010
+    app.listen(port, '0.0.0.0', () => {
+      console.log('Listening on http://0.0.0.0:' + port)
+      app.emit('apiStarted')
+    })
+  })
 })
 
 module.exports = app

@@ -5,10 +5,12 @@ const request = require('supertest')
 const server = require('../../../app')
 let token = ''
 
-describe('controllers', () => {
+describe('controllers', function () {
+  this.timeout(10000)
   describe('authentication', () => {
-    before(() => {
-      request(server)
+    before((done) => {
+      server.on('apiStarted', () => {
+        request(server)
         .get('/login')
         .set('Accept', 'application/json')
         .set('Authorization', 'Key bm9wcXJzdHV2d3h5ego=')
@@ -18,7 +20,9 @@ describe('controllers', () => {
           should.not.exist(err)
           token = 'Bearer ' + res.body['token']
           res.body.should.containEql({message: 'Authenticated'})
+          done()
         })
+      })
     })
 
     describe('GET /login', () => {
