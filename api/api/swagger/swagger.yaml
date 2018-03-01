@@ -18,11 +18,13 @@ consumes:
 produces:
   - application/json
 paths:
-  /docker:
+  /monitor/docker:
     x-swagger-router-controller: docker
     get:
+      tags:
+        - admin
       description: Returns 'Unauthorized Access' to the caller
-      operationId: list
+      operationId: docker_list
       responses:
         "200":
           description: Success
@@ -35,13 +37,47 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /login:
+    x-swagger-router-controller: login
+    get:
+      tags:
+        - auth
+      description: Returns the JWT token to the caller
+      operationId: login_token
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/JwtResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
   /unauthorized:
     # binds a127 app logic to a route
-    x-swagger-router-controller: unauthorized
+    x-swagger-router-controller: login
     get:
+      tags:
+        - auth
       description: Returns 'Unauthorized Access' to the caller
-      operationId: unauthorized
+      operationId: login_unauthorized
       responses:
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /user:
+    x-swagger-router-controller: login
+    get:
+      tags:
+        - auth
+      description: Return the username of the caller based on the JWT token
+      operationId: login_user
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/UserResponse"
         default:
           description: Error
           schema:
@@ -65,4 +101,18 @@ definitions:
       - message
     properties:
       message:
+        type: string
+  JwtResponse:
+    required:
+      - token
+    properties:
+      message:
+        type: string
+      token:
+        type: string
+  UserResponse:
+    required:
+      - username
+    properties:
+      username:
         type: string

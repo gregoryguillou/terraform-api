@@ -1,3 +1,5 @@
+jwt:
+  secretOrKey: secret
 docker:
   socketPath: '/var/run/docker.sock'
 users:
@@ -11,8 +13,7 @@ projects:
   - type: terraform
     name: Demonstration
     description: A demonstration project
-    docker: 
-      image: "lineup-terraform:alpha1"
+    docker-image: "lineup-terraform:alpha1"
     git:
       repository: https://github.com/gregoryguillou/lineup.git
       branch: master

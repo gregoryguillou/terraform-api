@@ -35,5 +35,5 @@ function list (req, res) {
 }
 
 module.exports = {
-  list: list
+  docker_list: list
 }

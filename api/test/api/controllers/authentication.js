@@ -9,7 +9,7 @@ describe('controllers', () => {
   describe('authentication', () => {
     before(() => {
       request(server)
-        .get('/auth')
+        .get('/login')
         .set('Accept', 'application/json')
         .set('Authorization', 'Key bm9wcXJzdHV2d3h5ego=')
         .expect('Content-Type', /json/)
@@ -21,10 +21,10 @@ describe('controllers', () => {
         })
     })
 
-    describe('GET /auth', () => {
+    describe('GET /login', () => {
       it('should connect to the API with a right API key', (done) => {
         request(server)
-          .get('/auth')
+          .get('/login')
           .set('Accept', 'application/json')
           .set('Authorization', 'Key bm9wcXJzdHV2d3h5ego=')
           .expect('Content-Type', /json/)
@@ -36,22 +36,21 @@ describe('controllers', () => {
           })
       })
 
-      it('should not connect to the API with a wrong API key', (done) => {
+      it('should not connect to the API with a wrong API key and get HTTP-401', (done) => {
         request(server)
-          .get('/auth')
+          .get('/login')
           .set('Accept', 'application/json')
           .set('Authorization', 'Key abcd')
-          .expect(302)
+          .expect(401)
           .end((err, res) => {
             should.not.exist(err)
-            res.header['location'].should.be.equal('/unauthorized')
             done()
           })
       })
     })
 
     describe('GET /user', () => {
-      it('should connect to the API with a JWT token and get gregory', (done) => {
+      it('should connect to the API with a JWT token and get {username: "gregory"}', (done) => {
         request(server)
           .get('/user')
           .set('Accept', 'application/json')
@@ -60,8 +59,19 @@ describe('controllers', () => {
           .expect(200)
           .end((err, res) => {
             should.not.exist(err)
-            res.body.should.containEql({message: 'Authenticated'})
             res.body.should.containEql({username: 'gregory'})
+            done()
+          })
+      })
+
+      it('should connect to the API with a wrong JWT token and get HTTP-401', (done) => {
+        request(server)
+          .get('/user')
+          .set('Accept', 'application/json')
+          .set('Authorization', 'abc')
+          .expect(401)
+          .end((err, res) => {
+            should.not.exist(err)
             done()
           })
       })
