@@ -7,6 +7,7 @@ const { Strategy } = require('passport-jwt')
 const { HeaderAPIKeyStrategy } = require('passport-headerapikey')
 const app = require('express')()
 const user = require('./api/models/user')
+const log = require('./api/models/logger')
 const { updateAll } = require('./api/models/git')
 
 const config = {
@@ -67,7 +68,7 @@ updateAll(() => {
     swaggerExpress.register(app)
     const port = process.env.PORT || 10010
     app.listen(port, '0.0.0.0', () => {
-      console.log('Listening on http://0.0.0.0:' + port)
+      log.info('Listening on http://0.0.0.0:%d', port)
       app.emit('apiStarted')
     })
   })

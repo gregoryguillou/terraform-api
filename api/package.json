@@ -9,6 +9,7 @@
   "main": "app.js",
   "dependencies": {
     "body-parser": "^1.18.2",
+    "bunyan": "^1.8.12",
     "dockerode": "^2.5.4",
     "express": "^4.12.3",
     "jsonwebtoken": "^8.1.1",
