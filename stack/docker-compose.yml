@@ -18,3 +18,18 @@ services:
       CONSUL_BIND_INTERFACE: eth0
     ports:
      - 8500:8500
+
+  couchbase:
+    image: couchbase:5.1.0
+    ports:
+      - 8091-8094:8091-8094
+      - 11210:11210
+
+  couchbase-setup:
+    image: couchbase:5.1.0
+    volumes:
+     - $PWD/couchbase-setup.sh:/script/couchbase-setup.sh
+    depends_on:
+      - couchbase
+    command: ['/script/couchbase-setup.sh']
+    restart: "no"
