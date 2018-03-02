@@ -9,7 +9,7 @@ const containers = {
   },
   'lineup-terraform': {
     name: 'lineup-terraform',
-    version: 'alpha1',
+    version: 'beta',
     path: '../demo'
   }
 }

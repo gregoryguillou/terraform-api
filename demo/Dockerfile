@@ -8,7 +8,12 @@ ARG TERRAFORM_VERSION=0.11.3
 WORKDIR /app
 RUN curl -L -o terraform.zip https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
 
-COPY terraform /app/
+RUN cd /usr/local/bin && \
+    unzip /app/terraform.zip && \
+    rm -f /app/terraform.zip
+
+COPY terraform /app/terraform
+COPY bin /app/bin
 COPY entrypoint.sh /app/entrypoint.sh
 
 ENTRYPOINT [ "/app/entrypoint.sh" ]

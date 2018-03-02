@@ -2,6 +2,7 @@
 
 PROJECT_DIR=$(realpath $(dirname ${BASH_SOURCE[0]})/..)
 WORKSPACE=${WORKSPACE:-default}
+export PATH=/app:$PATH
 
 cd $PROJECT_DIR/terraform/starter
 
