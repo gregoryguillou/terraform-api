@@ -15,8 +15,7 @@ function update (project, callback) {
     remote = util.format('https://%s', gitProps['repository'])
   }
 
-  var stats = fs.statSync(localProject)
-  if (!stats.isDirectory()) {
+  if (!fs.existsSync(localProject)) {
     log.info('Start cloning https://%s...', gitProps['repository'])
     git().silent(true)
       .clone(remote, localProject)
