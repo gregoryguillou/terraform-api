@@ -17,7 +17,9 @@ services:
     environment:
       CONSUL_BIND_INTERFACE: eth0
     ports:
-     - 8500:8500
+      - 8500:8500
+    labels:
+      - "lineup.role=consul"
 
   couchbase:
     image: couchbase:5.1.0
