@@ -29,6 +29,6 @@
   },
   "scripts": {
     "start": "node app.js",
-    "test": "swagger project test"
+    "test": "NODE_ENV=unit swagger project test"
   }
 }
