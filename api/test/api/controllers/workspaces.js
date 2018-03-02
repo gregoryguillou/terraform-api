@@ -5,20 +5,22 @@ const request = require('supertest')
 const server = require('../../../app')
 let token = ''
 
-describe('controllers', () => {
+describe('controllers', function () {
+  this.timeout(10000)
   describe('workspace', () => {
-    before(() => {
+    before((done) => {
       request(server)
-        .get('/login')
-        .set('Accept', 'application/json')
-        .set('Authorization', 'Key bm9wcXJzdHV2d3h5ego=')
-        .expect('Content-Type', /json/)
-        .expect(200)
-        .end((err, res) => {
-          should.not.exist(err)
-          token = 'Bearer ' + res.body['token']
-          res.body.should.containEql({message: 'Authenticated'})
-        })
+      .get('/login')
+      .set('Accept', 'application/json')
+      .set('Authorization', 'Key bm9wcXJzdHV2d3h5ego=')
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err, res) => {
+        should.not.exist(err)
+        token = 'Bearer ' + res.body['token']
+        res.body.should.containEql({message: 'Authenticated'})
+        done()
+      })
     })
 
     describe('GET /projects/{project}/workspaces/{workspace}', () => {
