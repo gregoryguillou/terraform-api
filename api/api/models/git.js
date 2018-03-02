@@ -56,6 +56,35 @@ function updateAll (callback) {
   }
 }
 
+function getTags (project, callback) {
+  const localProject = '/tmp/' + project['name']
+  require('simple-git')(localProject)
+    .tags((err, tags) => {
+      if (!err) {
+        callback(tags['all'])
+      }
+    })
+}
+
+function getBranches (project, callback) {
+  const localProject = '/tmp/' + project['name']
+  require('simple-git')(localProject)
+    .branch((err, branches) => {
+      let list = []
+      if (!err) {
+        const re = /remotes\/origin\//
+        for (var i = 0, size = branches['all'].length; i < size; i++) {
+          if (branches['all'][i].match(re)) {
+            list.push(branches['all'][i].replace(/remotes\/origin\/(.*)/, '$1'))
+          }
+        }
+        callback(list)
+      }
+    })
+}
+
 module.exports = {
+  getBranches: getBranches,
+  getTags: getTags,
   updateAll: updateAll
 }

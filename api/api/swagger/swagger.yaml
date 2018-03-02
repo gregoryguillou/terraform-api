@@ -37,6 +37,52 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /events/{event}:
+    x-swagger-router-controller: events
+    get:
+      tags:
+        - main
+      description: Returns the description of a given event
+      operationId: event_describe
+      parameters:
+        - in: path
+          name: event
+          type: string
+          required: true
+          description: Event to get.
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/EventDescription"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /events/{event}/logs:
+    x-swagger-router-controller: events
+    get:
+      tags:
+        - main
+      description: Returns logs of a given event
+      operationId: event_logs
+      parameters:
+        - in: path
+          name: event
+          type: string
+          required: true
+          description: Event to get.
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: array
+            items: 
+              $ref: "#/definitions/Log"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
   /login:
     x-swagger-router-controller: login
     get:
@@ -332,6 +378,12 @@ definitions:
         type: string
       reference:
         type: string
+  EventDescription:
+    required:
+      - id
+    properties:
+      id:
+        type: string
   JwtResponse:
     required:
       - token
@@ -339,6 +391,12 @@ definitions:
       message:
         type: string
       token:
+        type: string
+  Log:
+    required:
+      - message
+    properties:
+      message:
         type: string
   Project:
     required:

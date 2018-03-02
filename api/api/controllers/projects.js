@@ -3,6 +3,7 @@
 const util = require('util')
 const YAML = require('yamljs')
 const projects = YAML.load('config/settings.yaml')['projects']
+const { getTags, getBranches } = require('../models/git')
 
 function action (req, res) {
   var pproject = req.swagger.params.project.value
@@ -21,17 +22,23 @@ function action (req, res) {
 
 function branches (req, res) {
   var pproject = req.swagger.params.project.value
-  let branch = {}
   for (var i = 0, size = projects.length; i < size; i++) {
     if (projects[i].name === pproject) {
-      branch = {name: 'master'}
+      getBranches(
+        {name: pproject},
+        (branches) => {
+          let list = []
+          for (let j = 0, wsize = branches.length; j < wsize; j++) {
+            list.push({name: branches[j]})
+          }
+          if (list.length > 0) {
+            res.status(200).json(list)
+          } else {
+            res.status(400).json({message: util.format('No branch found for {%s}', pproject)})
+          }
+        }
+      )
     }
-  }
-
-  if (branch.name) {
-    res.status(200).json([branch])
-  } else {
-    res.status(404).json({message: util.format('Project {%s} not found', pproject)})
   }
 }
 
@@ -79,17 +86,23 @@ function list (req, res) {
 
 function tags (req, res) {
   var pproject = req.swagger.params.project.value
-  let tag = {}
   for (var i = 0, size = projects.length; i < size; i++) {
     if (projects[i].name === pproject) {
-      tag = {name: 'v0.0.1'}
+      getTags(
+        {name: pproject},
+        (tags) => {
+          let list = []
+          for (let j = 0, wsize = tags.length; j < wsize; j++) {
+            list.push({name: tags[j]})
+          }
+          if (list.length > 0) {
+            res.status(200).json(list)
+          } else {
+            res.status(400).json({message: util.format('No tag found for {%s}', pproject)})
+          }
+        }
+      )
     }
-  }
-
-  if (tag.name) {
-    res.status(200).json([tag])
-  } else {
-    res.status(404).json({message: util.format('Project {%s} not found', pproject)})
   }
 }
 
