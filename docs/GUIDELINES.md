@@ -18,3 +18,17 @@ development Guidelines to follow:
   api-staging.example.com and api-development.example.com
 - Anonymize environment, example animals, colors or simply
   a key
+
+## Avoiding resource collision
+
+- Multiple accounts
+- ${terraform.workspace}
+- How to pass parameters and variable in ways that depend from the
+  workspace ?
+
+## Building a container
+
+the interface is 
+- -c, 
+- -w and 
+- -r with branch: or tag:

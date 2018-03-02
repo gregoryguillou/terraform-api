@@ -1,7 +1,7 @@
-resource "consul_keys" "alive" {
-  key {
-    name    = "alive"
-    path    = "environment/${terraform.workspace}"
-    default = "true"
+resource "consul_key_prefix" "myapp_config" {
+  path_prefix = "environment/${terraform.workspace}/"
+
+  subkeys = {
+    "alive"         = "yes"
   }
 }
