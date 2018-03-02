@@ -26,11 +26,13 @@ function buildall () {
 function build () {
   process.chdir(path)
   run(util.format('docker build -t %s:%s .', container, version))
+  run(util.format('docker build -t %s:latest .', container))
 }
 
 function clean () {
   process.chdir(path)
   run(util.format('docker rmi %s:%s', container, version))
+  run(util.format('docker build -t %s:latest .', container))
 }
 
 module.exports = {
