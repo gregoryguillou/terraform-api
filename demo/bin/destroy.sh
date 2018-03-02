@@ -10,7 +10,7 @@ terraform init -get-plugins=true >/dev/null 2>&1 || \
   (printf "Error with terraform initialization\n"; exit 1)
 
 terraform workspace select $WORKSPACE >/dev/null || \
-  terraform workspace create $WORKSPACE >/dev/null
+  terraform workspace new $WORKSPACE >/dev/null
 
 terraform destroy -force
 

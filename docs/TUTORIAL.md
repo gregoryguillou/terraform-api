@@ -99,7 +99,7 @@ The script below execute those 3 steps:
 export CONSUL_DOCKER=$(docker ps -f "label=lineup.role=consul" -f status=running --format "{{.ID}}")
 export CONSUL_BRIDGE=$(docker inspect ${CONSUL_DOCKER} | jq -r ".[0].NetworkSettings.Networks | to_entries | .[0].key")
 CONSUL_GATEWAY=$(docker inspect ${CONSUL_DOCKER} | jq -r ".[0].NetworkSettings.Networks.${CONSUL_BRIDGE}.Gateway")
-curl ${CONSUL_GATEWAY}:8500/v1/catalog/nodes | jq
+curl --silent ${CONSUL_GATEWAY}:8500/v1/catalog/nodes | jq
 ```
 
 ## Developing a Terraform project
