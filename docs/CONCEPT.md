@@ -1,8 +1,11 @@
 # Concept Guide
 
+TODO: remove the dependency to terraform as it is not needed
+TODO: Add vocabulary and specifically the project/workspace terms
+
 ## Architecture overview
 
-Terraform Lineup is able to create/update and destroy several set of 
+Lineup is able to create/update and destroy several set of 
 resources in parallel. It can run the `terraform` commands in the same
 `directory` of the same project but with different `workspace` and at
 different `commit`. It also supports running different version of

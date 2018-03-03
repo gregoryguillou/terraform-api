@@ -1,4 +1,65 @@
-# Guidelines to develop and deploy Terraform scripts for Lineup
+# Guidelines to develop and deploy a project management automation script
+
+Lineup allows to create, update, destroy and check environments on-demand. In
+order to do that, it requires you build a project artefact. These guidelines
+go from a general overview to the principles of developing the project
+automation. The last section digs into some principles associated with
+the terraform specific implementation.
+
+## General principles
+
+Avoid collision so that one fail does not impact others
+- Multiple accounts
+- ${terraform.workspace}
+
+## Managing the artefact
+
+- Building the artefact
+- Deploy and configure the artefact
+- Test the artefact
+
+### Create a project artefact
+
+A project artefact is made of 2 parts:
+
+- The container that embeds terraform and contains the logic
+- A set of script that are available on the 
+
+#### Create the project container
+
+the interface is 
+- -c or --command
+  - apply
+  - destroy
+  - list
+  - check
+- -w or --workspace
+- -r or --reference
+  the reference can contain a with branch: or tag:
+
+- commands are :
+
+#### Create the project extra-scripts
+
+ for now only a status script. It usually reference the {{lineup.WORKSPACE}}
+ for now but we could imagine to enrich it later on
+
+### Deploy and configure a project artefact
+
+This section should describe the project configuration like the one available
+in settings-template.yaml
+
+It should also describe the variable that are accessible:
+
+- lineup.WORKSPACE
+- env.[VARIABLE]
+
+### Test the project
+
+## Managing a prohect with Terraform
+
+It should be possible to create project with tools others that Terraform
+
 
 The configuration should be as simple as `terraform apply` and
 `terraform destroy`. In order to get to that, there are a few
@@ -19,16 +80,5 @@ development Guidelines to follow:
 - Anonymize environment, example animals, colors or simply
   a key
 
-## Avoiding resource collision
-
-- Multiple accounts
-- ${terraform.workspace}
 - How to pass parameters and variable in ways that depend from the
   workspace ?
-
-## Building a container
-
-the interface is 
-- -c, 
-- -w and 
-- -r with branch: or tag:
