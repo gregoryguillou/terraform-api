@@ -32,7 +32,7 @@ while true ; do
   esac
 done
 
-if [[ -n $CONSUL_IP ]]; then echo "${CONSUL_IP} consul" >> /etc/hosts; fi
+if [[ -n "$CONSUL_IP" ]]; then echo "${CONSUL_IP} consul" >> /etc/hosts; fi
 
 # do something with the variables -- in this case the lamest possible one :-)
 if [[ "$HELP" == "true" ]]; then 

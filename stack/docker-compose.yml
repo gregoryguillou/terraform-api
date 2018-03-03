@@ -11,6 +11,7 @@ services:
       - consul
     environment:
       SECRETORKEY: secret
+      CONSUL_IP: "172.28.0.1"
 
   consul:
     image: consul:1.0.6

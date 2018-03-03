@@ -33,7 +33,11 @@ projects:
       post-finish:
         - echo "Ready to begin..."
       status:
-        - echo "{{WORKSPACE}} is currently running..."
+        - ./status.sh -w {{lineup.WORKSPACE}}
+    # Define the environment variables that should be used when running the project
+    # management commands (i.e. apply, destroy, list and check)
+    setenv:
+      - CONSUL_IP={{env.CONSUL_IP}} 
 users:
   - username: 'gregory'
     apikey: 'bm9wcXJzdHV2d3h5ego='

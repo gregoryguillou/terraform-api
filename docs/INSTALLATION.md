@@ -29,10 +29,7 @@ cd stack
 docker-compose up -d
 ```
 
-## Terraform for AWS
-
-
-## Other configurations
+## Other considerations
 
 Installing the Terraform Lineup on other Cloud Provider or on-premises should
 not be too difficult. 
