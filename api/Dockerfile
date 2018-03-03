@@ -15,4 +15,5 @@ CMD [ "npm", "start" ]
 
 COPY app.js entrypoint.sh /app/
 COPY api /app/api
+COPY projects /app/projects
 COPY config /app/config

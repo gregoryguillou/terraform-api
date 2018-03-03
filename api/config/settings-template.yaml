@@ -4,7 +4,6 @@ jwt:
   secretOrKey: secret
 pool:
   type: docker
-  max: 3
 projects:
   - type: terraform
     name: demonstration
@@ -37,7 +36,8 @@ projects:
     # Define the environment variables that should be used when running the project
     # management commands (i.e. apply, destroy, list and check)
     setenv:
-      - CONSUL_IP={{env.CONSUL_IP}} 
+      - CONSUL_IP={{env.CONSUL_IP}}
+      - AWS_PROFILE={{env.DEMONSTRATION__AWS_PROFILE}}
 users:
   - username: 'gregory'
     apikey: 'bm9wcXJzdHV2d3h5ego='
