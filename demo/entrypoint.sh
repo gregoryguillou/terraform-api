@@ -35,10 +35,12 @@ done
 if [[ -n "$CONSUL_IP" ]]; then echo "${CONSUL_IP} consul" >> /etc/hosts; fi
 
 # do something with the variables -- in this case the lamest possible one :-)
-if [[ "$HELP" == "true" ]]; then 
-  usage 
+if [[ "$HELP" == "true" ]]; then
+  usage
 elif [[ "$VERSION" == "true" ]]; then
-  version 
+  version
 elif [[ "$COMMAND" == "apply" || "$COMMAND" == "destroy" || "$COMMAND" == "list" ]]; then
   WORKSPACE=${WORKSPACE} bin/${COMMAND}.sh
+else
+  usage  
 fi
