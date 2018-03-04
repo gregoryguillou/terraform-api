@@ -1,3 +1,0 @@
-# Reference documentation
-
-## API
