@@ -43,7 +43,7 @@ to help you:
 - [The concept guide](docs/CONCEPT.md)
 - [The installation guide](docs/INSTALLATION.md)
 - [The guidelines to develop and deploy scripts for Lineup](docs/GUIDELINES.md)
-- [The reference documentation for the API](docs/REFERENCE.md)
+- [The reference documentation for the API](docs/REFERENCE.adoc)
 - [Frequently Asked Question](docs/FAQ.md)
 
 Last and not least, if you have any question, open issues and PR on Github and refer to
