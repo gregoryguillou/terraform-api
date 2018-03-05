@@ -1,20 +1,23 @@
 const couchbase = require('couchbase')
+var couchnode = require('couchnode')
 const stream = require('stream')
 
-const cluster = new couchbase.Cluster('couchbase://127.0.0.1')
-var bucket = cluster.openBucket('default')
+const cluster = new couchbase.Cluster('127.0.0.1:8091')
+cluster.authenticate('admin', 'couchbase')
+
+const bucket = couchnode.wrap(cluster.openBucket('bucket', 'couchbase'))
 
 function test (callback) {
-  bucket.upsert('testdoc', { name: 'Frank' }, function (err, result) {
+  bucket.upsert('testdoc', { name: 'Gregory' }, function (err, result) {
     if (err) throw err
 
     bucket.get('testdoc', function (err, result) {
-      if (err) throw err
-
-      console.log(result.value)
+      if (err) {
+        callback(err, null)
+      } else {
+        callback(null, result)
+      }
     })
-
-    callback()
   })
 }
 
