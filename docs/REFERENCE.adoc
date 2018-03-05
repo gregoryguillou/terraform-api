@@ -1,0 +1,606 @@
+= Terraform Lineup
+
+
+[[_overview]]
+== Overview
+
+=== Version information
+[%hardbreaks]
+__Version__ : 0.0.1
+
+
+=== URI scheme
+[%hardbreaks]
+__Host__ : localhost:10010
+__BasePath__ : /
+__Schemes__ : HTTP, HTTPS
+
+
+=== Consumes
+
+* `application/json`
+
+
+=== Produces
+
+* `application/json`
+
+
+
+
+[[_paths]]
+== Paths
+
+[[_event_describe]]
+=== GET /events/{event}
+
+==== Description
+Returns the description of a given event
+
+
+==== Parameters
+
+[options="header", cols=".^2,.^3,.^9,.^4"]
+|===
+|Type|Name|Description|Schema
+|**Path**|**event** +
+__required__|Event to get.|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2,.^14,.^4"]
+|===
+|HTTP Code|Description|Schema
+|**200**|Success|<<_eventdescription,EventDescription>>
+|**default**|Error|<<_errorresponse,ErrorResponse>>
+|===
+
+
+==== Tags
+
+* main
+
+
+[[_event_logs]]
+=== GET /events/{event}/logs
+
+==== Description
+Returns logs of a given event
+
+
+==== Parameters
+
+[options="header", cols=".^2,.^3,.^9,.^4"]
+|===
+|Type|Name|Description|Schema
+|**Path**|**event** +
+__required__|Event to get.|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2,.^14,.^4"]
+|===
+|HTTP Code|Description|Schema
+|**200**|Success|< <<_log,Log>> > array
+|**default**|Error|<<_errorresponse,ErrorResponse>>
+|===
+
+
+==== Tags
+
+* main
+
+
+[[_login_token]]
+=== GET /login
+
+==== Description
+Returns the JWT token to the caller
+
+
+==== Responses
+
+[options="header", cols=".^2,.^14,.^4"]
+|===
+|HTTP Code|Description|Schema
+|**200**|Success|<<_jwtresponse,JwtResponse>>
+|**default**|Error|<<_errorresponse,ErrorResponse>>
+|===
+
+
+==== Tags
+
+* auth
+
+
+[[_projects_list]]
+=== GET /projects
+
+==== Description
+Return a list of projects managed by the API
+
+
+==== Responses
+
+[options="header", cols=".^2,.^14,.^4"]
+|===
+|HTTP Code|Description|Schema
+|**200**|Success|< <<_project,Project>> > array
+|**default**|Error|<<_errorresponse,ErrorResponse>>
+|===
+
+
+==== Tags
+
+* main
+
+
+[[_project_action]]
+=== POST /projects/{project}
+
+==== Description
+Send an action to a given project
+
+
+==== Parameters
+
+[options="header", cols=".^2,.^3,.^9,.^4"]
+|===
+|Type|Name|Description|Schema
+|**Path**|**project** +
+__required__|Project to apply the action too.|string
+|**Body**|**action** +
+__required__|The action to execute|<<_project_action_action,action>>
+|===
+
+[[_project_action_action]]
+**action**
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**action** +
+__required__|enum (reserve, release)
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2,.^14,.^4"]
+|===
+|HTTP Code|Description|Schema
+|**201**|Created|No Content
+|===
+
+
+==== Tags
+
+* main
+
+
+[[_project_describe]]
+=== GET /projects/{project}
+
+==== Description
+Returns the description of a given project
+
+
+==== Parameters
+
+[options="header", cols=".^2,.^3,.^9,.^4"]
+|===
+|Type|Name|Description|Schema
+|**Path**|**project** +
+__required__|Project to get.|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2,.^14,.^4"]
+|===
+|HTTP Code|Description|Schema
+|**200**|Success|<<_projectdescription,ProjectDescription>>
+|**default**|Error|<<_errorresponse,ErrorResponse>>
+|===
+
+
+==== Tags
+
+* main
+
+
+[[_project_branches]]
+=== GET /projects/{project}/branches
+
+==== Description
+Returns a list of branches associated with a given project
+
+
+==== Parameters
+
+[options="header", cols=".^2,.^3,.^9,.^4"]
+|===
+|Type|Name|Description|Schema
+|**Path**|**project** +
+__required__|Project to get events from.|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2,.^14,.^4"]
+|===
+|HTTP Code|Description|Schema
+|**200**|Success|< <<_branch,Branch>> > array
+|**default**|Error|<<_errorresponse,ErrorResponse>>
+|===
+
+
+==== Tags
+
+* main
+
+
+[[_project_events]]
+=== GET /projects/{project}/events
+
+==== Description
+Returns a list of events associated with a given project
+
+
+==== Parameters
+
+[options="header", cols=".^2,.^3,.^9,.^4"]
+|===
+|Type|Name|Description|Schema
+|**Path**|**project** +
+__required__|Project to get events from.|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2,.^14,.^4"]
+|===
+|HTTP Code|Description|Schema
+|**200**|Success|< <<_event,Event>> > array
+|**default**|Error|<<_errorresponse,ErrorResponse>>
+|===
+
+
+==== Tags
+
+* main
+
+
+[[_project_tags]]
+=== GET /projects/{project}/tags
+
+==== Description
+Returns a list of tags associated with a given project
+
+
+==== Parameters
+
+[options="header", cols=".^2,.^3,.^9,.^4"]
+|===
+|Type|Name|Description|Schema
+|**Path**|**project** +
+__required__|Project to get tags from.|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2,.^14,.^4"]
+|===
+|HTTP Code|Description|Schema
+|**200**|Success|< <<_tag,Tag>> > array
+|**default**|Error|<<_errorresponse,ErrorResponse>>
+|===
+
+
+==== Tags
+
+* main
+
+
+[[_workspace_action]]
+=== POST /projects/{project}/workspaces/{workspace}
+
+==== Description
+Send an action to a given workspace
+
+
+==== Parameters
+
+[options="header", cols=".^2,.^3,.^9,.^4"]
+|===
+|Type|Name|Description|Schema
+|**Path**|**project** +
+__required__|Project to get the workspace from.|string
+|**Path**|**workspace** +
+__required__|Workspace to get|string
+|**Body**|**action** +
+__required__|The action to execute|<<_workspace_action_action,action>>
+|===
+
+[[_workspace_action_action]]
+**action**
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**action** +
+__required__|enum (apply, destroy)
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2,.^14,.^4"]
+|===
+|HTTP Code|Description|Schema
+|**201**|Created|No Content
+|===
+
+
+==== Tags
+
+* main
+
+
+[[_workspace_describe]]
+=== GET /projects/{project}/workspaces/{workspace}
+
+==== Description
+Returns the description of a given project/workspace
+
+
+==== Parameters
+
+[options="header", cols=".^2,.^3,.^9,.^4"]
+|===
+|Type|Name|Description|Schema
+|**Path**|**project** +
+__required__|Project to get the workspace from.|string
+|**Path**|**workspace** +
+__required__|Workspace to get|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2,.^14,.^4"]
+|===
+|HTTP Code|Description|Schema
+|**200**|Success|<<_workspace,Workspace>>
+|**default**|Error|<<_errorresponse,ErrorResponse>>
+|===
+
+
+==== Tags
+
+* main
+
+
+[[_workspace_events]]
+=== GET /projects/{project}/workspaces/{workspace}/events
+
+==== Description
+Returns a list of events associated with a given project/workspace
+
+
+==== Parameters
+
+[options="header", cols=".^2,.^3,.^9,.^4"]
+|===
+|Type|Name|Description|Schema
+|**Path**|**project** +
+__required__|Project to get events from.|string
+|**Path**|**workspace** +
+__required__|Workspace to get events from.|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2,.^14,.^4"]
+|===
+|HTTP Code|Description|Schema
+|**200**|Success|< <<_event,Event>> > array
+|**default**|Error|<<_errorresponse,ErrorResponse>>
+|===
+
+
+==== Tags
+
+* main
+
+
+[[_login_user]]
+=== GET /user
+
+==== Description
+Return the username of the caller based on the JWT token
+
+
+==== Responses
+
+[options="header", cols=".^2,.^14,.^4"]
+|===
+|HTTP Code|Description|Schema
+|**200**|Success|<<_user,User>>
+|**default**|Error|<<_errorresponse,ErrorResponse>>
+|===
+
+
+==== Tags
+
+* auth
+
+
+
+
+[[_definitions]]
+== Definitions
+
+[[_branch]]
+=== Branch
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**name** +
+__required__|string
+|===
+
+
+[[_errorresponse]]
+=== ErrorResponse
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**message** +
+__required__|string
+|===
+
+
+[[_event]]
+=== Event
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**description** +
+__required__|string
+|**reference** +
+__required__|string
+|**time** +
+__required__|string
+|===
+
+
+[[_eventdescription]]
+=== EventDescription
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**id** +
+__required__|string
+|===
+
+
+[[_jwtresponse]]
+=== JwtResponse
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**message** +
+__optional__|string
+|**token** +
+__required__|string
+|===
+
+
+[[_log]]
+=== Log
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**message** +
+__required__|string
+|===
+
+
+[[_project]]
+=== Project
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**description** +
+__optional__|string
+|**name** +
+__required__|string
+|**type** +
+__required__|string
+|===
+
+
+[[_projectdescription]]
+=== ProjectDescription
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**description** +
+__optional__|string
+|**name** +
+__required__|string
+|**type** +
+__required__|string
+|**workspaces** +
+__optional__|< <<_projectdescription_workspaces,workspaces>> > array
+|===
+
+[[_projectdescription_workspaces]]
+**workspaces**
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**name** +
+__required__|string
+|**status** +
+__optional__|string
+|===
+
+
+[[_tag]]
+=== Tag
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**name** +
+__required__|string
+|===
+
+
+[[_user]]
+=== User
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**username** +
+__required__|string
+|===
+
+
+[[_workspace]]
+=== Workspace
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**name** +
+__required__|string
+|**status** +
+__required__|string
+|===
+
+
+
+
+

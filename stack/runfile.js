@@ -30,6 +30,11 @@ function clean () {
   run(util.format('docker build -t %s:latest .', container))
 }
 
+function doc () {
+  process.chdir('..')
+  run('docker run --rm -v $(pwd):/opt swagger2markup/swagger2markup convert -i /opt/api/api/swagger/swagger.yaml -f /opt/docs/REFERENCE -c /opt/api/api/swagger/config.properties')
+}
+
 help(build, {
   description: 'Build the docker containers',
   examples: `
@@ -40,5 +45,6 @@ help(build, {
 
 module.exports = {
   build,
-  clean
+  clean,
+  doc
 }
