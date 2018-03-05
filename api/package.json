@@ -9,6 +9,8 @@
   "main": "app.js",
   "dependencies": {
     "bunyan": "^1.8.12",
+    "couchbase": "^2.4.4",
+    "couchnode": "^4.3.4",
     "dockerode": "^2.5.4",
     "express": "^4.12.3",
     "jsonwebtoken": "^8.1.1",

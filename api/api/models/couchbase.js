@@ -1,9 +1,25 @@
+const couchbase = require('couchbase')
+var couchnode = require('couchnode')
 const stream = require('stream')
 
-/* below is a set of documents explaining how to manage logs:
-   * https://stackoverflow.com/questions/22032172/how-to-use-couchbase-as-fifo-queue
-   * https://groups.google.com/forum/#!topic/mobile-couchbase/nd239vdkTcE
-*/
+const cluster = new couchbase.Cluster('127.0.0.1:8091')
+cluster.authenticate('admin', 'couchbase')
+
+const bucket = couchnode.wrap(cluster.openBucket('bucket', 'couchbase'))
+
+function test (callback) {
+  bucket.upsert('testdoc', { name: 'Gregory' }, function (err, result) {
+    if (err) throw err
+
+    bucket.get('testdoc', function (err, result) {
+      if (err) {
+        callback(err, null)
+      } else {
+        callback(null, result)
+      }
+    })
+  })
+}
 
 class EchoStream extends stream.Writable {
   _write (chunk, enc, next) {
@@ -15,5 +31,6 @@ class EchoStream extends stream.Writable {
 const out = new EchoStream()
 
 module.exports = {
-  'stdout': out
+  'stdout': out,
+  test: test
 }

@@ -10,7 +10,7 @@ projects:
     description: A demonstration project that relies on Terraform/Consul
     docker-image: "lineup-terraform:alpha1"
     git:
-      repository: github.com/gregoryguillou/lineup.git
+      repository: github.com/gregoryguillou/terraform-lineup.git
       branch: master
       username: gregoryguillou
       password: "1234567880"
