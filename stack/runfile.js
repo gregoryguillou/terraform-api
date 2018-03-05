@@ -1,8 +1,9 @@
 const { run, help } = require('runjs')
 const util = require('util')
+const dotenv = require('dotenv')
 
 const containers = {
-  'lineup-service': {
+  'lineup-api': {
     name: 'lineup-service',
     version: 'alpha1',
     path: '../api'
@@ -19,9 +20,13 @@ const version = process.env.LINEUP_VERSION || containers[container]['version']
 const path = containers[container]['path']
 
 function build () {
+  dotenv.config()
   process.chdir(path)
-  run(util.format('docker build -t %s:%s .', container, version))
-  run(util.format('docker build -t %s:latest .', container))
+  if (container === 'lineup-api') {
+    run(util.format('docker build --build-arg CACHEBUST=$(date +%s) -t %s:%s -t %s:latest .', '%s', container, container, version))
+  } else {
+    run(util.format('docker build --build-arg CACHEBUST=$(date +%s) --build-arg GITHUB=https://%s@%s -t %s:latest -t %s:%s .', '%s', process.env.CREDENTIALS, process.env.REPOSITORY, container, container, version))
+  }
 }
 
 function clean () {

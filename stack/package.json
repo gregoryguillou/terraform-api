@@ -11,5 +11,8 @@
   "license": "MIT",
   "devDependencies": {
     "runjs": "^4.3.0"
+  },
+  "dependencies": {
+    "dotenv": "^5.0.1"
   }
 }
