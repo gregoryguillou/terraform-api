@@ -25,7 +25,8 @@ function build () {
   if (container === 'lineup-api') {
     run(util.format('docker build --build-arg CACHEBUST=$(date +%s) -t %s:%s -t %s:latest .', '%s', container, container, version))
   } else {
-    run(util.format('docker build --build-arg CACHEBUST=$(date +%s) --build-arg GITHUB=https://%s@%s -t %s:latest -t %s:%s .', '%s', process.env.CREDENTIALS, process.env.REPOSITORY, container, container, version))
+    run(util.format('docker build --build-arg CACHEBUST=$(date +%s) --build-arg GITHUB_REPOSITORY=%s  --build-arg GITHUB_USERNAME=%s --build-arg GITHUB_PASSWORD=%s -t %s:latest -t %s:%s .',
+      '%s', process.env.GITHUB_REPOSITORY, process.env.GITHUB_USERNAME, process.env.GITHUB_PASSWORD, container, container, version))
   }
 }
 
