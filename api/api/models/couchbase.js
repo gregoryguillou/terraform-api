@@ -1,11 +1,13 @@
 const couchbase = require('couchbase')
 var couchnode = require('couchnode')
 const stream = require('stream')
+const YAML = require('yamljs')
+const couchparam = YAML.load('config/settings.yaml')['couchbase']
 
-const cluster = new couchbase.Cluster('127.0.0.1:8091')
-cluster.authenticate('admin', 'couchbase')
+const cluster = new couchbase.Cluster(couchparam['url'])
+cluster.authenticate(couchparam['username'], couchparam['password'])
 
-const bucket = couchnode.wrap(cluster.openBucket('bucket', 'couchbase'))
+const bucket = couchnode.wrap(cluster.openBucket(couchparam['bucket'], couchparam['bucket-password']))
 
 function test (callback) {
   bucket.upsert('testdoc', { name: 'Gregory' }, function (err, result) {
