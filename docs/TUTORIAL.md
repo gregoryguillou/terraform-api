@@ -213,9 +213,9 @@ Again, you should be able to see the how the container is working to manage thos
 stacks. 
 
 ```shell
-docker run -it --rm -e CONSUL_IP=${CONSUL_GATEWAY} lineup-terraform -c apply -w qa
-docker run -it --rm -e CONSUL_IP=${CONSUL_GATEWAY} lineup-terraform -c list -w qa
-docker run -it --rm -e CONSUL_IP=${CONSUL_GATEWAY} lineup-terraform -c destroy -w qa
+docker run -it --rm -e CONSUL_IP=${CONSUL_GATEWAY} --env-file .env lineup-terraform -c apply -w qa
+docker run -it --rm -e CONSUL_IP=${CONSUL_GATEWAY} --env-file .env lineup-terraform -c list -w qa
+docker run -it --rm -e CONSUL_IP=${CONSUL_GATEWAY} --env-file .env lineup-terraform -c destroy -w qa
 ```
 
 ## Running the `lineup` service locally

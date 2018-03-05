@@ -2,7 +2,8 @@
 
 function usage() {
   echo "Usage: $0 [(-c|--command) command] [(-r|--reference) reference] \\"
-  echo "             [(-w|--workspace) workspace] [-h|--help] [-v|--version]"
+  echo "             [(-w|--workspace) workspace]  [((-t|--tag) tag | (-b|--branch) branch)] \\"
+  echo "             [-h|--help] [-v|--version]"
 	exit 1
 }
 
@@ -17,16 +18,18 @@ REF=branch:master
 HELP=false
 VERSION=false
 
-TEMP=`getopt -o c:w:r:hv --long command:,workspace:,reference:,help,version -n 'lineup' -- "$@"`
+TEMP=`getopt -o c:w:r:t:b:hv --long command:,workspace:,reference:,tag:,branch:,help,version -n 'lineup' -- "$@"`
 eval set -- "$TEMP"
 
 while true ; do
   case "$1" in
+    -b|--branch) TAG=$2 ; shift 2;;
     -c|--command) COMMAND=$2 ; shift 2 ;;
-    -w|--workspace) WORKSPACE=$2 ; shift 2 ;;
-    -r|--reference) REF=$2; shift 2 ;;
     -h|--help) HELP=true ; shift ;;
+    -r|--reference) REF=$2; shift 2 ;;
+    -t|--tag) TAG=$2 ; shift 2;;
     -v|--version) VERSION=true ; shift ;;
+    -w|--workspace) WORKSPACE=$2 ; shift 2 ;;
     --) shift ; break ;;
     *) echo usage ; exit 1 ;;
   esac
