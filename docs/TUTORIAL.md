@@ -200,8 +200,10 @@ terraform workspace select default
 
 A full description of how the container that embed the feature of `terraform` is out of the
 scope of this tutorial. You should review the scripts and the
-[Development Guidelines](GUIDELINES.md). For more details. However, you can build the
-container with the script below:
+[Development Guidelines](GUIDELINES.md). For more details. However, in order to build the 
+container, you will need to add your github repository, username and token to an `.env` file
+in `stack`. You can user `.env.template` as a template for this `.env` file. Once done, you
+should be able to build the container with the script below:
 
 ```shell
 cd stack
