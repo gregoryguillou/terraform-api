@@ -1,20 +1,20 @@
 # Lineup
 
-`Lineup` allows to provision/unprovision environments from a simple
-command. That is a Web API that triggers Terraform commands on a server.
-It can be used:
+Think about `Lineup` like your terraform project managed by a server. You
+would provision/unprovision environments from a simple command or from a
+REST API. It can be used:
 
-- to start and stop environments on-demand. As a developer, you will not
+- to create and destroy environments on-demand. As a developer, you will not
   need to configure your environment anymore, neither wait for your
   command to finish before you can start working again on a different branch
   or simply stop your laptop
 - to update environments on-demand. As a developer, you might need to apply
-  some version changes
-- to be accessible from your frontend applications. Grant access to your
-  environment though self-service portals or chatbots and allow users
-  to interact with complete systems, not just instances, from the push of
-  a button
-- to reduce cost. Add time lease rules to your environments and provide
+  some version changes, you can just kick them off
+- to make the infrastructure code accessible from any frontend applications. 
+  You can grant access to your environment though self-service portals or 
+  via a chatbot and allow users to interact with complete systems, not
+  just instances, from the push of a button
+- to **reduce cost**. Add time lease rules to your environments and provide
   centralized cleanup jobs to reduce your infrastructure needs.
   Lineup can also easily be used to track resource consumption, contact
   people and do more cleanup
