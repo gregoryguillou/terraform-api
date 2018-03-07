@@ -8,13 +8,11 @@ import (
 
 var workspaceshowCmd = &cobra.Command{
 	Use:   "show",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Shows properties of a workspace",
+	Long: `
+	Shows properties of a workspace for a project or for the current
+	project.
+`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("workspace show called")
 	},
