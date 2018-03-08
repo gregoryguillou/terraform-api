@@ -321,6 +321,22 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /version:
+    x-swagger-router-controller: version
+    get:
+      tags:
+        - auth
+      description: Return the API version
+      operationId: version
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Version"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
   /swagger:
     x-swagger-pipe: swagger_raw
 # complex objects have schema definitions
@@ -413,6 +429,12 @@ definitions:
       - username
     properties:
       username:
+        type: string
+  Version:
+    required:
+      - version
+    properties:
+      version:
         type: string
   Workspace:
     required:
