@@ -4,7 +4,7 @@ Think about `Lineup` as `your Terraform project managed by a server` or, as we
 like to see it, `Terraform power to the mass`. If you work with a Cloud
 provider or as an Ops, you might already have experienced the power of
 Terraform. You know how easy it is to build and modify change environments.
-`Lineup` provide an easy access to this work from a Command Line or via a
+`Lineup` provide an easy access to this work from the Command Line or via a
 REST API. Anybody you have granted the right to can access and benefit from
 your work. `Lineup` allows you to:
 
