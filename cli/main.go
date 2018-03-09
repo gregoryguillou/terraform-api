@@ -1,7 +1,11 @@
 package main
 
-import "github.com/gregoryguillou/terraform-lineup/cli/cmd"
+import (
+	"github.com/gregoryguillou/terraform-lineup/cli/cmd"
+)
+
+var version string
 
 func main() {
-	cmd.Execute()
+	cmd.Execute(version)
 }

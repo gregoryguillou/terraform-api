@@ -1,15 +1,17 @@
+.DEFAULT_GOAL=linux
+
 BINARY=linup
 GOARCH = amd64
 
-VERSION?=?
 COMMIT=$(shell git rev-parse HEAD)
-BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
+TAG=$(shell git tag -l --contains HEAD | grep "^v" | head -n 1 | sed 's/^v//')
+VERSION := $(or ${TAG},${COMMIT},unknown)
 
 CURRENT_DIR=$(shell pwd)
 BUILD_DIR_LINK=$(shell readlink ${BUILD_DIR})
 
 # Setup the -ldflags option for go build here, interpolate the variable values
-LDFLAGS = -ldflags "-X main.VERSION=${VERSION} -X main.COMMIT=${COMMIT} -X main.BRANCH=${BRANCH}"
+LDFLAGS = -ldflags "-X main.version=${VERSION}"
 
 # Build the project
 all: clean linux darwin windows
@@ -33,5 +35,5 @@ fmt:
 clean:
 	-rm -f build/${BINARY}-*
 
-.PHONY: linux darwin windows clean
+.PHONY: linux darwin windows clean fmt
 
