@@ -10,9 +10,9 @@
   "author": "Gregory Guillou",
   "license": "MIT",
   "devDependencies": {
-    "runjs": "^4.3.0"
+    "runjs": "4.3.0"
   },
   "dependencies": {
-    "dotenv": "^5.0.1"
+    "dotenv": "5.0.1"
   }
 }
