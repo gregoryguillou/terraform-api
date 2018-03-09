@@ -8,25 +8,25 @@
   "license": "ISC",
   "main": "app.js",
   "dependencies": {
-    "bunyan": "^1.8.12",
-    "couchbase": "^2.4.4",
-    "couchnode": "^4.3.4",
-    "dockerode": "^2.5.4",
-    "express": "^4.12.3",
-    "jsonwebtoken": "^8.1.1",
-    "passport": "^0.4.0",
-    "passport-headerapikey": "^1.0.3",
-    "passport-jwt": "^3.0.1",
-    "simple-git": "^1.91.0",
-    "swagger-express-mw": "^0.1.0",
-    "yamljs": "^0.3.0"
+    "bunyan": "1.8.12",
+    "couchbase": "2.4.4",
+    "couchnode": "4.3.4",
+    "dockerode": "2.5.4",
+    "express": "4.12.3",
+    "jsonwebtoken": "8.1.1",
+    "passport": "0.4.0",
+    "passport-headerapikey": "1.0.3",
+    "passport-jwt": "3.0.1",
+    "simple-git": "1.91.0",
+    "swagger-express-mw": "0.1.0",
+    "yamljs": "0.3.0"
   },
   "devDependencies": {
-    "dev-null": "^0.1.1",
-    "nodemon": "^1.17.1",
-    "should": "^7.1.0",
-    "supertest": "^1.0.0",
-    "swagger": "^0.7.5"
+    "dev-null": "0.1.1",
+    "nodemon": "1.17.1",
+    "should": "7.1.0",
+    "supertest": "1.0.0",
+    "swagger": "0.7.5"
   },
   "scripts": {
     "start": "node app.js",
