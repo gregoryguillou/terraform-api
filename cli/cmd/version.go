@@ -60,7 +60,8 @@ var versionCmd = &cobra.Command{
 		if err := json.Unmarshal(data, &dat); err != nil {
 			panic(err)
 		}
-    fmt.Println("You are connected as", dat["username"])
+		fmt.Println("Client:", version)
+		fmt.Println("Server:", dat["username"])
 	},
 }
 
