@@ -1,19 +1,24 @@
 # Lineup
 
-Think about `Lineup` as `your terraform project managed by a server`. You
-would use it from a command line or from a REST API. It can be used:
+Think about `Lineup` as `your Terraform project managed by a server` or, as we
+like to see it, `Terraform power to the mass`. If you work with a Cloud
+provider or as an Ops, you might already have experienced the power of
+Terraform. You know how easy it is to build and modify change environments.
+`Lineup` provide an easy access to this work from a Command Line or via a
+REST API. Anybody you have granted the right to can access and benefit from
+your work. `Lineup` allows you to:
 
-- to create and destroy environments on-demand.
-- to update environments on-demand from a git branch/tag
-- to build a frontend applications or a chatbot
-- to **reduce cost** by managing systematic destroy or a time lease
-- to build temporary infrastructure for demonstration, training or create
-  manage SaaS environment
-- to do whatever you can think of...
+- Create and destroy development, training or demonstration environments on-demand.
+- Update environments on-demand from a git branch/tag
+- Build a frontend applications or a chatbot
+- **reduce cost** by managing systematic destroy or a time lease
+- Build temporary infrastructure for demonstration, training or create manage
+  SaaS environment
+- Do whatever you can think of...
 
-# Interested?
+# Try Lineup
 
-Simply try it. Read and comment the documents below:
+Read and comment the documents below to start with `Lineup`:
 
 - [A step-by-step demonstration of Lineup with Consul](docs/TUTORIAL.md)
 - [The concept guide](docs/CONCEPT.md)
@@ -23,4 +28,5 @@ Simply try it. Read and comment the documents below:
 - [The reference documentation for the API](docs/REFERENCE.adoc)
 
 If you have any question, open issues and PR on Github and refer to the 
-[Code of Conduct](docs/CODE_OF_CONDUCT.md) and the [Contribution Guide](docs/CONTRIBUTION.md)
+[Code of Conduct](docs/CODE_OF_CONDUCT.md) and the
+[Contribution Guide](docs/CONTRIBUTION.md).
