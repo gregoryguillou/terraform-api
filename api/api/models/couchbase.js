@@ -10,7 +10,7 @@ cluster.authenticate(couchparam['username'], couchparam['password'])
 const bucket = couchnode.wrap(cluster.openBucket(couchparam['bucket'], couchparam['bucket-password']))
 
 function test (callback) {
-  bucket.upsert('testdoc', { name: 'Gregory' }, function (err, result) {
+  bucket.upsert({'testdoc': { name: 'Gregory' }}, function (err, result) {
     if (err) throw err
 
     bucket.get('testdoc', function (err, result) {
