@@ -32,7 +32,7 @@ function branches (req, res) {
             list.push({name: branches[j]})
           }
           if (list.length > 0) {
-            res.status(200).json(list)
+            res.json(list)
           } else {
             res.status(400).json({message: util.format('No branch found for {%s}', pproject)})
           }
@@ -54,7 +54,7 @@ function describe (req, res) {
     }
   }
   if (project.name) {
-    res.status(200).json(project)
+    res.json(project)
   } else {
     res.status(404).json({message: util.format('Project {%s} not found', pproject)})
   }
@@ -70,7 +70,7 @@ function events (req, res) {
   }
 
   if (event.time) {
-    res.status(200).json([event])
+    res.json([event])
   } else {
     res.status(404).json({message: util.format('Project {%s} not found', pproject)})
   }
@@ -81,7 +81,7 @@ function list (req, res) {
   for (var i = 0, size = projects.length; i < size; i++) {
     output.push({type: projects[i].type, name: projects[i].name, description: projects[i].description})
   }
-  res.status(200).json(output)
+  res.json(output)
 }
 
 function tags (req, res) {
@@ -96,7 +96,7 @@ function tags (req, res) {
             list.push({name: tags[j]})
           }
           if (list.length > 0) {
-            res.status(200).json(list)
+            res.json(list)
           } else {
             res.status(400).json({message: util.format('No tag found for {%s}', pproject)})
           }

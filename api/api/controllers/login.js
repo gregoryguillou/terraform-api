@@ -5,11 +5,11 @@ const params = require('../models/jwt')
 
 function token (req, res) {
   const token = jwt.sign({username: req.user.username}, params['secretOrKey'], {expiresIn: 120})
-  res.status(200).json({message: 'Authenticated', token: token})
+  res.json({message: 'Authenticated', token: token})
 }
 
 function user (req, res) {
-  res.status(200).json({ username: req.user.username })
+  res.json({ username: req.user.username })
 }
 
 module.exports = {
