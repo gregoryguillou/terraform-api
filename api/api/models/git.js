@@ -30,7 +30,7 @@ function update (project, callback) {
       .fetch(
         remote,
         'master',
-        { '--prune': null }
+        { '--prune': null, '--tags': null }
       )
       .then(() => {
         log.info('Finish updating https://%s with success!', gitProps['repository'])
