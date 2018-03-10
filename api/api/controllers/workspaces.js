@@ -18,7 +18,7 @@ function describe (req, res) {
     }
   }
   if (workspace.name) {
-    res.status(200).json(workspace)
+    res.json(workspace)
   } else {
     res.status(404).json({message: util.format('Project/Workspace {%s/%s} not found', pproject, pworkspace)})
   }
@@ -60,7 +60,7 @@ function events (req, res) {
   }
 
   if (event.time) {
-    res.status(200).json([event])
+    res.json([event])
   } else {
     res.status(404).json({message: util.format('Project {%s} not found', pproject)})
   }
