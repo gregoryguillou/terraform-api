@@ -1,24 +1,21 @@
 # Lineup
 
-Think about `Lineup` as `your Terraform project managed by a server` or, as we
-like to see it, `Terraform power to the mass`. If you work with a Cloud
-provider or as an Ops, you might already have experienced the power of
-Terraform. You know how easy it is to build and modify change environments.
-`Lineup` provide an easy access to this work from the Command Line or via a
-REST API. Anybody you have granted the right to can access and benefit from
-your work. `Lineup` allows you to:
+`Lineup` relies on containers to manage a set of terraform projects and 
+workspaces. Access it securely from a Command Line Interface or via the REST
+API, and:
 
-- Create and destroy development, training or demonstration environments on-demand.
+- Create and destroy development, training or demonstration environments 
+  on-demand.
 - Update environments on-demand from a git branch/tag
-- Build a frontend applications or a chatbot
-- **reduce cost** by managing systematic destruction and time lease
-- Build temporary infrastructure for demonstration, training or create manage
-  SaaS environment
-- Do whatever you can think of...
+- Build frontend applications and chatbots
+- **Reduce cost** by managing systematic destruction and time lease
+- Build temporary infrastructure for demonstration, training and manage your
+  SaaS environments
+- Be creative...
 
 # Try Lineup
 
-Read and comment the documents below to start with `Lineup`:
+Try `Lineup` now. Read and comment the documents:
 
 - [A step-by-step demonstration of Lineup with Consul](docs/TUTORIAL.md)
 - [The concept guide](docs/CONCEPT.md)
@@ -27,6 +24,6 @@ Read and comment the documents below to start with `Lineup`:
 - [The guidelines to develop and deploy scripts for Lineup](docs/GUIDELINES.md)
 - [The reference documentation for the API](docs/REFERENCE.adoc)
 
-If you have any question, open issues and PR on Github and refer to the 
-[Code of Conduct](docs/CODE_OF_CONDUCT.md) and the
+If you have any question, open an issue or create a PR on Github. Get involved,
+read the [Code of Conduct](docs/CODE_OF_CONDUCT.md) and the
 [Contribution Guide](docs/CONTRIBUTION.md).
