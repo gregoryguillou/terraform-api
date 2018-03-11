@@ -18,6 +18,16 @@ class EchoStream extends stream.Writable {
   }
 }
 
+class ActionError extends Error {
+  constructor (code = 401, ...params) {
+    super(...params)
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, ActionError)
+    }
+    this.code = code
+  }
+}
+
 const out = new EchoStream()
 
 function test (callback) {
@@ -50,7 +60,7 @@ function verifyWorkspace (workspace) {
   return false
 }
 
-function updateWorkspace (workspace, request, callback) {
+function actionWorkspace (workspace, request, callback) {
   const key = `ws:${workspace['project']}:${workspace['workspace']}`
   const event = uuidv4()
   const eventKey = `evt:${event}`
@@ -78,14 +88,14 @@ function updateWorkspace (workspace, request, callback) {
         type: 'workspace',
         project: workspace['project'],
         workspace: workspace['workspace'],
-        state: 'New',
+        state: 'new',
         creation: eventDate,
         request: {
           date: eventDate,
           action: request['action'],
           event: event
         },
-        lastEvents: [ {event: event} ]
+        lastEvents: [ event ]
       }
 
       bucket.insert(payload, (err, cas, existing) => {
@@ -101,18 +111,21 @@ function updateWorkspace (workspace, request, callback) {
         }
       })
     } else if (data[key] && data[key]['request'] && data[key]['request']['action']) {
-      const pendingAction = new Error('There is already one pending action on the workspace')
+      const pendingAction = new ActionError(409, 'There is already one pending action on the workspace')
       callback(pendingAction, null)
     } else {
       let payload = data
       payload[key].request = {
         date: eventDate,
-        action: request['action']
+        action: request['action'],
+        event: event
       }
       payload[key]['lastEvents'] = data[key]['lastEvents']
-      payload[key]['lastEvents'].unshift(
-        {event: event}
-      )
+      if (payload[key]['lastEvents']) {
+        payload[key]['lastEvents'].unshift(event)
+      } else {
+        payload[key]['lastEvents'] = [ event ]
+      }
       bucket.upsert(payload, (err, data) => {
         if (err) {
           callback(err, null)
@@ -130,12 +143,46 @@ function updateWorkspace (workspace, request, callback) {
 }
 
 function deleteWorkspace (workspace, callback) {
+  if (!verifyWorkspace(workspace)) {
+    callback(new Error(`Workspace/Project does not exist. Check ${workspace['project']}/${workspace['workspace']}`), null)
+    return
+  }
   const key = `ws:${workspace['project']}:${workspace['workspace']}`
   bucket.remove(key, (err, cas, misses) => {
     if (err) {
       callback(err, null)
     } else {
       callback(null, null)
+    }
+  })
+}
+
+function showWorkspace (workspace, callback) {
+  const key = `ws:${workspace['project']}:${workspace['workspace']}`
+  const eventDate = Date.now()
+  bucket.get(key, (err, results, cas, misses) => {
+    if (err) {
+      callback(err, null)
+    } else if (results && results[key]) {
+      callback(null, results)
+    } else {
+      let payload = {}
+      payload[key] = {
+        type: 'workspace',
+        project: workspace['project'],
+        workspace: workspace['workspace'],
+        state: 'new',
+        creation: eventDate,
+        lastEvents: []
+      }
+
+      bucket.insert(payload, (err, cas, existing) => {
+        if (err) {
+          callback(err, null)
+        } else {
+          callback(null, payload)
+        }
+      })
     }
   })
 }
@@ -162,7 +209,9 @@ function workspaceEndRequest (workspace, state, callback) {
 module.exports = {
   'stdout': out,
   test: test,
-  updateWorkspace: updateWorkspace,
+  ActionError: ActionError,
+  actionWorkspace: actionWorkspace,
   deleteWorkspace: deleteWorkspace,
+  showWorkspace: showWorkspace,
   workspaceEndRequest: workspaceEndRequest
 }

@@ -34,7 +34,7 @@ describe('controllers', function () {
           .end((err, res) => {
             should.not.exist(err)
             res.body.should.be.eql({
-              id: '1234'
+              event: '1234'
             })
             done()
           }

@@ -4,7 +4,7 @@ const dotenv = require('dotenv')
 
 const containers = {
   'lineup-api': {
-    name: 'lineup-service',
+    name: 'lineup-api',
     version: 'alpha1',
     path: '../api'
   },
@@ -15,7 +15,7 @@ const containers = {
   }
 }
 
-const container = process.env.LINEUP_CONTAINER || 'lineup-service'
+const container = process.env.LINEUP_CONTAINER || 'lineup-terraform'
 const version = process.env.LINEUP_VERSION || containers[container]['version']
 const path = containers[container]['path']
 
@@ -44,7 +44,7 @@ function doc () {
 help(build, {
   description: 'Build the docker containers',
   examples: `
-    LINEUP_CONTAINER=lineup-service npx run build
+    LINEUP_CONTAINER=lineup-api npx run build
     LINEUP_CONTAINER=lineup-terraform npx run build
   `
 })

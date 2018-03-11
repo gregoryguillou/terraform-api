@@ -3,45 +3,40 @@
 const util = require('util')
 const YAML = require('yamljs')
 const projects = YAML.load('config/settings.yaml')['projects']
+const { showWorkspace, actionWorkspace } = require('../models/couchbase')
 
 function describe (req, res) {
-  var pproject = req.swagger.params.project.value
-  var pworkspace = req.swagger.params.workspace.value
-  let workspace = {}
-  for (var i = 0, size = projects.length; i < size; i++) {
-    if (projects[i].name === pproject) {
-      for (var j = 0, wsize = projects[i].workspaces.length; j < wsize; j++) {
-        if (projects[i].workspaces[j] === pworkspace) {
-          workspace = {name: projects[i].workspaces[j], status: 'stopped'}
-        }
-      }
+  const workspace = {
+    project: req.swagger.params.project.value,
+    workspace: req.swagger.params.workspace.value
+  }
+  const key = `ws:${workspace['project']}:${workspace['workspace']}`
+  showWorkspace(workspace, (err, data) => {
+    if (err) {
+      res.status(404).json({ message: `(${workspace['project']}/${workspace['workspace']} not found` })
+    } else {
+      res.json(data[key])
     }
-  }
-  if (workspace.name) {
-    res.json(workspace)
-  } else {
-    res.status(404).json({message: util.format('Project/Workspace {%s/%s} not found', pproject, pworkspace)})
-  }
+  })
 }
 
 function action (req, res) {
-  var pproject = req.swagger.params.project.value
-  var pworkspace = req.swagger.params.workspace.value
-  let workspace = {}
-  for (var i = 0, size = projects.length; i < size; i++) {
-    if (projects[i].name === pproject) {
-      for (var j = 0, wsize = projects[i].workspaces.length; j < wsize; j++) {
-        if (projects[i].workspaces[j] === pworkspace) {
-          workspace = {name: projects[i].workspaces[j], status: 'stopped'}
-        }
+  const workspace = {
+    project: req.swagger.params.project.value,
+    workspace: req.swagger.params.workspace.value
+  }
+  const key = `ws:${workspace['project']}:${workspace['workspace']}`
+  actionWorkspace(workspace, {action: req.swagger.params.action.value['action']}, (err, data) => {
+    if (err) {
+      if (err.code && (err.code === 409)) {
+        res.status(409).json({ message: `(${workspace['project']}/${workspace['workspace']} has a pending action` })
+      } else {
+        res.status(404).json({ message: `(${workspace['project']}/${workspace['workspace']} not found` })
       }
+    } else {
+      res.status(201).json({event: data[key].request.event})
     }
-  }
-  if (workspace.name) {
-    res.status(201).json()
-  } else {
-    res.status(404).json({message: util.format('Project/Workspace {%s/%s} not found', pproject, pworkspace)})
-  }
+  })
 }
 
 function events (req, res) {

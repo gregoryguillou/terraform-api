@@ -276,6 +276,12 @@ paths:
       responses:
         "201":
           description: Created
+          schema:
+            $ref: "#/definitions/EventDescription"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
   /projects/{project}/workspaces/{workspace}/events:
     x-swagger-router-controller: workspaces
     get:
@@ -367,9 +373,9 @@ definitions:
         type: string
   EventDescription:
     required:
-      - id
+      - event
     properties:
-      id:
+      event:
         type: string
   JwtResponse:
     required:
@@ -438,10 +444,30 @@ definitions:
         type: string
   Workspace:
     required:
-      - name
-      - status
+      - project
+      - workspace
+      - state
     properties:
-      name:
+      creation:
+        type: integer
+      lastEvents:
+        type: array
+        items:
+          type: string
+      project:
         type: string
-      status:
+      request:
+        type: object
+        properties:
+          date:
+            type: integer
+          action:
+            type: string
+          event:
+            type: string
+      state:
+        type: string
+      type:
+        type: string
+      workspace:
         type: string
