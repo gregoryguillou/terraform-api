@@ -10,11 +10,24 @@ const log = require('./logger')
 const cluster = new couchbase.Cluster(couchparam['url'])
 cluster.authenticate(couchparam['username'], couchparam['password'])
 const bucket = couchnode.wrap(cluster.openBucket(couchparam['data_bucket'], couchparam['bucket-password']))
+const logs = couchnode.wrap(cluster.openBucket(couchparam['log_bucket'], couchparam['bucket-password']))
 
 class EchoStream extends stream.Writable {
+  constructor (event, ...params) {
+    super(...params)
+    this.event = event
+    this.key = 1
+  }
+
   _write (chunk, enc, next) {
-    console.log(chunk.toString().toUpperCase())
-    next()
+    const key = `logs:${this.event}:${this.key}`
+    let log = {}
+    log[key] = {type: 'log', chunk: this.key, msg: chunk.toString()}
+    this.key++
+    logs.upsert(log, function (err, result) {
+      if (err) throw err
+      next()
+    })
   }
 }
 
@@ -27,8 +40,6 @@ class ActionError extends Error {
     this.code = code
   }
 }
-
-const out = new EchoStream()
 
 function test (callback) {
   bucket.upsert({'testdoc': { name: 'Gregory' }}, function (err, result) {
@@ -202,12 +213,14 @@ function workspaceEndRequest (workspace, state, callback) {
         if (err) callback(err, null)
         else callback(null, payload)
       })
+    } else {
+      callback(null, null)
     }
   })
 }
 
 module.exports = {
-  'stdout': out,
+  EchoStream: EchoStream,
   test: test,
   ActionError: ActionError,
   actionWorkspace: actionWorkspace,

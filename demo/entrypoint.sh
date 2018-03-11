@@ -42,7 +42,7 @@ if [[ "$HELP" == "true" ]]; then
   usage
 elif [[ "$VERSION" == "true" ]]; then
   version
-elif [[ "$COMMAND" == "apply" || "$COMMAND" == "destroy" || "$COMMAND" == "list" ]]; then
+elif [[ "$COMMAND" == "apply" || "$COMMAND" == "destroy" || "$COMMAND" == "list" || "$COMMAND" == "check" ]]; then
   WORKSPACE=${WORKSPACE} bin/${COMMAND}.sh
 else
   usage  

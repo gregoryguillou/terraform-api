@@ -1,10 +1,15 @@
 const Docker = require('dockerode')
 var docker = new Docker({socketPath: '/var/run/docker.sock'})
+const YAML = require('yamljs')
+const projects = YAML.load('config/settings.yaml')['projects']
+const { EchoStream } = require('./couchbase')
 
-const createoptions = {env: [ 'CONSUL_IP=172.28.0.1' ]}
-const startoptions = {}
+let env = [ 'CONSUL_IP=172.28.0.1' ]
+let createoptions = {}
+let startoptions = {}
 
-function version (stdout, callback) {
+function version (callback) {
+  const stdout = new EchoStream('version')
   docker.run('lineup-terraform', ['-v'], stdout, createoptions, startoptions, function (err, data, container) {
     if (!err) {
       callback(null, data)
@@ -14,4 +19,45 @@ function version (stdout, callback) {
   })
 }
 
-module.exports = { version }
+function command (command, config, callback) {
+  if (!config || !config['project'] || !config['workspace'] || !config['event']) {
+    callback(new Error('Cannot run docker; you need the workspace and the event id'), null)
+  } else {
+    const stdout = new EchoStream(config['event'])
+    for (var i = 0, size = projects.length; i < size; i++) {
+      if (projects[i].name === config['project']) {
+        if (projects[i]['git']) {
+          env.push(`GITHUB_USERNAME=${projects[i]['git']['login']}`)
+          env.push(`GITHUB_PASSWORD=${projects[i]['git']['password']}`)
+        }
+      }
+    }
+    createoptions = {env: env}
+    docker.run('lineup-terraform', ['-c', command, '-w', config['workspace']], stdout, createoptions, startoptions, function (err, data, container) {
+      if (!err) {
+        callback(null, data)
+      } else {
+        callback(err, data)
+      }
+    })
+  }
+}
+
+function apply (config, callback) {
+  command('apply', config, callback)
+}
+
+function destroy (config, callback) {
+  command('destroy', config, callback)
+}
+
+function check (config, callback) {
+  command('check', config, callback)
+}
+
+module.exports = {
+  apply,
+  check,
+  destroy,
+  version
+}

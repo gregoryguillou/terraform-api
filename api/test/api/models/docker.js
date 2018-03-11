@@ -1,16 +1,52 @@
 /* eslint-env mocha */
 
 const should = require('should')
-const { version } = require('../../../api/models/docker')
-const devnull = require('dev-null')
+const { version, apply, check, destroy } = require('../../../api/models/docker')
+// const devnull = require('dev-null')
 
 describe('models', () => {
   describe('docker', function () {
-    this.timeout(10000)
+    this.timeout(20000)
     it('Make sure the docker lineup container can display a version', (done) => {
-      version(devnull(), (err, data) => {
+      version((err, data) => {
         if (!err) {
           should(data).containEql({ StatusCode: 0 })
+          done()
+        }
+      })
+    })
+
+    it('Run `terraform apply` from docker', (done) => {
+      apply({project: 'demonstration', workspace: 'staging', event: 'test-apply'}, (err, data) => {
+        if (!err) {
+          should(data).containEql({ StatusCode: 0 })
+          done()
+        }
+      })
+    })
+
+    it('Check the terraform stack from docker', (done) => {
+      check({project: 'demonstration', workspace: 'staging', event: 'test-check1'}, (err, data) => {
+        if (!err) {
+          should(data).containEql({ StatusCode: 0 })
+          done()
+        }
+      })
+    })
+
+    it('Run `terraform destroy` from docker', (done) => {
+      destroy({project: 'demonstration', workspace: 'staging', event: 'test-destroy'}, (err, data) => {
+        if (!err) {
+          should(data).containEql({ StatusCode: 0 })
+          done()
+        }
+      })
+    })
+
+    it('Check the terraform stack from docker', (done) => {
+      check({project: 'demonstration', workspace: 'staging', event: 'test-check2'}, (err, data) => {
+        if (!err) {
+          should(data).containEql({ StatusCode: 2 })
           done()
         }
       })
