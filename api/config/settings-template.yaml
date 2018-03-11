@@ -4,7 +4,8 @@ couchbase:
   url: 127.0.0.1:8091
   username: admin
   password: couchbase
-  bucket: bucket
+  data_bucket: data
+  log_bucket: logs
   'bucket-password': couchbase
 docker:
   socketPath: '/var/run/docker.sock'

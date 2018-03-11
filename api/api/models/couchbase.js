@@ -5,10 +5,11 @@ const YAML = require('yamljs')
 const couchparam = YAML.load('config/settings.yaml')['couchbase']
 const projects = YAML.load('config/settings.yaml')['projects']
 const uuidv4 = require('uuid/v4')
+const log = require('./logger')
 
 const cluster = new couchbase.Cluster(couchparam['url'])
 cluster.authenticate(couchparam['username'], couchparam['password'])
-const bucket = couchnode.wrap(cluster.openBucket(couchparam['bucket'], couchparam['bucket-password']))
+const bucket = couchnode.wrap(cluster.openBucket(couchparam['data_bucket'], couchparam['bucket-password']))
 
 class EchoStream extends stream.Writable {
   _write (chunk, enc, next) {
@@ -51,10 +52,23 @@ function verifyWorkspace (workspace) {
 
 function updateWorkspace (workspace, request, callback) {
   const key = `ws:${workspace['project']}:${workspace['workspace']}`
+  const event = uuidv4()
+  const eventKey = `evt:${event}`
+  const eventDate = Date.now()
+  let eventPayload = {}
+  eventPayload[eventKey] = {
+    type: 'event',
+    project: workspace['project'],
+    workspace: workspace['workspace'],
+    creation: eventDate,
+    action: request['action']
+  }
+
   if (!verifyWorkspace(workspace)) {
     callback(new Error(`Workspace/Project does not exist. Check ${workspace['project']}/${workspace['workspace']}`), null)
     return
   }
+
   bucket.get(key, function (err, data) {
     if (err) {
       callback(err, null)
@@ -65,18 +79,24 @@ function updateWorkspace (workspace, request, callback) {
         project: workspace['project'],
         workspace: workspace['workspace'],
         state: 'New',
-        creation: Date.now(),
+        creation: eventDate,
         request: {
-          date: Date.now(),
-          action: request['action']
+          date: eventDate,
+          action: request['action'],
+          event: event
         },
-        events: [ {event: uuidv4()} ]
+        lastEvents: [ {event: event} ]
       }
 
       bucket.insert(payload, (err, cas, existing) => {
         if (err) {
           callback(err, null)
         } else {
+          bucket.upsert(eventPayload, (err, data) => {
+            if (err) {
+              log.error('Error inserting the following key in bucket', eventPayload)
+            }
+          })
           callback(null, payload)
         }
       })
@@ -86,17 +106,22 @@ function updateWorkspace (workspace, request, callback) {
     } else {
       let payload = data
       payload[key].request = {
-        date: Date.now(),
+        date: eventDate,
         action: request['action']
       }
-      payload[key]['events'] = data[key]['events']
-      payload[key]['events'].unshift(
-        {event: uuidv4()}
+      payload[key]['lastEvents'] = data[key]['lastEvents']
+      payload[key]['lastEvents'].unshift(
+        {event: event}
       )
       bucket.upsert(payload, (err, data) => {
         if (err) {
           callback(err, null)
         } else {
+          bucket.upsert(eventPayload, (err, data) => {
+            if (err) {
+              log.error('Error inserting the following key in bucket', eventPayload)
+            }
+          })
           callback(null, payload)
         }
       })
@@ -104,7 +129,7 @@ function updateWorkspace (workspace, request, callback) {
   })
 }
 
-function workspaceDelete (workspace, callback) {
+function deleteWorkspace (workspace, callback) {
   const key = `ws:${workspace['project']}:${workspace['workspace']}`
   bucket.remove(key, (err, cas, misses) => {
     if (err) {
@@ -138,6 +163,6 @@ module.exports = {
   'stdout': out,
   test: test,
   updateWorkspace: updateWorkspace,
-  workspaceDelete: workspaceDelete,
+  deleteWorkspace: deleteWorkspace,
   workspaceEndRequest: workspaceEndRequest
 }
