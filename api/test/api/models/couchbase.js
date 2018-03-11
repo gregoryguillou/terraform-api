@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 const should = require('should')
-const { test, workspacePost, workspaceDelete, workspaceEndRequest } = require('../../../api/models/couchbase')
+const { test, updateWorkspace, workspaceDelete, workspaceEndRequest } = require('../../../api/models/couchbase')
 
 describe('models', () => {
   describe('couchbase', function () {
@@ -13,8 +13,15 @@ describe('models', () => {
       })
     })
 
+    it('Access a non-existing workspace/project combination should fail', (done) => {
+      updateWorkspace({project: 'doesnotexist', workspace: 'doesnotexist'}, {action: 'apply'}, (err, data) => {
+        should.exist(err)
+        done()
+      })
+    })
+
     it('Update an empty workspace with an action', (done) => {
-      workspacePost({project: 'demonstration', workspace: 'qa'}, {action: 'apply'}, (err, data) => {
+      updateWorkspace({project: 'demonstration', workspace: 'qa'}, {action: 'apply'}, (err, data) => {
         should.not.exist(err)
         should(data['ws:demonstration:qa']['request']).containEql({ action: 'apply' })
         done()
@@ -22,18 +29,25 @@ describe('models', () => {
     })
 
     it('End current request on workspace', (done) => {
-      workspaceEndRequest({project: 'demonstration', workspace: 'qa'}, (err, data) => {
+      workspaceEndRequest({project: 'demonstration', workspace: 'qa'}, 'Applied', (err, data) => {
         should.not.exist(err)
         should.not.exist(data['ws:demonstration:qa']['request'])
+        should(data['ws:demonstration:qa']['state']).containEql('Applied')
         done()
       })
     })
 
     it('Request an action to an existing workspace', (done) => {
-      workspacePost({project: 'demonstration', workspace: 'qa'}, {action: 'apply'}, (err, data) => {
+      updateWorkspace({project: 'demonstration', workspace: 'qa'}, {action: 'apply'}, (err, data) => {
         should.not.exist(err)
-        console.log(data)
         should(data['ws:demonstration:qa']['request']).containEql({ action: 'apply' })
+        done()
+      })
+    })
+
+    it('Request a second action to an existing workspace', (done) => {
+      updateWorkspace({project: 'demonstration', workspace: 'qa'}, {action: 'apply'}, (err, data) => {
+        should.exist(err)
         done()
       })
     })
