@@ -78,7 +78,7 @@ function updateWorkspace (workspace, request, callback) {
         type: 'workspace',
         project: workspace['project'],
         workspace: workspace['workspace'],
-        state: 'New',
+        state: 'new',
         creation: eventDate,
         request: {
           date: eventDate,
@@ -130,12 +130,46 @@ function updateWorkspace (workspace, request, callback) {
 }
 
 function deleteWorkspace (workspace, callback) {
+  if (!verifyWorkspace(workspace)) {
+    callback(new Error(`Workspace/Project does not exist. Check ${workspace['project']}/${workspace['workspace']}`), null)
+    return
+  }
   const key = `ws:${workspace['project']}:${workspace['workspace']}`
   bucket.remove(key, (err, cas, misses) => {
     if (err) {
       callback(err, null)
     } else {
       callback(null, null)
+    }
+  })
+}
+
+function showWorkspace (workspace, callback) {
+  const key = `ws:${workspace['project']}:${workspace['workspace']}`
+  const eventDate = Date.now()
+  bucket.get(key, (err, results, cas, misses) => {
+    if (err) {
+      callback(err, null)
+    } else if (results && results[key]) {
+      callback(null, results)
+    } else {
+      let payload = {}
+      payload[key] = {
+        type: 'workspace',
+        project: workspace['project'],
+        workspace: workspace['workspace'],
+        state: 'new',
+        creation: eventDate,
+        lastEvents: []
+      }
+
+      bucket.insert(payload, (err, cas, existing) => {
+        if (err) {
+          callback(err, null)
+        } else {
+          callback(null, payload)
+        }
+      })
     }
   })
 }
@@ -162,7 +196,8 @@ function workspaceEndRequest (workspace, state, callback) {
 module.exports = {
   'stdout': out,
   test: test,
-  updateWorkspace: updateWorkspace,
   deleteWorkspace: deleteWorkspace,
+  showWorkspace: showWorkspace,
+  updateWorkspace: updateWorkspace,
   workspaceEndRequest: workspaceEndRequest
 }

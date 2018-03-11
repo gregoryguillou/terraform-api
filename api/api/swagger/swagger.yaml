@@ -438,10 +438,21 @@ definitions:
         type: string
   Workspace:
     required:
-      - name
-      - status
+      - project
+      - workspace
+      - state
     properties:
+      creation:
+        type: integer
       name:
         type: string
-      status:
+      project:
         type: string
+      state:
+        type: string
+      workspace:
+        type: string
+      lastEvents:
+        type: array
+        items:
+          type: string

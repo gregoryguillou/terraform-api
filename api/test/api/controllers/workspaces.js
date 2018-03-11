@@ -34,8 +34,9 @@ describe('controllers', function () {
           .end((err, res) => {
             should.not.exist(err)
             res.body.should.containEql({
-              name: 'staging',
-              status: 'stopped'
+              project: 'demonstration',
+              workspace: 'staging',
+              state: 'new'
             })
             done()
           })
