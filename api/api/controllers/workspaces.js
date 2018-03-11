@@ -4,7 +4,7 @@ const util = require('util')
 const YAML = require('yamljs')
 const projects = YAML.load('config/settings.yaml')['projects']
 const { showWorkspace, actionWorkspace, workspaceEndRequest } = require('../models/couchbase')
-const { apply } = require('../models/docker')
+const { apply, destroy } = require('../models/docker')
 const logger = require('../models/logger')
 
 function describe (req, res) {
@@ -39,6 +39,20 @@ function action (req, res) {
       if (req.swagger.params.action.value['action'] === 'apply') {
         apply({project: workspace['project'], workspace: workspace['workspace'], event: data[key].request.event}, (err, data) => {
           let msg = 'applied'
+          if (err) {
+            msg = 'error'
+          }
+          workspaceEndRequest({project: workspace['project'], workspace: workspace['workspace']}, msg, (err, data) => {
+            if (err) {
+              logger.error(`${workspace['project']}/${workspace['workspace']} failed to register ${msg}`)
+            } else {
+              logger.info(`${workspace['project']}/${workspace['workspace']} has successfully registered ${msg}`)
+            }
+          })
+        })
+      } else if (req.swagger.params.action.value['action'] === 'destroy') {
+        destroy({project: workspace['project'], workspace: workspace['workspace'], event: data[key].request.event}, (err, data) => {
+          let msg = 'destroyed'
           if (err) {
             msg = 'error'
           }

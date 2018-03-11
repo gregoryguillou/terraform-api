@@ -205,5 +205,62 @@ describe('controllers', function () {
           })
       })
     })
+
+    describe('POST /projects/{project}/workspaces/{workspace} with {action: "destroy"}', () => {
+      it('should succeed HTTP-201 when project/workspace exists, action in [apply, destroy] and no pending action', (done) => {
+        request(server)
+          .post('/projects/demonstration/workspaces/staging')
+          .send({'action': 'destroy'})
+          .set('Accept', 'application/json')
+          .set('Authorization', token)
+          .expect(201)
+          .end((err, res) => {
+            should.not.exist(err)
+            should.exist(res.body.event)
+            done()
+          })
+      })
+
+      it('Wait up to 15s before the destruction is considered failed', (done) => {
+        i = 0
+        queryWorkspace(() => {
+          done()
+        })
+      })
+
+      it('should succeed HTTP-201 when project/workspace exists, action in [apply, destroy] and no pending action', (done) => {
+        request(server)
+          .post('/projects/demonstration/workspaces/staging')
+          .send({'action': 'destroy'})
+          .set('Accept', 'application/json')
+          .set('Authorization', token)
+          .expect(201)
+          .end((err, res) => {
+            should.not.exist(err)
+            should.exist(res.body.event)
+            done()
+          })
+      })
+
+      it('should fail HTTP-409 when project/workspace exists, action in [apply, destroy] and pending action', (done) => {
+        request(server)
+          .post('/projects/demonstration/workspaces/staging')
+          .send({'action': 'apply'})
+          .set('Accept', 'application/json')
+          .set('Authorization', token)
+          .expect(409)
+          .end((err, res) => {
+            should.not.exist(err)
+            done()
+          })
+      })
+
+      it('Wait up to 15s before the destruction is considered failed', (done) => {
+        i = 0
+        queryWorkspace(() => {
+          done()
+        })
+      })
+    })
   })
 })
