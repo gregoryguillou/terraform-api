@@ -21,9 +21,9 @@ class EchoStream extends stream.Writable {
 
   _write (chunk, enc, next) {
     const key = `logs:${this.event}:${this.key}`
-    this.key++
     let log = {}
-    log[key] = {type: 'log', msg: chunk.toString()}
+    log[key] = {type: 'log', chunk: this.key, msg: chunk.toString()}
+    this.key++
     logs.upsert(log, function (err, result) {
       if (err) throw err
       next()
