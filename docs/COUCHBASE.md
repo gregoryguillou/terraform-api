@@ -10,7 +10,9 @@ Every document has a field name type that helps to search for documents a simple
 way to clean the environment is by running the set of queries below:
 
 ```sql
-CREATE INDEX type_idx ON data(type);
+CREATE INDEX data_type_idx ON data(type);
+CREATE INDEX logs_type_idx ON logs(type);
 DELETE FROM data WHERE type='workspace';
 DELETE FROM data WHERE type='event';
+DELETE FROM logs WHERE type='log';
 ```

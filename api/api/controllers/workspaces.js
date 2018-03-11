@@ -3,7 +3,9 @@
 const util = require('util')
 const YAML = require('yamljs')
 const projects = YAML.load('config/settings.yaml')['projects']
-const { showWorkspace, actionWorkspace } = require('../models/couchbase')
+const { showWorkspace, actionWorkspace, workspaceEndRequest } = require('../models/couchbase')
+const { apply } = require('../models/couchbase')
+const logger = require('../models/logger')
 
 function describe (req, res) {
   const workspace = {
@@ -34,6 +36,21 @@ function action (req, res) {
         res.status(404).json({ message: `(${workspace['project']}/${workspace['workspace']} not found` })
       }
     } else {
+      if (req.swagger.params.action.value['action'] === 'apply') {
+        apply({project: workspace['project'], workspace: workspace['workspace'], event: data[key].request.event}, (err, data) => {
+          let msg = 'applied'
+          if (err) {
+            msg = 'error'
+          }
+          workspaceEndRequest({project: workspace['project'], workspace: workspace['workspace']}, msg, (err, data) => {
+            if (err) {
+              logger.error(`${workspace['project']}/${workspace['workspace']} failed to register ${msg}`)
+            } else {
+              logger.info(`${workspace['project']}/${workspace['workspace']} has successfully registered ${msg}`)
+            }
+          })
+        })
+      }
       res.status(201).json({event: data[key].request.event})
     }
   })
