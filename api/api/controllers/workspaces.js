@@ -4,7 +4,7 @@ const util = require('util')
 const YAML = require('yamljs')
 const projects = YAML.load('config/settings.yaml')['projects']
 const { showWorkspace, actionWorkspace, workspaceEndRequest } = require('../models/couchbase')
-const { apply } = require('../models/couchbase')
+const { apply } = require('../models/docker')
 const logger = require('../models/logger')
 
 function describe (req, res) {

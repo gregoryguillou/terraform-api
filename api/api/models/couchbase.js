@@ -213,6 +213,8 @@ function workspaceEndRequest (workspace, state, callback) {
         if (err) callback(err, null)
         else callback(null, payload)
       })
+    } else {
+      callback(null, null)
     }
   })
 }

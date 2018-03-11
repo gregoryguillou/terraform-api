@@ -6,8 +6,36 @@ const server = require('../../../app')
 const { workspaceEndRequest } = require('../../../api/models/couchbase')
 let token = ''
 
+let i = 0
+
+function queryWorkspace (callback) {
+  setTimeout(function () {
+    i++
+    if (i < 15) {
+      request(server)
+      .get('/projects/demonstration/workspaces/staging')
+      .set('Accept', 'application/json')
+      .set('Authorization', token)
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err, res) => {
+        should.not.exist(err)
+        if (res.body['request']) {
+          queryWorkspace(callback)
+        } else {
+          callback()
+          i = 15
+        }
+      })
+    } else {
+      should.fail('finish', 'ongoing')
+      callback()
+    }
+  }, 1000)
+}
+
 describe('controllers', function () {
-  this.timeout(10000)
+  this.timeout(20000)
   describe('workspace', () => {
     before((done) => {
       request(server)
@@ -92,7 +120,26 @@ describe('controllers', function () {
         workspaceEndRequest({project: 'demonstration', workspace: 'staging'}, 'applied', (err, data) => {
           should.not.exist(err)
           should.not.exist(data['ws:demonstration:staging']['request'])
-          should(data['ws:demonstration:staging']['state']).containEql('applied')
+          done()
+        })
+      })
+
+      it('should succeed HTTP-201 when project/workspace exists, action in [apply, destroy] and no pending action', (done) => {
+        request(server)
+          .post('/projects/demonstration/workspaces/staging')
+          .send({'action': 'apply'})
+          .set('Accept', 'application/json')
+          .set('Authorization', token)
+          .expect(201)
+          .end((err, res) => {
+            should.not.exist(err)
+            should.exist(res.body.event)
+            done()
+          })
+      })
+
+      it('Wait up to 15s before the creation is considered failed', (done) => {
+        queryWorkspace(() => {
           done()
         })
       })
@@ -122,6 +169,13 @@ describe('controllers', function () {
             should.not.exist(err)
             done()
           })
+      })
+
+      it('Wait up to 15s before the creation is considered failed', (done) => {
+        i = 0
+        queryWorkspace(() => {
+          done()
+        })
       })
 
       it('should fail with HTTP-400 when project/workspace exists and action not in [apply, destroy]', (done) => {
