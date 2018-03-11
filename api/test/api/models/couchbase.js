@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 const should = require('should')
-const { test, updateWorkspace, workspaceDelete, workspaceEndRequest } = require('../../../api/models/couchbase')
+const { test, updateWorkspace, deleteWorkspace, workspaceEndRequest } = require('../../../api/models/couchbase')
 
 describe('models', () => {
   describe('couchbase', function () {
@@ -53,7 +53,7 @@ describe('models', () => {
     })
 
     it('Delete Workspace after it has been used', (done) => {
-      workspaceDelete({project: 'demonstration', workspace: 'qa'}, (err, data) => {
+      deleteWorkspace({project: 'demonstration', workspace: 'qa'}, (err, data) => {
         should.not.exist(err)
         done()
       })

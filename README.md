@@ -11,7 +11,7 @@ your work. `Lineup` allows you to:
 - Create and destroy development, training or demonstration environments on-demand.
 - Update environments on-demand from a git branch/tag
 - Build a frontend applications or a chatbot
-- **reduce cost** by managing systematic destroy or a time lease
+- **reduce cost** by managing systematic destruction and time lease
 - Build temporary infrastructure for demonstration, training or create manage
   SaaS environment
 - Do whatever you can think of...

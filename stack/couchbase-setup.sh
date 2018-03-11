@@ -3,7 +3,8 @@
 COUCHBASE_BASEURL=${COUCHBASE_BASEURL:-couchbase}
 COUCHBASE_ADMINISTRATOR_USERNAME=${COUCHBASE_ADMINISTRATOR_USERNAME:-admin}
 COUCHBASE_ADMINISTRATOR_PASSWORD=${COUCHBASE_ADMINISTRATOR_PASSWORD:-couchbase}
-COUCHBASE_BUCKET=${COUCHBASE_BUCKET:-bucket}
+COUCHBASE_BUCKET_1=${COUCHBASE_BUCKET:-data}
+COUCHBASE_BUCKET_2=${COUCHBASE_BUCKET:-logs}
 COUCHBASE_BUCKET_PASSWORD=${COUCHBASE_BUCKET_PASSWORD:-couchbase}
 
 printf "Kicking off couchbase script...\n"
@@ -38,7 +39,14 @@ curl --silent -u $COUCHBASE_ADMINISTRATOR_USERNAME:$COUCHBASE_ADMINISTRATOR_PASS
 
 curl --silent -u $COUCHBASE_ADMINISTRATOR_USERNAME:$COUCHBASE_ADMINISTRATOR_PASSWORD \
      -X POST http://${COUCHBASE_BASEURL}:8091/pools/default/buckets \
-     -d name=$COUCHBASE_BUCKET -d bucketType=couchbase \
+     -d name=$COUCHBASE_BUCKET_1 -d bucketType=couchbase \
+     -d ramQuotaMB=128 -d authType=sasl \
+     -d saslPassword=$COUCHBASE_BUCKET_PASSWORD \
+     >/dev/null 2>&1
+
+curl --silent -u $COUCHBASE_ADMINISTRATOR_USERNAME:$COUCHBASE_ADMINISTRATOR_PASSWORD \
+     -X POST http://${COUCHBASE_BASEURL}:8091/pools/default/buckets \
+     -d name=$COUCHBASE_BUCKET_2 -d bucketType=couchbase \
      -d ramQuotaMB=128 -d authType=sasl \
      -d saslPassword=$COUCHBASE_BUCKET_PASSWORD \
      >/dev/null 2>&1
