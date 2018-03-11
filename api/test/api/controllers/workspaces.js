@@ -3,6 +3,7 @@
 const should = require('should')
 const request = require('supertest')
 const server = require('../../../app')
+const { workspaceEndRequest } = require('../../../api/models/couchbase')
 let token = ''
 
 describe('controllers', function () {
@@ -35,8 +36,7 @@ describe('controllers', function () {
             should.not.exist(err)
             res.body.should.containEql({
               project: 'demonstration',
-              workspace: 'staging',
-              state: 'new'
+              workspace: 'staging'
             })
             done()
           })
@@ -87,15 +87,37 @@ describe('controllers', function () {
       })
     })
 
-    describe('POST /projects/{project}/workspaces/{workspace} with {action: "action"}', () => {
-      it('should succeed when project/workspace exists and action in [apply, destroy]', (done) => {
+    describe('POST /projects/{project}/workspaces/{workspace} with {action: "apply"}', () => {
+      it('Remove pending action on demonstration/staging', (done) => {
+        workspaceEndRequest({project: 'demonstration', workspace: 'staging'}, 'applied', (err, data) => {
+          should.not.exist(err)
+          should.not.exist(data['ws:demonstration:staging']['request'])
+          should(data['ws:demonstration:staging']['state']).containEql('applied')
+          done()
+        })
+      })
+
+      it('should succeed HTTP-201 when project/workspace exists, action in [apply, destroy] and no pending action', (done) => {
         request(server)
           .post('/projects/demonstration/workspaces/staging')
           .send({'action': 'apply'})
           .set('Accept', 'application/json')
           .set('Authorization', token)
-          .expect('Content-Type', /json/)
           .expect(201)
+          .end((err, res) => {
+            should.not.exist(err)
+            should.exist(res.body.event)
+            done()
+          })
+      })
+
+      it('should fail HTTP-409 when project/workspace exists, action in [apply, destroy] and pending action', (done) => {
+        request(server)
+          .post('/projects/demonstration/workspaces/staging')
+          .send({'action': 'apply'})
+          .set('Accept', 'application/json')
+          .set('Authorization', token)
+          .expect(409)
           .end((err, res) => {
             should.not.exist(err)
             done()
@@ -108,7 +130,6 @@ describe('controllers', function () {
           .send({'action': 'doesnotexist'})
           .set('Accept', 'application/json')
           .set('Authorization', token)
-          .expect('Content-Type', /json/)
           .expect(400)
           .end((err, res) => {
             should.not.exist(err)

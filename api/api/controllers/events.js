@@ -2,7 +2,7 @@
 
 function describe (req, res) {
   var pevent = req.swagger.params.event.value
-  res.json({id: pevent})
+  res.json({event: pevent})
 }
 
 function logs (req, res) {
