@@ -119,6 +119,9 @@ describe('controllers', function () {
             res.body.should.containEql({
               name: 'v0.0.1'
             })
+            res.body.should.containEql({
+              name: 'v0.0.2'
+            })
             done()
           })
       })
