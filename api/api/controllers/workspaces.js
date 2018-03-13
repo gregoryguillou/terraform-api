@@ -33,7 +33,11 @@ function describe (req, res) {
   })
 }
 
-function quickcheck (workspace, callback) {
+function quickcheck (req, res) {
+  const workspace = {
+    project: req.swagger.params.project.value,
+    workspace: req.swagger.params.workspace.value
+  }
   const project = workspace['project']
   let cwd = ''
   let command = [ ]
@@ -45,7 +49,16 @@ function quickcheck (workspace, callback) {
       }
     }
   }
-  sh(command[0], {cwd: cwd}, (err, data) => {callback(err, data)})
+  sh(command[0], {cwd: cwd}, (err, data) => {
+    if (err) {
+      if (err.code === 1 && err.killed === false) {
+        res.status(404).json()
+      } else {
+        res.status(500).json({ message: err})
+      }
+    }
+    res.status(200).json()
+  })
 }
 
 function action (req, res) {
@@ -54,62 +67,61 @@ function action (req, res) {
     workspace: req.swagger.params.workspace.value
   }
   const key = `ws:${workspace['project']}:${workspace['workspace']}`
-  if (req.swagger.params.action.value['action'] === 'quickcheck') {
-    quickcheck({project: workspace['project'], workspace: workspace['workspace']}, (err, data) => {
+  if (req.swagger.params.action.value['action'] === 'clean') {
+    workspaceEndRequest({project: workspace['project'], workspace: workspace['workspace']}, 'clean', (err, data) => {
       if (err) {
-        logger.error(`${workspace['project']}/${workspace['workspace']} failed to run quickcheck`)
-        res.status(500).json()
+        logger.error(`${workspace['project']}/${workspace['workspace']} failed to clean`)
       } else {
-        console.log(`Execution result is: ${data}`)
-        res.status(200).json()
+        logger.info(`${workspace['project']}/${workspace['workspace']} has successfully clean the resource`)
       }
     })
-    
-  } else {
-    actionWorkspace(workspace, {action: req.swagger.params.action.value['action']}, (err, data) => {
-      if (err) {
-        if (err.code && (err.code === 409)) {
-          res.status(409).json({ message: `(${workspace['project']}/${workspace['workspace']} has a pending action` })
-        } else {
-          res.status(404).json({ message: `(${workspace['project']}/${workspace['workspace']} not found` })
-        }
+    res.status(201).json({event: 'none'})
+    return
+  }
+
+  actionWorkspace(workspace, {action: req.swagger.params.action.value['action']}, (err, data) => {
+    if (err) {
+      if (err.code && (err.code === 409)) {
+        res.status(409).json({ message: `(${workspace['project']}/${workspace['workspace']} has a pending action` })
+        return
       } else {
-        console.log(`enter 1: ${req.swagger.params.action.value['action']}`)
-        if (req.swagger.params.action.value['action'] === 'apply') {
-          console.log(`enter 2`)
-          apply({project: workspace['project'], workspace: workspace['workspace'], event: data[key].request.event}, (err, data) => {
-            let msg = 'applied'
+        res.status(404).json({ message: `(${workspace['project']}/${workspace['workspace']} not found` })
+        return
+      }
+    } else {
+      if (req.swagger.params.action.value['action'] === 'apply') {
+        apply({project: workspace['project'], workspace: workspace['workspace'], event: data[key].request.event}, (err, data) => {
+          let msg = 'applied'
+          if (err) {
+            msg = 'error'
+          }
+          workspaceEndRequest({project: workspace['project'], workspace: workspace['workspace']}, msg, (err, data) => {
             if (err) {
-              msg = 'error'
+              logger.error(`${workspace['project']}/${workspace['workspace']} failed to register ${msg}`)
+            } else {
+              logger.info(`${workspace['project']}/${workspace['workspace']} has successfully registered ${msg}`)
             }
-            workspaceEndRequest({project: workspace['project'], workspace: workspace['workspace']}, msg, (err, data) => {
-              if (err) {
-                logger.error(`${workspace['project']}/${workspace['workspace']} failed to register ${msg}`)
-              } else {
-                logger.info(`${workspace['project']}/${workspace['workspace']} has successfully registered ${msg}`)
-              }
-            })
           })
-        } else if (req.swagger.params.action.value['action'] === 'destroy') {
-          console.log(`enter 3`)
-          destroy({project: workspace['project'], workspace: workspace['workspace'], event: data[key].request.event}, (err, data) => {
-            let msg = 'destroyed'
+        })
+        res.status(201).json({event: data[key].request.event})
+      } else if (req.swagger.params.action.value['action'] === 'destroy') {
+        destroy({project: workspace['project'], workspace: workspace['workspace'], event: data[key].request.event}, (err, data) => {
+          let msg = 'destroyed'
+          if (err) {
+            msg = 'error'
+          }
+          workspaceEndRequest({project: workspace['project'], workspace: workspace['workspace']}, msg, (err, data) => {
             if (err) {
-              msg = 'error'
+              logger.error(`${workspace['project']}/${workspace['workspace']} failed to register ${msg}`)
+            } else {
+              logger.info(`${workspace['project']}/${workspace['workspace']} has successfully registered ${msg}`)
             }
-            workspaceEndRequest({project: workspace['project'], workspace: workspace['workspace']}, msg, (err, data) => {
-              if (err) {
-                logger.error(`${workspace['project']}/${workspace['workspace']} failed to register ${msg}`)
-              } else {
-                logger.info(`${workspace['project']}/${workspace['workspace']} has successfully registered ${msg}`)
-              }
-            })
           })
-        }
+        })
         res.status(201).json({event: data[key].request.event})
       }
-    })
-  }
+    }
+  })
 }
 
 function events (req, res) {
@@ -137,5 +149,6 @@ function events (req, res) {
 module.exports = {
   workspace_action: action,
   workspace_describe: describe,
-  workspace_events: events
+  workspace_events: events,
+  workspace_status: quickcheck
 }

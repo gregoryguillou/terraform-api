@@ -28,6 +28,7 @@ services:
     ports:
       - 8091-8094:8091-8094
       - 11210:11210
+    restart: "always"
 
   couchbase-setup:
     image: couchbase:5.1.0
