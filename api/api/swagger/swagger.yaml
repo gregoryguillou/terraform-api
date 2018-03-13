@@ -272,7 +272,7 @@ paths:
             properties:
               action:
                 type: string
-                enum: ["apply", "destroy"]
+                enum: ["apply", "destroy", "clean"]
       responses:
         "201":
           description: Created
@@ -307,6 +307,31 @@ paths:
             type: array
             items:
               $ref: "#/definitions/Event"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /projects/{project}/workspaces/{workspace}/status:
+    x-swagger-router-controller: workspaces
+    get:
+      tags:
+        - main
+      description: Returns the description of a given project/workspace
+      operationId: workspace_status
+      parameters:
+        - in: path
+          name: project
+          type: string
+          required: true
+          description: Project to get the workspace from.
+        - in: path
+          name: workspace
+          type: string
+          required: true
+          description: Workspace to get
+      responses:
+        "200":
+          description: Success
         default:
           description: Error
           schema:

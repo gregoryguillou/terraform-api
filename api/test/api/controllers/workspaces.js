@@ -124,7 +124,7 @@ describe('controllers', function () {
         })
       })
 
-      it('should succeed HTTP-201 when project/workspace exists, action in [apply, destroy] and no pending action', (done) => {
+      it('should succeed HTTP-201 when project/workspace exists, action is apply and no pending action', (done) => {
         request(server)
           .post('/projects/demonstration/workspaces/staging')
           .send({'action': 'apply'})
@@ -144,7 +144,7 @@ describe('controllers', function () {
         })
       })
 
-      it('should succeed HTTP-201 when project/workspace exists, action in [apply, destroy] and no pending action', (done) => {
+      it('should succeed HTTP-201 when project/workspace exists, action is apply and no pending action', (done) => {
         request(server)
           .post('/projects/demonstration/workspaces/staging')
           .send({'action': 'apply'})
@@ -158,7 +158,7 @@ describe('controllers', function () {
           })
       })
 
-      it('should fail HTTP-409 when project/workspace exists, action in [apply, destroy] and pending action', (done) => {
+      it('should fail HTTP-409 when project/workspace exists, action in apply and pending action', (done) => {
         request(server)
           .post('/projects/demonstration/workspaces/staging')
           .send({'action': 'apply'})
@@ -261,6 +261,53 @@ describe('controllers', function () {
           done()
         })
       })
+    })
+
+    describe('GET /projects/{project}/workspaces/{workspace}/status', () => {
+      it('should succeed HTTP-404 when project/workspace exists and is not running', (done) => {
+        request(server)
+          .get('/projects/demonstration/workspaces/staging/status')
+          .set('Accept', 'application/json')
+          .set('Authorization', token)
+          .expect(404)
+          .end((err, res) => {
+            should.not.exist(err)
+            done()
+          })
+      })
+
+      it('should fail HTTP-409 when project/workspace exists, action is apply and no pending action', (done) => {
+        request(server)
+          .post('/projects/demonstration/workspaces/staging')
+          .send({'action': 'apply'})
+          .set('Accept', 'application/json')
+          .set('Authorization', token)
+          .expect(201)
+          .end((err, res) => {
+            should.not.exist(err)
+            done()
+          })
+      })
+
+      it('Wait up to 15s before the creation is considered failed', (done) => {
+        i = 0
+        queryWorkspace(() => {
+          done()
+        })
+      })
+
+      it('should succeed HTTP-200 when project/workspace exists and is running', (done) => {
+        request(server)
+          .get('/projects/demonstration/workspaces/staging/status')
+          .set('Accept', 'application/json')
+          .set('Authorization', token)
+          .expect(200)
+          .end((err, res) => {
+            should.not.exist(err)
+            done()
+          })
+      })
+
     })
   })
 })

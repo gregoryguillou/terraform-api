@@ -30,6 +30,7 @@ projects:
       - test
       - development
     lifecycle:
+      cwd: projects/demonstration
       before-start:
         - echo "Ready to kick-off a creation container..."
       pre-start:
