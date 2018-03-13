@@ -273,6 +273,8 @@ paths:
               action:
                 type: string
                 enum: ["apply", "destroy", "clean"]
+              ref:
+                type: string
       responses:
         "201":
           description: Created
