@@ -272,7 +272,7 @@ paths:
             properties:
               action:
                 type: string
-                enum: ["apply", "destroy"]
+                enum: ["apply", "destroy", "quickcheck"]
       responses:
         "201":
           description: Created
