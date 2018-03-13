@@ -8,8 +8,8 @@ const { apply, destroy } = require('../models/docker')
 const logger = require('../models/logger')
 const { exec } = require('child_process')
 
-function sh(cmd, callback) {
-    exec(cmd, (err, stdout, stderr) => {
+function sh(cmd, options, callback) {
+    exec(cmd, options, (err, stdout, stderr) => {
       if (err) {
         callback(err, null)
       } else {
@@ -35,15 +35,17 @@ function describe (req, res) {
 
 function quickcheck (workspace, callback) {
   const project = workspace['project']
+  let cwd = ''
   let command = [ ]
   for (var i = 0, size = projects.length; i < size; i++) {
     if (projects[i].name === project) {
+      cwd = projects[i].lifecycle.cwd || 'projects/demonstration'
       for (var j = 0, wsize = projects[i].lifecycle.status.length; j < wsize; j++) {
         command.push(projects[i].lifecycle.status[j].replace(/{{lineup\.WORKSPACE}}/, workspace['workspace']))
       }
     }
   }
-  sh(command[0], (err, data) => {callback(err, data)})
+  sh(command[0], {cwd: cwd}, (err, data) => {callback(err, data)})
 }
 
 function action (req, res) {
