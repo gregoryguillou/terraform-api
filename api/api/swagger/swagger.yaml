@@ -142,7 +142,7 @@ paths:
             properties:
               action:
                 type: string
-                enum: ["reserve", "release"]
+                enum: ["reserve", "release", "refresh"]
       responses:
         "201":
           description: Created

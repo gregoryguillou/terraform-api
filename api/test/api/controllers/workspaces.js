@@ -204,6 +204,27 @@ describe('controllers', function () {
             done()
           })
       })
+
+      it.skip('should succeed HTTP-201 when project/workspace exists, action is apply, no pending action and tag', (done) => {
+        request(server)
+          .post('/projects/demonstration/workspaces/staging')
+          .send({'action': 'apply', 'ref': 'tag:v0.0.1'})
+          .set('Accept', 'application/json')
+          .set('Authorization', token)
+          .expect(201)
+          .end((err, res) => {
+            should.not.exist(err)
+            should.exist(res.body.event)
+            done()
+          })
+      })
+
+      it.skip('Wait up to 15s before the creation is considered failed', (done) => {
+        queryWorkspace(() => {
+          done()
+        })
+      })
+
     })
 
     describe('POST /projects/{project}/workspaces/{workspace} with {action: "destroy"}', () => {

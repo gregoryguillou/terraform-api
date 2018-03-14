@@ -79,7 +79,7 @@ function action (req, res) {
     return
   }
 
-  actionWorkspace(workspace, {action: req.swagger.params.action.value['action']}, (err, data) => {
+  actionWorkspace(workspace, {action: req.swagger.params.action.value['action'], ref: req.swagger.params.action.value['action']}, (err, data) => {
     if (err) {
       if (err.code && (err.code === 409)) {
         res.status(409).json({ message: `(${workspace['project']}/${workspace['workspace']} has a pending action` })
@@ -90,7 +90,15 @@ function action (req, res) {
       }
     } else {
       if (req.swagger.params.action.value['action'] === 'apply') {
-        apply({project: workspace['project'], workspace: workspace['workspace'], event: data[key].request.event}, (err, data) => {
+        let request = {
+          project: workspace['project'], 
+          workspace: workspace['workspace'], 
+          event: data[key].request.event
+        }        
+        if (req.swagger.params.action.value['ref']) {
+          request.ref = req.swagger.params.action.value['ref']
+        }        
+        apply(request, (err, data) => {
           let msg = 'applied'
           if (err) {
             msg = 'error'
