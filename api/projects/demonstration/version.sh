@@ -11,9 +11,9 @@ while true; do
   if [[ -z "$VERSION" ]]; then
     printf "${RED}.${NC}"
   elif [[ "$VERSION" == "v0.0.2" ]]; then
-    printf "${RED}${VERSION}.${NC}"
+    printf "${RED}${VERSION}...${NC}"
   else
-    printf "${GREEN}${VERSION}.${NC}"
+    printf "${GREEN}${VERSION}...${NC}"
   fi
   sleep 1
   if [[ "$i" -gt 256 ]]; then
