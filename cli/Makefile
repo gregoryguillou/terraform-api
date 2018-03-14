@@ -1,6 +1,6 @@
 .DEFAULT_GOAL=linux
 
-BINARY=linup
+BINARY=lineup
 GOARCH = amd64
 
 COMMIT=$(shell git rev-parse HEAD)
