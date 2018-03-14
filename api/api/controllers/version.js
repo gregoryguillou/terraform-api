@@ -6,7 +6,7 @@ function version (req, res) {
   fs.readFile('package.json', 'utf8', function (err, data) {
     if (err) throw err;
     const obj = JSON.parse(data);
-    res.json({ version: obj['version'] })
+    res.json({ version: `v${obj['version']}` })
   })
 
 }

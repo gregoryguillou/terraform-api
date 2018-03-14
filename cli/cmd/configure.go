@@ -51,10 +51,19 @@ func saveConfiguration(cfg config) error {
 		os.Mkdir(path.Join(home, ".lineup"), 0700)
 	}
 
-	d1 := []byte("endpoint=\"" + cfg.endpoint + "\"\nkey=\"" + cfg.apikey + "\"\n")
+	d1 := []byte("endpoint=\"" + cfg.endpoint + "\"\napikey=\"" + cfg.apikey + "\"\n")
 	err := ioutil.WriteFile(
 		path.Join(home, ".lineup", "credentials"), d1, 0600)
 	return err
+}
+
+func trimQuotes(s string) string {
+	if len(s) >= 2 {
+			if s[0] == '"' && s[len(s)-1] == '"' {
+					return s[1 : len(s)-1]
+			}
+	}
+	return s
 }
 
 func loadConfiguration() (config, error) {
@@ -81,7 +90,6 @@ func loadConfiguration() (config, error) {
 
 	for {
 			line, err := reader.ReadString('\n')
-
 			if equal := strings.Index(line, "="); equal >= 0 {
 					if key := strings.TrimSpace(line[:equal]); len(key) > 0 {
 							value := ""
@@ -89,9 +97,9 @@ func loadConfiguration() (config, error) {
 									value = strings.TrimSpace(line[equal+1:])
 							}
 							if key == "endpoint" { 
-								cfg.endpoint = value
-							} else if key == "apikey" { 
-								cfg.apikey = value
+								cfg.endpoint = trimQuotes(value)
+  						} else if key == "apikey" { 
+								cfg.apikey = trimQuotes(value)
 							}
 					}
 			}
@@ -102,7 +110,7 @@ func loadConfiguration() (config, error) {
 					return cfg, err
 			}
 	}
-	return cfg, nil
+  return cfg, nil
 }
 
 func testConfiguration(cfg config) (string, error) {
@@ -131,6 +139,7 @@ func testConfiguration(cfg config) (string, error) {
 }
 
 func connectAPI(cfg config) (string, error) {
+
 	client := &http.Client{
 		CheckRedirect: nil,
 	}
@@ -139,6 +148,7 @@ func connectAPI(cfg config) (string, error) {
 
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Authorization", "Key "+ cfg.apikey)
+
 	resp, err := client.Do(req)
 	if err != nil { return "", err }
 
@@ -149,6 +159,7 @@ func connectAPI(cfg config) (string, error) {
 	var dat map[string]interface{}
 
 	if err = json.Unmarshal(data, &dat); err != nil { return "", err }
+
 	token := fmt.Sprintf("Bearer %s", dat["token"])
   return token, nil
 
