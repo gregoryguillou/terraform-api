@@ -3,7 +3,7 @@
 BINARY=lineup
 GOARCH = amd64
 
-COMMIT=$(shell git rev-parse HEAD)
+COMMIT=$(shell git rev-parse HEAD | cut -c1-7)
 TAG=$(shell git tag -l --contains HEAD | grep "^v" | head -n 1 | sed 's/^v//')
 VERSION := $(or ${TAG},${COMMIT},unknown)
 

@@ -1,7 +1,14 @@
 'use strict'
+const fs = require('fs');
 
 function version (req, res) {
-  res.json({ version: '0.0.1' })
+
+  fs.readFile('package.json', 'utf8', function (err, data) {
+    if (err) throw err;
+    const obj = JSON.parse(data);
+    res.json({ version: `v${obj['version']}` })
+  })
+
 }
 
 module.exports = {
