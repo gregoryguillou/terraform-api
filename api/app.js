@@ -48,19 +48,46 @@ app.use(
   '/login',
   passport.authenticate(
     'headerapikey', { session: false }),
-    (req, res, next) => {
-      next()
-    }
-  )
+  (req, res, next) => {
+    next()
+  }
+)
 
 app.use(
-    '/user',
-    passport.authenticate(
-      'jwt', { session: false }),
-      (req, res, next) => {
-        next()
-      }
-    )
+  '/user',
+  passport.authenticate(
+    'jwt', { session: false }),
+  (req, res, next) => {
+    next()
+  }
+)
+
+app.use(
+  '/events',
+  passport.authenticate(
+    'jwt', { session: false }),
+  (req, res, next) => {
+    next()
+  }
+)
+  
+app.use(
+  '/projects',
+  passport.authenticate(
+    'jwt', { session: false }),
+  (req, res, next) => {
+    next()
+  }
+)
+
+app.use(
+  '/version',
+  passport.authenticate(
+    'jwt', { session: false }),
+  (req, res, next) => {
+    next()
+  }
+)
 
 updateAll(() => {
   SwaggerExpress.create(config, (err, swaggerExpress) => {

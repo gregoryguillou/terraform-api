@@ -35,7 +35,45 @@ function queryWorkspace (callback) {
 }
 
 describe('controllers', function () {
-  this.timeout(31000)
+  describe('JSON Web Token', () => { 
+    it('GET /projects/{project} should return 401 when unauthenticated', (done) => {
+      request(server)
+        .get('/projects/demonstration')
+        .set('Accept', 'application/json')
+        .expect(401)
+        .end((err, res) => {
+          should.not.exist(err)
+          done()
+        })
+    })
+
+    it('GET /events should return 401 when unauthenticated', (done) => {
+      request(server)
+        .get('/events')
+        .set('Accept', 'application/json')
+        .expect(401)
+        .end((err, res) => {
+          should.not.exist(err)
+          done()
+        })
+    })
+
+    it('GET /version should return 401 when unauthenticated', (done) => {
+      request(server)
+        .get('/version')
+        .set('Accept', 'application/json')
+        .expect(401)
+        .end((err, res) => {
+          should.not.exist(err)
+          done()
+        })
+    })
+
+  })
+})
+
+describe('controllers', function () {
+  this.timeout(20000)
   describe('workspace', () => {
     before((done) => {
       request(server)
