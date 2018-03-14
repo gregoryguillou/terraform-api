@@ -142,7 +142,7 @@ paths:
             properties:
               action:
                 type: string
-                enum: ["reserve", "release"]
+                enum: ["reserve", "release", "refresh"]
       responses:
         "201":
           description: Created
@@ -273,6 +273,8 @@ paths:
               action:
                 type: string
                 enum: ["apply", "destroy", "clean"]
+              ref:
+                type: string
       responses:
         "201":
           description: Created
@@ -481,12 +483,16 @@ definitions:
           type: string
       project:
         type: string
+      ref:
+        type: string
       request:
         type: object
         properties:
           date:
             type: integer
           action:
+            type: string
+          ref:
             type: string
           event:
             type: string

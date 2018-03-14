@@ -43,7 +43,16 @@ if [[ "$HELP" == "true" ]]; then
 elif [[ "$VERSION" == "true" ]]; then
   version
 elif [[ "$COMMAND" == "apply" || "$COMMAND" == "destroy" || "$COMMAND" == "list" || "$COMMAND" == "check" ]]; then
-  WORKSPACE=${WORKSPACE} bin/${COMMAND}.sh
+  if [[ -n "$REF" && -z "$TAG" && -z "$BRANCH" ]]; then
+    TYPREF=$(echo "$REF" | cut -d':' -f1)
+    LABREF=$(echo "$REF" | cut -d':' -f2)
+    if [[ "$TYPREF" == "tag" ]]; then
+      export TAG="$LABREF"
+    elif [[ "$TYPREF" == "branch" ]]; then
+      export BRANCH="$LABREF"
+    fi
+  fi
+  WORKSPACE=${WORKSPACE} TAG=${TAG} BRANCH=${BRANCH} bin/${COMMAND}.sh
 else
-  usage  
+  usage
 fi

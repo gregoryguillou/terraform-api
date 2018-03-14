@@ -33,6 +33,11 @@ function command (command, config, callback) {
       }
     }
     createoptions = {env: env}
+    let args = ['-c', command, '-w', config['workspace']]
+    if (command === 'apply' && config['ref'] ) {
+       args.push('-r')
+       args.push(config['ref'])
+    }
     docker.run('lineup-terraform', ['-c', command, '-w', config['workspace']], stdout, createoptions, startoptions, function (err, data, container) {
       if (!err) {
         callback(null, data)
