@@ -1,13 +1,16 @@
 package cmd
 
 import (
+	"bufio"
 	"fmt"
 	"net/http"
+	"io"
 	"io/ioutil"
 	"encoding/json"
 	"os"
 	"path"
-
+	"strings"
+	
 	"github.com/spf13/cobra"
 )
 
@@ -54,41 +57,101 @@ func saveConfiguration(cfg config) error {
 	return err
 }
 
-func testConfiguration(cfg config) error {
+func loadConfiguration() (config, error) {
+
+	home := os.Getenv("HOME")
+	if home == "" {
+		home = os.Getenv("HOMEPATH")
+	}
+	
+	filename := path.Join(home, ".lineup", "credentials")
+	cfg := config{endpoint: "", apikey: ""}
+
+	if len(filename) == 0 {
+			return cfg, nil
+	}
+
+	file, err := os.Open(filename)
+	if err != nil {
+			return cfg, err
+	}
+	defer file.Close()
+
+	reader := bufio.NewReader(file)
+
+	for {
+			line, err := reader.ReadString('\n')
+
+			if equal := strings.Index(line, "="); equal >= 0 {
+					if key := strings.TrimSpace(line[:equal]); len(key) > 0 {
+							value := ""
+							if len(line) > equal {
+									value = strings.TrimSpace(line[equal+1:])
+							}
+							if key == "endpoint" { 
+								cfg.endpoint = value
+							} else if key == "apikey" { 
+								cfg.apikey = value
+							}
+					}
+			}
+			if err == io.EOF {
+					break
+			}
+			if err != nil {
+					return cfg, err
+			}
+	}
+	return cfg, nil
+}
+
+func testConfiguration(cfg config) (string, error) {
+	token, err := connectAPI(cfg)
+	client := &http.Client{
+		CheckRedirect: nil,
+	}
+	req, err := http.NewRequest("GET", "http://localhost:10010/user", nil)
+	if err != nil { return "", err }
+
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Authorization", token)
+
+	resp, err := client.Do(req)
+	if err != nil { return "", err }
+
+	data, err := ioutil.ReadAll(resp.Body)
+	resp.Body.Close()
+	if err != nil { return "", err }
+
+	var dat map[string]interface{}
+	if err = json.Unmarshal(data, &dat); err != nil { return "", err }
+
+	username := fmt.Sprintf("%s", dat["username"])
+	return username, nil
+}
+
+func connectAPI(cfg config) (string, error) {
 	client := &http.Client{
 		CheckRedirect: nil,
 	}
 	req, err := http.NewRequest("GET", cfg.endpoint + "/login", nil)
-	if err != nil { return err }
+	if err != nil { return "", err }
 
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Authorization", "Key "+ cfg.apikey)
 	resp, err := client.Do(req)
-	if err != nil { return err }
+	if err != nil { return "", err }
 
 	data, err := ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
-	if err != nil { return err }
+	if err != nil { return "", err }
 
 	var dat map[string]interface{}
 
-	if err = json.Unmarshal(data, &dat); err != nil { return err }
-	req, err = http.NewRequest("GET", "http://localhost:10010/user", nil)
-	if err != nil { return err }
+	if err = json.Unmarshal(data, &dat); err != nil { return "", err }
+	token := fmt.Sprintf("Bearer %s", dat["token"])
+  return token, nil
 
-	req.Header.Add("Accept", "application/json")
-	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", dat["token"]))
-
-	resp, err = client.Do(req)
-	if err != nil { return err }
-
-	data, err = ioutil.ReadAll(resp.Body)
-	resp.Body.Close()
-	if err != nil { return err }
-
-	if err := json.Unmarshal(data, &dat); err != nil { return err }
-
-	return nil
 }
 
 var configureCmd = &cobra.Command{
@@ -100,10 +163,11 @@ var configureCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		cfg := readConfiguration()
-		err := testConfiguration(cfg)
+		username, err := testConfiguration(cfg)
 		if err != nil {
 			fmt.Println("ERROR: Cannot connect to the API, make sure the endpoint and api keys are valid...")
 		} else {
+			fmt.Println(fmt.Sprintf("SUCCESS: You are connected as %s...", username))
 			err = saveConfiguration(cfg)
 			if err != nil {panic(err)}	
 		}
