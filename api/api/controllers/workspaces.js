@@ -3,7 +3,11 @@
 const util = require('util')
 const YAML = require('yamljs')
 const projects = YAML.load('config/settings.yaml')['projects']
-const { showWorkspace, actionWorkspace, workspaceEndRequest } = require('../models/couchbase')
+const { 
+  showWorkspace, 
+  actionWorkspace, 
+  workspaceEndRequest 
+} = require('../models/couchbase')
 const { apply, destroy } = require('../models/docker')
 const logger = require('../models/logger')
 const { exec } = require('child_process')
@@ -26,7 +30,9 @@ function describe (req, res) {
   const key = `ws:${workspace['project']}:${workspace['workspace']}`
   showWorkspace(workspace, (err, data) => {
     if (err) {
-      res.status(404).json({ message: `(${workspace['project']}/${workspace['workspace']} not found` })
+      res.status(404).json({ 
+        message: `(${workspace['project']}/${workspace['workspace']} not found` 
+      })
     } else {
       res.json(data[key])
     }
@@ -45,7 +51,11 @@ function quickcheck (req, res) {
     if (projects[i].name === project) {
       cwd = projects[i].lifecycle.cwd || 'projects/demonstration'
       for (var j = 0, wsize = projects[i].lifecycle.status.length; j < wsize; j++) {
-        command.push(projects[i].lifecycle.status[j].replace(/{{lineup\.WORKSPACE}}/, workspace['workspace']))
+        command.push(
+          projects[i].lifecycle.status[j].replace(/{{lineup\.WORKSPACE}}/, 
+            workspace['workspace']
+          )
+        )
       }
     }
   }
@@ -79,57 +89,61 @@ function action (req, res) {
     return
   }
 
-  actionWorkspace(workspace, {action: req.swagger.params.action.value['action'], ref: req.swagger.params.action.value['action']}, (err, data) => {
-    if (err) {
-      if (err.code && (err.code === 409)) {
-        res.status(409).json({ message: `(${workspace['project']}/${workspace['workspace']} has a pending action` })
-        return
+  actionWorkspace(
+    workspace, 
+    {action: req.swagger.params.action.value['action'], ref: req.swagger.params.action.value['ref']}, 
+    (err, data) => {
+      if (err) {
+        if (err.code && (err.code === 409)) {
+          res.status(409).json({ 
+            message: `(${workspace['project']}/${workspace['workspace']} has a pending action`
+          })
+          return
+        } else {
+          res.status(404).json({ message: `(${workspace['project']}/${workspace['workspace']} not found` })
+          return
+        }
       } else {
-        res.status(404).json({ message: `(${workspace['project']}/${workspace['workspace']} not found` })
-        return
-      }
-    } else {
-      if (req.swagger.params.action.value['action'] === 'apply') {
-        let request = {
-          project: workspace['project'], 
-          workspace: workspace['workspace'], 
-          event: data[key].request.event
-        }        
-        if (req.swagger.params.action.value['ref']) {
-          request.ref = req.swagger.params.action.value['ref']
-        }        
-        apply(request, (err, data) => {
-          let msg = 'applied'
-          if (err) {
-            msg = 'error'
-          }
-          workspaceEndRequest({project: workspace['project'], workspace: workspace['workspace']}, msg, (err, data) => {
+        if (req.swagger.params.action.value['action'] === 'apply') {
+          let request = {
+            project: workspace['project'], 
+            workspace: workspace['workspace'],
+            ref: (req.swagger.params.action.value['ref'] ? req.swagger.params.action.value['ref'] : (data['ref'] ? data['ref'] : 'branch:master')),
+            event: data[key].request.event
+          }   
+          apply(request, (err, data) => {
+            let msg = 'applied'
             if (err) {
-              logger.error(`${workspace['project']}/${workspace['workspace']} failed to register ${msg}`)
-            } else {
-              logger.info(`${workspace['project']}/${workspace['workspace']} has successfully registered ${msg}`)
+              msg = 'error'
             }
+            workspaceEndRequest({project: workspace['project'], workspace: workspace['workspace']}, msg, (err, data) => {
+              if (err) {
+                logger.error(`${workspace['project']}/${workspace['workspace']} failed to register ${msg}`)
+              } else {
+                logger.info(`${workspace['project']}/${workspace['workspace']} has successfully registered ${msg}`)
+              }
+            })
           })
-        })
-        res.status(201).json({event: data[key].request.event})
-      } else if (req.swagger.params.action.value['action'] === 'destroy') {
-        destroy({project: workspace['project'], workspace: workspace['workspace'], event: data[key].request.event}, (err, data) => {
-          let msg = 'destroyed'
-          if (err) {
-            msg = 'error'
-          }
-          workspaceEndRequest({project: workspace['project'], workspace: workspace['workspace']}, msg, (err, data) => {
+          res.status(201).json({event: data[key].request.event})
+        } else if (req.swagger.params.action.value['action'] === 'destroy') {
+          destroy({project: workspace['project'], workspace: workspace['workspace'], event: data[key].request.event}, (err, data) => {
+            let msg = 'destroyed'
             if (err) {
-              logger.error(`${workspace['project']}/${workspace['workspace']} failed to register ${msg}`)
-            } else {
-              logger.info(`${workspace['project']}/${workspace['workspace']} has successfully registered ${msg}`)
+              msg = 'error'
             }
+            workspaceEndRequest({project: workspace['project'], workspace: workspace['workspace']}, msg, (err, data) => {
+              if (err) {
+                logger.error(`${workspace['project']}/${workspace['workspace']} failed to register ${msg}`)
+              } else {
+                logger.info(`${workspace['project']}/${workspace['workspace']} has successfully registered ${msg}`)
+              }
+            })
           })
-        })
-        res.status(201).json({event: data[key].request.event})
+          res.status(201).json({event: data[key].request.event})
+        }
       }
     }
-  })
+  )
 }
 
 function events (req, res) {
@@ -141,7 +155,13 @@ function events (req, res) {
     if (projects[i].name === pproject) {
       for (var j = 0, wsize = projects[i].workspaces.length; j < wsize; j++) {
         if (projects[i].workspaces[j] === pworkspace) {
-          event = {time: '1970-01-01 00:00:00', description: 'The environment has been registered', reference: util.format('/projects/%s/workspace/%s', pproject, pworkspace)}
+          event = {
+            time: '1970-01-01 00:00:00', 
+            description: 'The environment has been registered', 
+            reference: util.format('/projects/%s/workspace/%s', 
+            pproject, 
+            pworkspace
+          )}
         }
       }
     }

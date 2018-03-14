@@ -85,6 +85,10 @@ function actionWorkspace (workspace, request, callback) {
     action: request['action']
   }
 
+  if (request['ref']) {
+    eventPayload[eventKey]['ref'] = request['ref']
+  }
+
   if (!verifyWorkspace(workspace)) {
     callback(new Error(`Workspace/Project does not exist. Check ${workspace['project']}/${workspace['workspace']}`), null)
     return
@@ -109,6 +113,10 @@ function actionWorkspace (workspace, request, callback) {
         lastEvents: [ event ]
       }
 
+      if (request['ref']) {
+        payload[key].request.ref = request['ref']
+      }
+
       bucket.insert(payload, (err, cas, existing) => {
         if (err) {
           callback(err, null)
@@ -130,6 +138,9 @@ function actionWorkspace (workspace, request, callback) {
         date: eventDate,
         action: request['action'],
         event: event
+      }
+      if (request['ref']) {
+        payload[key].request.ref = request['ref']
       }
       payload[key]['lastEvents'] = data[key]['lastEvents']
       if (payload[key]['lastEvents']) {
@@ -182,6 +193,7 @@ function showWorkspace (workspace, callback) {
         type: 'workspace',
         project: workspace['project'],
         workspace: workspace['workspace'],
+        ref: 'branch:master',
         state: 'new',
         creation: eventDate,
         lastEvents: []
@@ -205,6 +217,9 @@ function workspaceEndRequest (workspace, state, callback) {
       callback(err, null)
     } else if (data && data[key]) {
       let payload = data
+      if (payload[key].request && payload[key].request.ref) {
+        payload[key].ref = payload[key].request.ref
+      }
       delete payload[key].request
       if (state) {
         payload[key]['state'] = state

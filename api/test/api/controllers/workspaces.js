@@ -35,7 +35,7 @@ function queryWorkspace (callback) {
 }
 
 describe('controllers', function () {
-  this.timeout(20000)
+  this.timeout(31000)
   describe('workspace', () => {
     before((done) => {
       request(server)
@@ -204,8 +204,39 @@ describe('controllers', function () {
             done()
           })
       })
+    })
 
-      it.skip('should succeed HTTP-201 when project/workspace exists, action is apply, no pending action and tag', (done) => {
+    describe('POST /projects/{project}/workspaces/{workspace} with {action: "apply"} and different tags', () => {
+      it('should succeed HTTP-201 when project/workspace exists, action is apply with tag v0.0.2', (done) => {
+        request(server)
+          .post('/projects/demonstration/workspaces/staging')
+          .send({'action': 'apply', 'ref': 'tag:v0.0.2'})
+          .set('Accept', 'application/json')
+          .set('Authorization', token)
+          .expect(201)
+          .end((err, res) => {
+            should.not.exist(err)
+            should.exist(res.body.event)
+            done()
+          })
+      })
+
+      it('Wait up to 15s before the creation is considered failed', (done) => {
+        i = 0
+        queryWorkspace(() => {
+          done()
+        })
+      })
+
+      it('Wait up to 30s to let people verify the stack status', (done) => {
+        setTimeout(() => {
+            done()
+          }, 
+          30000
+        )
+      })
+
+      it('should succeed HTTP-201 when project/workspace exists, action is apply with tag v0.0.1', (done) => {
         request(server)
           .post('/projects/demonstration/workspaces/staging')
           .send({'action': 'apply', 'ref': 'tag:v0.0.1'})
@@ -219,12 +250,33 @@ describe('controllers', function () {
           })
       })
 
-      it.skip('Wait up to 15s before the creation is considered failed', (done) => {
+      it('Wait up to 15s before the creation is considered failed', (done) => {
+        i = 0
         queryWorkspace(() => {
           done()
         })
       })
 
+      it('should succeed HTTP-201 when project/workspace exists, action is apply with branch master', (done) => {
+        request(server)
+          .post('/projects/demonstration/workspaces/staging')
+          .send({'action': 'apply', 'ref': 'branch:master'})
+          .set('Accept', 'application/json')
+          .set('Authorization', token)
+          .expect(201)
+          .end((err, res) => {
+            should.not.exist(err)
+            should.exist(res.body.event)
+            done()
+          })
+      })
+
+      it('Wait up to 15s before the creation is considered failed', (done) => {
+        i = 0
+        queryWorkspace(() => {
+          done()
+        })
+      })
     })
 
     describe('POST /projects/{project}/workspaces/{workspace} with {action: "destroy"}', () => {

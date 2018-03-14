@@ -483,12 +483,16 @@ definitions:
           type: string
       project:
         type: string
+      ref:
+        type: string
       request:
         type: object
         properties:
           date:
             type: integer
           action:
+            type: string
+          ref:
             type: string
           event:
             type: string
