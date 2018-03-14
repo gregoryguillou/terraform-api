@@ -1,6 +1,6 @@
 {
   "name": "deployment-api",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "private": true,
   "description": "An API Project, built with swagger to create resources with Terraform",
   "keywords": [],
