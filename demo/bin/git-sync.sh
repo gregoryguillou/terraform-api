@@ -7,6 +7,7 @@ echo "login ${GITHUB_USERNAME}" >>~/.netrc
 echo "password ${GITHUB_PASSWORD}" >>~/.netrc
 chmod 600 ~/.netrc
 cd /github/repository
+git pull
 git fetch --all --tags --prune
 
 if [ -n "$TAG" ]; then
@@ -15,6 +16,5 @@ elif [ -n "$BRANCH" ]; then
   git checkout -b ${BRANCH} origin/${BRANCH}
 fi
 
-git pull
 rm -f ~/.netrc
 cd $PROJECT_DIR

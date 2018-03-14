@@ -38,7 +38,7 @@ function command (command, config, callback) {
        args.push('-r')
        args.push(config['ref'])
     }
-    docker.run('lineup-terraform', ['-c', command, '-w', config['workspace']], stdout, createoptions, startoptions, function (err, data, container) {
+    docker.run('lineup-terraform', args, stdout, createoptions, startoptions, function (err, data, container) {
       if (!err) {
         callback(null, data)
       } else {
