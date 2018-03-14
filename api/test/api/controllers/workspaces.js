@@ -139,6 +139,7 @@ describe('controllers', function () {
       })
 
       it('Wait up to 15s before the creation is considered failed', (done) => {
+        i = 0
         queryWorkspace(() => {
           done()
         })
@@ -228,18 +229,18 @@ describe('controllers', function () {
         })
       })
 
-      it('Wait up to 30s to let people verify the stack status', (done) => {
+      it('Wait up to 5s to let people verify the stack status', (done) => {
         setTimeout(() => {
             done()
           }, 
-          30000
+          5000
         )
       })
 
-      it('should succeed HTTP-201 when project/workspace exists, action is apply with tag v0.0.1', (done) => {
+      it('should succeed HTTP-201 when project/workspace exists, action is apply with tag v0.0.3', (done) => {
         request(server)
           .post('/projects/demonstration/workspaces/staging')
-          .send({'action': 'apply', 'ref': 'tag:v0.0.1'})
+          .send({'action': 'apply', 'ref': 'tag:v0.0.3'})
           .set('Accept', 'application/json')
           .set('Authorization', token)
           .expect(201)
