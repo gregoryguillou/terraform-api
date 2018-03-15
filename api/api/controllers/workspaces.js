@@ -8,7 +8,7 @@ const {
   actionWorkspace, 
   workspaceEndRequest 
 } = require('../models/couchbase')
-const { apply, destroy } = require('../models/docker')
+const { apply, check, destroy } = require('../models/docker')
 const logger = require('../models/logger')
 const { exec } = require('child_process')
 
@@ -136,6 +136,21 @@ function action (req, res) {
                 logger.error(`${workspace['project']}/${workspace['workspace']} failed to register ${msg}`)
               } else {
                 logger.info(`${workspace['project']}/${workspace['workspace']} has successfully registered ${msg}`)
+              }
+            })
+          })
+          res.status(201).json({event: data[key].request.event})
+        } else if (req.swagger.params.action.value['action'] === 'check') {
+          check({project: workspace['project'], workspace: workspace['workspace'], event: data[key].request.event}, (err, data) => {
+            let msg = 'check'
+            if (err) {
+              msg = 'error'
+            }
+            workspaceEndRequest({project: workspace['project'], workspace: workspace['workspace']}, msg, (err, data) => {
+              if (err) {
+                logger.error(`${workspace['project']}/${workspace['workspace']} failed to check ${msg}`)
+              } else {
+                logger.info(`${workspace['project']}/${workspace['workspace']} has successfully ${msg}`)
               }
             })
           })
