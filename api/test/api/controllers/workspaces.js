@@ -11,7 +11,7 @@ let i = 0
 function queryWorkspace (callback) {
   setTimeout(function () {
     i++
-    if (i < 15) {
+    if (i < 20) {
       request(server)
       .get('/projects/demonstration/workspaces/staging')
       .set('Accept', 'application/json')
@@ -24,7 +24,7 @@ function queryWorkspace (callback) {
           queryWorkspace(callback)
         } else {
           callback()
-          i = 15
+          i = 20
         }
       })
     } else {
@@ -73,7 +73,7 @@ describe('controllers', function () {
 })
 
 describe('controllers', function () {
-  this.timeout(20000)
+  this.timeout(21000)
   describe('workspace', () => {
     before((done) => {
       request(server)
@@ -176,7 +176,7 @@ describe('controllers', function () {
           })
       })
 
-      it('Wait up to 15s before the creation is considered failed', (done) => {
+      it('Wait up to 20s before the creation is considered failed', (done) => {
         i = 0
         queryWorkspace(() => {
           done()
@@ -210,7 +210,7 @@ describe('controllers', function () {
           })
       })
 
-      it('Wait up to 15s before the creation is considered failed', (done) => {
+      it('Wait up to 20s before the creation is considered failed', (done) => {
         i = 0
         queryWorkspace(() => {
           done()
@@ -260,7 +260,7 @@ describe('controllers', function () {
           })
       })
 
-      it('Wait up to 15s before the creation is considered failed', (done) => {
+      it('Wait up to 20s before the creation is considered failed', (done) => {
         i = 0
         queryWorkspace(() => {
           done()
@@ -289,7 +289,7 @@ describe('controllers', function () {
           })
       })
 
-      it('Wait up to 15s before the creation is considered failed', (done) => {
+      it('Wait up to 20s before the creation is considered failed', (done) => {
         i = 0
         queryWorkspace(() => {
           done()
@@ -310,7 +310,7 @@ describe('controllers', function () {
           })
       })
 
-      it('Wait up to 15s before the creation is considered failed', (done) => {
+      it('Wait up to 20s before the creation is considered failed', (done) => {
         i = 0
         queryWorkspace(() => {
           done()
@@ -333,7 +333,7 @@ describe('controllers', function () {
           })
       })
 
-      it('Wait up to 15s before the destruction is considered failed', (done) => {
+      it('Wait up to 20s before the destruction is considered failed', (done) => {
         i = 0
         queryWorkspace(() => {
           done()
@@ -367,7 +367,7 @@ describe('controllers', function () {
           })
       })
 
-      it('Wait up to 15s before the destruction is considered failed', (done) => {
+      it('Wait up to 20s before the destruction is considered failed', (done) => {
         i = 0
         queryWorkspace(() => {
           done()
@@ -401,7 +401,7 @@ describe('controllers', function () {
           })
       })
 
-      it('Wait up to 15s before the creation is considered failed', (done) => {
+      it('Wait up to 20s before the creation is considered failed', (done) => {
         i = 0
         queryWorkspace(() => {
           done()
