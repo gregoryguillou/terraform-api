@@ -4,9 +4,9 @@ const util = require('util')
 const YAML = require('yamljs')
 const projects = YAML.load('config/settings.yaml')['projects']
 const { 
-  showWorkspace, 
   actionWorkspace, 
-  workspaceEndRequest 
+  feedWorkspace, 
+  showWorkspace 
 } = require('../models/couchbase')
 const { apply, check, destroy } = require('../models/docker')
 const logger = require('../models/logger')
@@ -78,7 +78,8 @@ function action (req, res) {
   }
   const key = `ws:${workspace['project']}:${workspace['workspace']}`
   if (req.swagger.params.action.value['action'] === 'clean') {
-    workspaceEndRequest({project: workspace['project'], workspace: workspace['workspace']}, 'clean', (err, data) => {
+    // TODO : Change signature
+    feedWorkspace({project: workspace['project'], workspace: workspace['workspace']}, {status: 'clean'}, (err, data) => {
       if (err) {
         logger.error(`${workspace['project']}/${workspace['workspace']} failed to clean`)
       } else {
@@ -116,7 +117,8 @@ function action (req, res) {
             if (err) {
               msg = 'error'
             }
-            workspaceEndRequest({project: workspace['project'], workspace: workspace['workspace']}, msg, (err, data) => {
+              // TODO : Change signature
+              feedWorkspace({project: workspace['project'], workspace: workspace['workspace']}, {status: 'succeed'}, (err, data) => {
               if (err) {
                 logger.error(`${workspace['project']}/${workspace['workspace']} failed to register ${msg}`)
               } else {
@@ -131,7 +133,8 @@ function action (req, res) {
             if (err) {
               msg = 'error'
             }
-            workspaceEndRequest({project: workspace['project'], workspace: workspace['workspace']}, msg, (err, data) => {
+              // TODO : Change signature
+              feedWorkspace({project: workspace['project'], workspace: workspace['workspace']}, {status: 'succeed'}, (err, data) => {
               if (err) {
                 logger.error(`${workspace['project']}/${workspace['workspace']} failed to register ${msg}`)
               } else {
@@ -146,7 +149,8 @@ function action (req, res) {
             if (err) {
               msg = 'error'
             }
-            workspaceEndRequest({project: workspace['project'], workspace: workspace['workspace']}, msg, (err, data) => {
+              // TODO : Change signature
+              feedWorkspace({project: workspace['project'], workspace: workspace['workspace']}, {status: 'succeed'}, (err, data) => {
               if (err) {
                 logger.error(`${workspace['project']}/${workspace['workspace']} failed to check ${msg}`)
               } else {

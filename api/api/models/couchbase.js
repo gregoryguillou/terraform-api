@@ -5,7 +5,7 @@ const YAML = require('yamljs')
 const couchparam = YAML.load('config/settings.yaml')['couchbase']
 const projects = YAML.load('config/settings.yaml')['projects']
 const uuidv4 = require('uuid/v4')
-const log = require('./logger')
+const logger = require('./logger')
 
 const cluster = new couchbase.Cluster(couchparam['url'])
 cluster.authenticate(couchparam['username'], couchparam['password'])
@@ -123,7 +123,7 @@ function actionWorkspace (workspace, request, callback) {
         } else {
           bucket.upsert(eventPayload, (err, data) => {
             if (err) {
-              log.error('Error inserting the following key in bucket', eventPayload)
+              logger.error('Error inserting the following key in bucket', eventPayload)
             }
           })
           callback(null, payload)
@@ -154,7 +154,7 @@ function actionWorkspace (workspace, request, callback) {
         } else {
           bucket.upsert(eventPayload, (err, data) => {
             if (err) {
-              log.error('Error inserting the following key in bucket', eventPayload)
+              logger.error('Error inserting the following key in bucket', eventPayload)
             }
           })
           callback(null, payload)
@@ -210,25 +210,56 @@ function showWorkspace (workspace, callback) {
   })
 }
 
-function workspaceEndRequest (workspace, state, callback) {
+// TODO: The signature shall change. The result should be 'succeed', 'fail', 'differ' or 'clean' 
+function feedWorkspace (workspace, results, callback) {
   const key = `ws:${workspace['project']}:${workspace['workspace']}`
   bucket.get(key, function (err, data) {
     if (err) {
       callback(err, null)
     } else if (data && data[key]) {
       let payload = data
-      if (payload[key].request && payload[key].request.ref) {
-        payload[key].ref = payload[key].request.ref
+      let request = { };
+      if (payload[key].request) {
+        request = {
+          action: payload[key].request.action,
+          ref: (payload[key].request.ref ? payload[key].request.ref : 'unknown')
+        }
+        delete payload[key].request
+        switch (request.action) {
+          case 'apply':
+            console.log('Manage the apply command');
+            payload[key]['lastChecked'] = {
+              date: Date.now(),
+              state: (results.status === 'succeed' ? 'checked' : 'error'),
+              ref: request.ref 
+            }
+            break;
+          case 'clean':
+            console.log('Manage the clean command');
+          case 'check':
+            console.log('Manage the check command');
+            payload[key]['lastChecked'] = {
+              date: Date.now(),
+              state: (results.status === 'succeed' ? 'checked' : 'error'),
+              ref: request.ref 
+            }
+          case 'destroy':
+            console.log('Manage the destroy command');
+            payload[key]['lastChecked'] = {
+              date: Date.now(),
+              state: (results.status === 'succeed' ? 'checked' : 'error'),
+              ref: request.ref 
+            }
+          default:
+            console.log('Sorry, we are out of ' + expr + '.');
+        }
+        bucket.upsert(payload, (err, data) => {
+          if (err) callback(err, null)
+          else callback(null, payload)
+        })
       }
-      delete payload[key].request
-      if (state) {
-        payload[key]['state'] = state
-      }
-      bucket.upsert(payload, (err, data) => {
-        if (err) callback(err, null)
-        else callback(null, payload)
-      })
     } else {
+      logger.error(`ERROR: Cannot find workspace ${key}`)
       callback(null, null)
     }
   })
@@ -239,7 +270,7 @@ module.exports = {
   test: test,
   ActionError: ActionError,
   actionWorkspace: actionWorkspace,
+  feedWorkspace: feedWorkspace,
   deleteWorkspace: deleteWorkspace,
-  showWorkspace: showWorkspace,
-  workspaceEndRequest: workspaceEndRequest
+  showWorkspace: showWorkspace
 }

@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 const should = require('should')
-const { test, actionWorkspace, deleteWorkspace, workspaceEndRequest } = require('../../../api/models/couchbase')
+const { test, actionWorkspace, deleteWorkspace, feedWorkspace } = require('../../../api/models/couchbase')
 
 describe('models', () => {
   describe('couchbase', function () {
@@ -29,7 +29,8 @@ describe('models', () => {
     })
 
     it('End current request on workspace', (done) => {
-      workspaceEndRequest({project: 'demonstration', workspace: 'qa'}, 'applied', (err, data) => {
+        // TODO : Change signature
+        feedWorkspace({project: 'demonstration', workspace: 'qa'}, {action: 'success'}, (err, data) => {
         should.not.exist(err)
         should.not.exist(data['ws:demonstration:qa']['request'])
         should(data['ws:demonstration:qa']['state']).containEql('applied')

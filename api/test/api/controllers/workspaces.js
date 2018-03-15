@@ -3,7 +3,7 @@
 const should = require('should')
 const request = require('supertest')
 const server = require('../../../app')
-const { workspaceEndRequest } = require('../../../api/models/couchbase')
+const { feedWorkspace } = require('../../../api/models/couchbase')
 let token = ''
 
 let i = 0
@@ -155,7 +155,8 @@ describe('controllers', function () {
 
     describe('POST /projects/{project}/workspaces/{workspace} with {action: "apply"}', () => {
       it('Remove pending action on demonstration/staging', (done) => {
-        workspaceEndRequest({project: 'demonstration', workspace: 'staging'}, 'applied', (err, data) => {
+          // TODO : Change signature
+          feedWorkspace({project: 'demonstration', workspace: 'staging'}, 'applied', (err, data) => {
           should.not.exist(err)
           should.not.exist(data['ws:demonstration:staging']['request'])
           done()
