@@ -34,7 +34,7 @@ describe('version', function () {
           const obj = JSON.parse(fs.readFileSync('package.json', 'utf8'))
           version = obj['version']
           should.not.exist(err)
-          res.body.should.containEql({version: version})
+          res.body.should.containEql({version: `v${version}`})
           done()
         })
     })
