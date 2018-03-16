@@ -6,7 +6,7 @@ const { version, apply, check, destroy } = require('../../../api/models/docker')
 
 describe('models', () => {
   describe('docker', function () {
-    this.timeout(20000)
+    this.timeout(60000)
     it('Make sure the docker lineup container can display a version', (done) => {
       version((err, data) => {
         if (!err) {
@@ -47,6 +47,15 @@ describe('models', () => {
       check({project: 'demonstration', workspace: 'staging', event: 'test-check2'}, (err, data) => {
         if (!err) {
           should(data).containEql({ StatusCode: 2 })
+          done()
+        }
+      })
+    })
+
+    it('Run `terraform apply` from docker with a non existing branch', (done) => {
+      apply({project: 'demonstration', workspace: 'staging', ref: 'branch:doesnotexist', event: 'test-destroy'}, (err, data) => {
+        if (!err) {
+          should(data).containEql({ StatusCode: 128 })
           done()
         }
       })

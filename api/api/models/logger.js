@@ -1,7 +1,6 @@
+const process = require('process')
 const Logger = require('bunyan')
-const log = new Logger({ name: 'lineup', level: 'info' })
-if (process.env.NODE_ENV === 'unit') {
-  log.level('warn')
-}
+var level = process.env.BUNYAN_LOG_LEVEL || 'info';
+const logger = new Logger({ name: 'lineup', level: level })
 
-module.exports = log
+module.exports = logger

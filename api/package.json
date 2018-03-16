@@ -30,6 +30,6 @@
   },
   "scripts": {
     "start": "node app.js",
-    "test": "NODE_ENV=unit swagger project test"
+    "test": "BUNYAN_LOG_LEVEL=fatal swagger project test"
   }
 }

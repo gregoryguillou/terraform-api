@@ -3,7 +3,7 @@
 const should = require('should')
 const request = require('supertest')
 const server = require('../../../app')
-const { workspaceEndRequest } = require('../../../api/models/couchbase')
+const { feedWorkspace } = require('../../../api/models/couchbase')
 let token = ''
 
 let i = 0
@@ -73,7 +73,7 @@ describe('controllers', function () {
 })
 
 describe('controllers', function () {
-  this.timeout(21000)
+  this.timeout(60000)
   describe('workspace', () => {
     before((done) => {
       request(server)
@@ -153,9 +153,9 @@ describe('controllers', function () {
       })
     })
 
-    describe('POST /projects/{project}/workspaces/{workspace} with {action: "apply"}', () => {
+    describe('POST /projects/{project}/workspaces/{workspace} with {status: "clean"}', () => {
       it('Remove pending action on demonstration/staging', (done) => {
-        workspaceEndRequest({project: 'demonstration', workspace: 'staging'}, 'applied', (err, data) => {
+          feedWorkspace({project: 'demonstration', workspace: 'staging'}, {status: 'clean'}, (err, data) => {
           should.not.exist(err)
           should.not.exist(data['ws:demonstration:staging']['request'])
           done()
@@ -300,6 +300,27 @@ describe('controllers', function () {
         request(server)
           .post('/projects/demonstration/workspaces/staging')
           .send({'action': 'apply', 'ref': 'branch:master'})
+          .set('Accept', 'application/json')
+          .set('Authorization', token)
+          .expect(201)
+          .end((err, res) => {
+            should.not.exist(err)
+            should.exist(res.body.event)
+            done()
+          })
+      })
+
+      it('Wait up to 20s before the creation is considered failed', (done) => {
+        i = 0
+        queryWorkspace(() => {
+          done()
+        })
+      })
+
+      it('should succeed HTTP-201 when project/workspace exists, action is apply with non-existing branch', (done) => {
+        request(server)
+          .post('/projects/demonstration/workspaces/staging')
+          .send({'action': 'apply', 'ref': 'branch:doesnotexist'})
           .set('Accept', 'application/json')
           .set('Authorization', token)
           .expect(201)

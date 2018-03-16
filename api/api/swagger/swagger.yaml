@@ -272,7 +272,7 @@ paths:
             properties:
               action:
                 type: string
-                enum: ["apply", "destroy", "clean"]
+                enum: ["apply", "check", "clean", "destroy"]
               ref:
                 type: string
       responses:
