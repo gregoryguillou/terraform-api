@@ -3,7 +3,7 @@ const git = require('simple-git/promise')
 const YAML = require('yamljs')
 const projects = YAML.load('config/settings.yaml')['projects']
 const fs = require('fs')
-const log = require('./logger')
+const logger = require('./logger')
 
 function update (project, callback) {
   let gitProps = project['git']
@@ -16,16 +16,16 @@ function update (project, callback) {
   }
 
   if (!fs.existsSync(localProject)) {
-    log.info('Start cloning https://%s...', gitProps['repository'])
+    logger.info('Start cloning https://%s...', gitProps['repository'])
     git().silent(true)
       .clone(remote, localProject)
       .then(() => {
-        log.info('Finish cloning https://%s with success!', gitProps['repository'])
+        logger.info('Finish cloning https://%s with success!', gitProps['repository'])
         callback()
       })
-      .catch((err) => console.error(util.format('Error cloning https://%s:\n', gitProps['repository']), err))
+      .catch((err) => logger.error(util.format('Error cloning https://%s:\n', gitProps['repository']), err))
   } else {
-    log.info('Start updating https://%s...', gitProps['repository'])
+    logger.info('Start updating https://%s...', gitProps['repository'])
     git(localProject)
       .fetch(
         remote,
@@ -33,10 +33,10 @@ function update (project, callback) {
         { '--prune': null, '--tags': null }
       )
       .then(() => {
-        log.info('Finish updating https://%s with success!', gitProps['repository'])
+        logger.info('Finish updating https://%s with success!', gitProps['repository'])
         callback()
       })
-      .catch((err) => console.error(util.format('Error cloning https://%s:\n', gitProps['repository']), err))
+      .catch((err) => logger.error(util.format('Error cloning https://%s:\n', gitProps['repository']), err))
   }
 }
 

@@ -11,7 +11,7 @@ let i = 0
 function queryWorkspace (callback) {
   setTimeout(function () {
     i++
-    if (i < 20) {
+    if (i < 40) {
       request(server)
       .get('/projects/demonstration/workspaces/staging')
       .set('Accept', 'application/json')
@@ -24,7 +24,7 @@ function queryWorkspace (callback) {
           queryWorkspace(callback)
         } else {
           callback()
-          i = 20
+          i = 40
         }
       })
     } else {
@@ -73,7 +73,7 @@ describe('controllers', function () {
 })
 
 describe('controllers', function () {
-  this.timeout(21000)
+  this.timeout(60000)
   describe('workspace', () => {
     before((done) => {
       request(server)
@@ -133,7 +133,7 @@ describe('controllers', function () {
       })
     })
 
-    describe.skip('GET /projects/{project}/workspaces/{workspace}/events', () => {
+    describe('GET /projects/{project}/workspaces/{workspace}/events', () => {
       it('should list events associated with a project', (done) => {
         request(server)
           .get('/projects/demonstration/workspaces/staging/events')
@@ -153,11 +153,11 @@ describe('controllers', function () {
       })
     })
 
-    describe('POST /projects/{project}/workspaces/{workspace} with {action: "apply"}', () => {
+    describe('POST /projects/{project}/workspaces/{workspace} with {status: "clean"}', () => {
       it('Remove pending action on demonstration/staging', (done) => {
           // TODO : Change signature
-          feedWorkspace({project: 'demonstration', workspace: 'staging'}, {action: 'clean' }, (err, data) => {
-          console.log(data['ws:demonstration:staging']['request'])
+
+          feedWorkspace({project: 'demonstration', workspace: 'staging'}, {status: 'clean'}, (err, data) => {
           should.not.exist(err)
           should.not.exist(data['ws:demonstration:staging']['request'])
           done()

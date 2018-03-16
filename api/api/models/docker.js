@@ -3,6 +3,7 @@ var docker = new Docker({socketPath: '/var/run/docker.sock'})
 const YAML = require('yamljs')
 const projects = YAML.load('config/settings.yaml')['projects']
 const { EchoStream } = require('./couchbase')
+const logger = require('./logger')
 
 let env = [ 'CONSUL_IP=172.28.0.1' ]
 let createoptions = {}
@@ -20,6 +21,7 @@ function version (callback) {
 }
 
 function command (command, config, callback) {
+
   if (!config || !config['project'] || !config['workspace'] || !config['event']) {
     callback(new Error('Cannot run docker; you need the workspace and the event id'), null)
   } else {
@@ -42,6 +44,7 @@ function command (command, config, callback) {
       if (!err) {
         callback(null, data)
       } else {
+        logger.error(`docker lineup-terraform has failed with ${err.error}`)
         callback(err, data)
       }
     })

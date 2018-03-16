@@ -3,7 +3,7 @@
 const should = require('should')
 const { test, actionWorkspace, deleteWorkspace, feedWorkspace } = require('../../../api/models/couchbase')
 
-describe('models', () => {
+describe.skip('models', () => {
   describe('couchbase', function () {
     it('Test connectivity to Couchbase', (done) => {
       test((err, data) => {
@@ -30,7 +30,7 @@ describe('models', () => {
 
     it('End current request on workspace', (done) => {
         // TODO : Change signature
-        feedWorkspace({project: 'demonstration', workspace: 'qa'}, {action: 'success'}, (err, data) => {
+        feedWorkspace({project: 'demonstration', workspace: 'qa'}, {status: 'succeed'}, (err, data) => {
         should.not.exist(err)
         should.not.exist(data['ws:demonstration:qa']['request'])
         should(data['ws:demonstration:qa']['state']).containEql('applied')
