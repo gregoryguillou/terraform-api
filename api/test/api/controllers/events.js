@@ -5,7 +5,7 @@ const request = require('supertest')
 const server = require('../../../app')
 let token = ''
 
-describe('controllers', function () {
+describe.skip('controllers', function () {
   this.timeout(10000)
   describe('events', () => {
     before((done) => {

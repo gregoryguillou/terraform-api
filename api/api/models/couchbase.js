@@ -85,6 +85,7 @@ function actionWorkspace (workspace, request, callback) {
     action: request['action']
   }
 
+  console.log(`Starting actionWorkspace...`)
   if (request['ref']) {
     eventPayload[eventKey]['ref'] = request['ref']
   }
@@ -211,54 +212,115 @@ function showWorkspace (workspace, callback) {
 }
 
 // TODO: The signature shall change. The result should be 'succeed', 'fail', 'differ' or 'clean' 
-function feedWorkspace (workspace, results, callback) {
+function feedWorkspace (workspace, result, callback) {
+  console.log('starting feedWorkspace...')
   const key = `ws:${workspace['project']}:${workspace['workspace']}`
   bucket.get(key, function (err, data) {
+    console.log('Searching for data...')
     if (err) {
       callback(err, null)
     } else if (data && data[key]) {
+      console.log(`There are data ${data[key]}`)
       let payload = data
-      let request = { };
+      let request = { }
       if (payload[key].request) {
+        console.log(`There are data ${payload[key].request}`)
         request = {
           action: payload[key].request.action,
           ref: (payload[key].request.ref ? payload[key].request.ref : 'unknown')
         }
         delete payload[key].request
+      }
+      console.log(`${result.action}`)
+      switch (result.action) {
+        case 'clean':
+        console.log(`Cleaning the request`)
+        logger.info(`Clean ${workspace['project']}:${workspace['workspace']} requested`)
+          payload[key]['lastChecked'] = {
+            date: Date.now(),
+            state: 'cleaned'
+          }
+        case 'differ':
+          if (request.action === 'check') {
+            logger.info(`Check ${workspace['project']}:${workspace['workspace']} and it differs`)
+            payload[key]['lastChecked'] = {
+              date: Date.now(),
+              state: (results.status === 'differs'),
+              ref: request.ref 
+            }
+          } else {
+            logger.error(`${workspace['project']}:${workspace['workspace']} should not differ with action = ${request.action}`)
+            payload[key]['lastChecked'] = {
+              date: Date.now(),
+              state: (results.status === 'error'),
+              ref: request.ref 
+            }              
+          }
+        case 'succeed':
+          switch (request.action) {
+            case 'apply':
+              payload[key]['lastChecked'] = {
+                date: Date.now(),
+                state: 'checked',
+                ref: request.ref 
+              }
+              payload[key].state = 'applied'
+              logger.info(`${workspace['project']}:${workspace['workspace']}, action = ${request.action} succeeded'`)
+            case 'destroy':
+              payload[key]['lastChecked'] = {
+                date: Date.now(),
+                state: 'destroyed',
+                ref: request.ref 
+              }
+              payload[key].state = 'destroyed'
+              logger.info(`${workspace['project']}:${workspace['workspace']}, action = ${request.action} destroyed'`)
+            case 'check':
+              payload[key]['lastChecked'] = {
+                date: Date.now(),
+                state: 'checked',
+                ref: request.ref 
+              }
+              logger.info(`${workspace['project']}:${workspace['workspace']}, action = ${request.action} succeeded'`)
+            default:
+              logger.info(`${workspace['project']}:${workspace['workspace']}, action = ${request.action} should not be managed'`)
+          }                
+        case 'fail':
         switch (request.action) {
           case 'apply':
-            console.log('Manage the apply command');
             payload[key]['lastChecked'] = {
               date: Date.now(),
-              state: (results.status === 'succeed' ? 'checked' : 'error'),
+              state: 'failed',
               ref: request.ref 
             }
-            break;
-          case 'clean':
-            console.log('Manage the clean command');
-          case 'check':
-            console.log('Manage the check command');
-            payload[key]['lastChecked'] = {
-              date: Date.now(),
-              state: (results.status === 'succeed' ? 'checked' : 'error'),
-              ref: request.ref 
-            }
+            payload[key].state = 'apply - failed'
+            logger.info(`${workspace['project']}:${workspace['workspace']}, action = ${request.action} failed'`)
           case 'destroy':
-            console.log('Manage the destroy command');
             payload[key]['lastChecked'] = {
               date: Date.now(),
-              state: (results.status === 'succeed' ? 'checked' : 'error'),
+              state: 'failed',
               ref: request.ref 
             }
+            payload[key].state = 'destroy - failed'
+            logger.info(`${workspace['project']}:${workspace['workspace']}, action = ${request.action} destroyed'`)
+          case 'check':
+            payload[key]['lastChecked'] = {
+              date: Date.now(),
+              state: 'failed',
+              ref: request.ref 
+            }
+            logger.info(`${workspace['project']}:${workspace['workspace']}, action = ${request.action} checked'`)
           default:
-            console.log('Sorry, we are out of ' + expr + '.');
+            logger.info(`${workspace['project']}:${workspace['workspace']}, action = ${request.action} should not be managed'`)
         }
-        bucket.upsert(payload, (err, data) => {
-          if (err) callback(err, null)
-          else callback(null, payload)
-        })
+        default:
+          console.log(`Sorry, we are out of range action = ${request.action} ; result = ${results.action}`)
       }
+      bucket.upsert(payload, (err, data) => {
+        if (err) callback(err, null)
+        else callback(null, payload)
+      })
     } else {
+      console.log('ERROR: Cannot find workspace ${key}')
       logger.error(`ERROR: Cannot find workspace ${key}`)
       callback(null, null)
     }

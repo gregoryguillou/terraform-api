@@ -4,7 +4,7 @@ const fs = require('fs')
 const should = require('should')
 const { getTags, getBranches } = require('../../../api/models/git')
 
-describe('models', function () {
+describe.skip('models', function () {
   this.timeout(10000)
   describe('git', () => {
     it('Check git clone/fetch has worked as expected', (done) => {

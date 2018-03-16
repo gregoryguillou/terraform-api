@@ -76,6 +76,7 @@ function action (req, res) {
     project: req.swagger.params.project.value,
     workspace: req.swagger.params.workspace.value
   }
+  console.log({action: req.swagger.params.action.value['action']})
   const key = `ws:${workspace['project']}:${workspace['workspace']}`
   if (req.swagger.params.action.value['action'] === 'clean') {
     // TODO : Change signature
@@ -113,6 +114,7 @@ function action (req, res) {
             event: data[key].request.event
           }   
           apply(request, (err, data) => {
+            console.log(`data: ${data}`)
             let msg = 'applied'
             if (err) {
               msg = 'error'
