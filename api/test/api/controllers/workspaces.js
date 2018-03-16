@@ -11,7 +11,7 @@ let i = 0
 function queryWorkspace (callback) {
   setTimeout(function () {
     i++
-    if (i < 40) {
+    if (i < 20) {
       request(server)
       .get('/projects/demonstration/workspaces/staging')
       .set('Accept', 'application/json')
@@ -24,7 +24,7 @@ function queryWorkspace (callback) {
           queryWorkspace(callback)
         } else {
           callback()
-          i = 40
+          i = 20
         }
       })
     } else {
@@ -120,7 +120,7 @@ describe('controllers', function () {
           })
       })
 
-      it.skip('should fail with 404 in case of a query to an non-existing project', (done) => {
+      it('should fail with 404 in case of a query to an non-existing project', (done) => {
         request(server)
           .get('/projects/doesnotexist/workspace/staging')
           .set('Accept', 'application/json')
@@ -155,8 +155,6 @@ describe('controllers', function () {
 
     describe('POST /projects/{project}/workspaces/{workspace} with {status: "clean"}', () => {
       it('Remove pending action on demonstration/staging', (done) => {
-          // TODO : Change signature
-
           feedWorkspace({project: 'demonstration', workspace: 'staging'}, {status: 'clean'}, (err, data) => {
           should.not.exist(err)
           should.not.exist(data['ws:demonstration:staging']['request'])
@@ -185,7 +183,7 @@ describe('controllers', function () {
         })
       })
 
-      it.skip('should succeed HTTP-201 when project/workspace exists, action is apply and no pending action', (done) => {
+      it('should succeed HTTP-201 when project/workspace exists, action is apply and no pending action', (done) => {
         request(server)
           .post('/projects/demonstration/workspaces/staging')
           .send({'action': 'apply'})
@@ -199,7 +197,7 @@ describe('controllers', function () {
           })
       })
 
-      it.skip('should fail HTTP-409 when project/workspace exists, action in apply and pending action', (done) => {
+      it('should fail HTTP-409 when project/workspace exists, action in apply and pending action', (done) => {
         request(server)
           .post('/projects/demonstration/workspaces/staging')
           .send({'action': 'apply'})
@@ -212,14 +210,14 @@ describe('controllers', function () {
           })
       })
 
-      it.skip('Wait up to 20s before the creation is considered failed', (done) => {
+      it('Wait up to 20s before the creation is considered failed', (done) => {
         i = 0
         queryWorkspace(() => {
           done()
         })
       })
 
-      it.skip('should fail with HTTP-400 when project/workspace exists and action not in [apply, destroy]', (done) => {
+      it('should fail with HTTP-400 when project/workspace exists and action not in [apply, destroy]', (done) => {
         request(server)
           .post('/projects/demonstration/workspaces/staging')
           .send({'action': 'doesnotexist'})
@@ -232,7 +230,7 @@ describe('controllers', function () {
           })
       })
 
-      it.skip('should fail with HTTP-404 when project/workspace doesn\'t exist', (done) => {
+      it('should fail with HTTP-404 when project/workspace doesn\'t exist', (done) => {
         request(server)
           .post('/projects/doesnotexist/workspaces/staging')
           .send({'action': 'apply'})
@@ -247,7 +245,7 @@ describe('controllers', function () {
       })
     })
 
-    describe.skip('POST /projects/{project}/workspaces/{workspace} with {action: "apply"} and different tags', () => {
+    describe('POST /projects/{project}/workspaces/{workspace} with {action: "apply"} and different tags', () => {
       it('should succeed HTTP-201 when project/workspace exists, action is apply with tag v0.0.2', (done) => {
         request(server)
           .post('/projects/demonstration/workspaces/staging')
@@ -318,9 +316,30 @@ describe('controllers', function () {
           done()
         })
       })
+
+      it('should succeed HTTP-201 when project/workspace exists, action is apply with non-existing branch', (done) => {
+        request(server)
+          .post('/projects/demonstration/workspaces/staging')
+          .send({'action': 'apply', 'ref': 'branch:doesnotexist'})
+          .set('Accept', 'application/json')
+          .set('Authorization', token)
+          .expect(201)
+          .end((err, res) => {
+            should.not.exist(err)
+            should.exist(res.body.event)
+            done()
+          })
+      })
+
+      it('Wait up to 20s before the creation is considered failed', (done) => {
+        i = 0
+        queryWorkspace(() => {
+          done()
+        })
+      })
     })
 
-    describe.skip('POST /projects/{project}/workspaces/{workspace} with {action: "destroy"}', () => {
+    describe('POST /projects/{project}/workspaces/{workspace} with {action: "destroy"}', () => {
       it('should succeed HTTP-201 when project/workspace exists, action in [apply, destroy] and no pending action', (done) => {
         request(server)
           .post('/projects/demonstration/workspaces/staging')
@@ -377,7 +396,7 @@ describe('controllers', function () {
       })
     })
 
-    describe.skip('GET /projects/{project}/workspaces/{workspace}/status', () => {
+    describe('GET /projects/{project}/workspaces/{workspace}/status', () => {
       it('should succeed HTTP-404 when project/workspace exists and is not running', (done) => {
         request(server)
           .get('/projects/demonstration/workspaces/staging/status')

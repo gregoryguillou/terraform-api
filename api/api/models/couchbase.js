@@ -210,7 +210,6 @@ function showWorkspace (workspace, callback) {
   })
 }
 
-// TODO: The signature shall change. The result should be 'succeed', 'fail', 'differ' or 'clean' 
 function feedWorkspace (workspace, result, callback) {
   const key = `ws:${workspace['project']}:${workspace['workspace']}`
   bucket.get(key, function (err, data) {

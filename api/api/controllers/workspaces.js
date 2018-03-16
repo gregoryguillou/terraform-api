@@ -78,7 +78,6 @@ function action (req, res) {
   }
   const key = `ws:${workspace['project']}:${workspace['workspace']}`
   if (req.swagger.params.action.value['action'] === 'clean') {
-    // TODO : Change signature
     feedWorkspace({project: workspace['project'], workspace: workspace['workspace']}, {status: 'clean'}, (err, data) => {
       if (err) {
         logger.error(`${workspace['project']}/${workspace['workspace']} failed to clean`)
@@ -119,10 +118,9 @@ function action (req, res) {
               logger.error(`${workspace['project']}/${workspace['workspace']} failed to check ${status}`)
               status = 'fail'
             } else if (data['StatusCode'] !== 0) {
-              logger.error(`${workspace['project']}/${workspace['workspace']} docker has failed with code: data['StatusCode'] - ${status}`)
+              logger.error(`${workspace['project']}/${workspace['workspace']} docker has failed with code: ${data['StatusCode']} - ${status}`)
               status = 'fail'
             }
-            // TODO : Change signature
             feedWorkspace({project: workspace['project'], workspace: workspace['workspace']}, {status: status}, (err, data) => {
               if (err) {
                 logger.error(`${workspace['project']}/${workspace['workspace']} failed store check ${status}`)
@@ -139,10 +137,9 @@ function action (req, res) {
               logger.error(`${workspace['project']}/${workspace['workspace']} failed to check ${status}`)
               status = 'fail'
             } else if (data['StatusCode'] !== 0) {
-              logger.error(`${workspace['project']}/${workspace['workspace']} docker has failed with code: data['StatusCode'] - ${status}`)
+              logger.error(`${workspace['project']}/${workspace['workspace']} docker has failed with code: ${data['StatusCode']} - ${status}`)
               status = 'fail'
             }
-            // TODO : Change signature
             feedWorkspace({project: workspace['project'], workspace: workspace['workspace']}, {status: status}, (err, data) => {
               if (err) {
                 logger.error(`${workspace['project']}/${workspace['workspace']} failed store check ${status}`)
@@ -159,13 +156,12 @@ function action (req, res) {
               logger.error(`${workspace['project']}/${workspace['workspace']} failed to check ${status}`)
               status = 'fail'
             } else if (data['StatusCode'] === 2) {
-              logger.error(`${workspace['project']}/${workspace['workspace']} docker has failed with code: data['StatusCode'] - ${status}`)
+              logger.error(`${workspace['project']}/${workspace['workspace']} docker has failed with code: ${data['StatusCode']} - ${status}`)
               status = 'differ'
             } else if (data['StatusCode'] !== 0) {
-              logger.error(`${workspace['project']}/${workspace['workspace']} docker has failed with code: data['StatusCode'] - ${status}`)
+              logger.error(`${workspace['project']}/${workspace['workspace']} docker has failed with code: ${data['StatusCode']} - ${status}`)
               status = 'fail'
             }
-            // TODO : Change signature
             feedWorkspace({project: workspace['project'], workspace: workspace['workspace']}, {status: status}, (err, data) => {
               if (err) {
                 logger.error(`${workspace['project']}/${workspace['workspace']} failed store check ${status}`)
