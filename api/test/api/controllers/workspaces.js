@@ -383,6 +383,7 @@ describe('controllers', function () {
           .set('Authorization', token)
           .expect(404)
           .end((err, res) => {
+            res.body.should.containEql({ quickCheck: 'failure', state: 'destroyed' })
             should.not.exist(err)
             done()
           })
@@ -415,6 +416,7 @@ describe('controllers', function () {
           .set('Authorization', token)
           .expect(200)
           .end((err, res) => {
+            res.body.should.containEql({ quickCheck: 'success', state: 'applied' })
             should.not.exist(err)
             done()
           })
