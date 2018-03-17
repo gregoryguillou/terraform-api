@@ -1,11 +1,11 @@
 # Installation Guide
 
-Terraform Deck relies on the local docker daemon. This limits the number of
+Terraform deck relies on the local docker daemon. This limits the number of
 container instances it can start and its ability to scale. It also prevents it
 from running several instances of the API. On the other hand, it makes its 
 configuration very easy as explained below.
 
-> **Note**: Future releases of Terraform Deck might support docker
+> **Note**: Future releases of Terraform--deck might support docker
   orchestration platforms, like Kubernetes.  
 
 ## Building containers
@@ -31,7 +31,7 @@ docker-compose up -d
 
 ## Other considerations
 
-Installing the Terraform Deck on other Cloud Provider or on-premises should
+Installing the Terraform-deck on other Cloud Provider or on-premises should
 not be too difficult. 
 
 Remarks:

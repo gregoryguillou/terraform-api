@@ -5,17 +5,17 @@ TODO: Add vocabulary and specifically the project/workspace terms
 
 ## Architecture overview
 
-Deck is able to create/update and destroy several set of 
+Terraform-deck is able to create/update and destroy several set of 
 resources in parallel. It can run the `terraform` commands in the same
 `directory` of the same project but with different `workspace` and at
 different `commit`. It also supports running different version of
-`terraform`. To perform these tasks, Terraform Deck relies on a pool
+`terraform`. To perform these tasks, Terraform-deck relies on a pool
 of containers running `terraform`, `git` and connected to your
 repository as show in the schema below:
 
 ![Architecture](img/architecture.png)
 
-Terraform Deck main components are:
+Terraform-deck main components are:
 
 - The `API`, that is a NodeJS/OpenAPI project which manage a pool of containers
 - A `container pool`, each of which are docker images runing `debian`, `terraform` and `git`
@@ -24,7 +24,7 @@ Terraform Deck main components are:
 
 ## Supported operations
 
-Terraform Deck supports the following set of operations:
+Terraform-deck supports the following set of operations:
 
 - An authentication model based on an API Key that grant a JWT token to manage
 - The ability to list the environments and workspaces that can be provisionned

@@ -1,9 +1,8 @@
-# Contribute to Deck
+# Contribute to Terraform-deck
 
 ## Your support is welcome
 
-There are many ways to contribute to `Deck` before you want to contribute to
-its code:
+There are many ways to contribute to `Terraform-deck`:
 
 - Try it, review the documentation and, if you have any problem, open an issue
   on the project
@@ -16,8 +15,8 @@ its code:
   [contact m from github](https://github.com/gregoryguillou).
 - Fork the project and create pull-request to correct or enrich the
   documentation, examples, drawings or whatever you want
-- Review and comment the code, provide development ideas. `Deck` relies on a
-  large set of technologies and can easily be enhanced, because we are all
+- Review and comment the code, provide development ideas. `Terraform-deck` relies 
+  on a large set of technologies and can easily be enhanced, because we are all
   beginners with Swagger, ExpressJS, Mocha, Bunyan, Docker and many more... 
 
 Obviously, we would love you contribute to the code too. In order to do so,
@@ -27,7 +26,7 @@ there are several ways:
   benefit. [Contact me](https://github.com/gregoryguillou) if:
   - you need a feature that does not exist yet, and your organisation can fund
     it.
-  - you want to subscribe to an open-source friendly support for `Deck`
+  - you want to subscribe to an open-source friendly support for `Terraform-deck`
   - you want to get some help to setup specific integrations with different
     applications, backends services or security systems
   - you want some specific terraform stacks to be developed for your needs and

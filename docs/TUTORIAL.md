@@ -1,9 +1,9 @@
-# A step-by-step demonstration of Deck with Consul
+# A step-by-step demonstration of Terraform-deck with Consul
 
 HashiCorp Consul is easy to run on a laptop with docker. In dev mode, it consumes
 only few resources. It is a perfect match for terraform as it can both be used to
 store its state and as a target environment. This tutorial will guide you through
-the steps to configuring and using `deck` on a laptop:
+the steps to configuring and using `Terraform-deck` on a laptop:
 
 1. make sure your laptop matches the system pre-requisites
 2. start consul for demonstration purpose
@@ -19,7 +19,7 @@ the steps to configuring and using `deck` on a laptop:
   it does integrate a CI/CD pipeline. If that is what you want to do, there are
   better ways.
 
-This tutorial presents many aspects of `Deck` for 4 reasons:
+This tutorial presents many aspects of `Terraform-deck` for 4 reasons:
 
 - So that you can have a working environment to demonstrate it
 - So that you understand how pieces work together and make Deck work
