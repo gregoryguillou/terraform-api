@@ -1,8 +1,5 @@
 # Concept Guide
 
-TODO: remove the dependency to terraform as it is not needed
-TODO: Add vocabulary and specifically the project/workspace terms
-
 ## Architecture overview
 
 Terraform-deck is able to create/update and destroy several set of 
@@ -34,4 +31,4 @@ Terraform-deck supports the following set of operations:
 - The ability to destroy a given environment/workspace
 - The ability to check the status of an environment
 - The ability to extract the history of an environment/workspace, including the associated events and the running ranges
-- The ability to reserve one of N environments for users
+- (Planned) The ability to reserve one of N environments for users
