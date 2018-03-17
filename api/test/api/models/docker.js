@@ -5,7 +5,7 @@ const { version, apply, check, destroy } = require('../../../api/models/docker')
 // const devnull = require('dev-null')
 
 describe('models', () => {
-  describe.skip('docker', function () {
+  describe('docker', function () {
     this.timeout(60000)
     it('Make sure the docker lineup container can display a version', (done) => {
       version((err, data) => {

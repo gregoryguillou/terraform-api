@@ -29,7 +29,7 @@ describe('models', () => {
     })
 
     it('End current request on workspace', (done) => {
-        feedWorkspace({project: 'demonstration', workspace: 'qa'}, {status: 'succeed'}, (err, data) => {
+      feedWorkspace({project: 'demonstration', workspace: 'qa'}, {status: 'succeed'}, (err, data) => {
         should.not.exist(err)
         should.not.exist(data['ws:demonstration:qa']['request'])
         should(data['ws:demonstration:qa']['state']).containEql('applied')

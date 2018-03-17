@@ -82,7 +82,8 @@ function actionWorkspace (workspace, request, callback) {
     project: workspace['project'],
     workspace: workspace['workspace'],
     creation: eventDate,
-    action: request['action']
+    action: request['action'],
+    status: 'requested'
   }
 
   if (request['ref']) {
@@ -237,7 +238,8 @@ function feedWorkspace (workspace, result, callback) {
       if (payload[key].request) {
         request = {
           action: payload[key].request.action,
-          ref: (payload[key].request.ref ? payload[key].request.ref : (payload[key].ref ? payload[key].ref : 'unknown'))
+          ref: (payload[key].request.ref ? payload[key].request.ref : (payload[key].ref ? payload[key].ref : 'unknown')),
+          event: payload[key].request.event
         }
         delete payload[key].request
       }
@@ -333,7 +335,26 @@ function feedWorkspace (workspace, result, callback) {
       }
       bucket.upsert(payload, (err, data) => {
         if (err) callback(err, null)
-        else callback(null, payload)
+        else if (result.status != 'clean') {
+          const evtkey = `evt:${request.event}`
+          bucket.get(evtkey, (err, data) => {
+            if (err) callback(err, null)
+            else {
+              let event = data
+              event[evtkey].status = (result.status == 'succeed' ? "succeeded" :
+                result.status == 'fail' ? "failed" : result.status)
+              event[evtkey].end = Date.now()
+              bucket.upsert(event, (err, data) => {
+                if (err) callback(err, null)
+                else {
+                  callback(null, payload)
+                }
+              })
+            }
+          })
+        } else {
+          callback(null, payload)
+        }
       })
     } else {
       logger.error(`ERROR: Cannot find workspace ${key}`)
