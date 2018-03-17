@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func eventShow(event string) (map[string]interface{}, error) {
+func eventsShow(event string) (map[string]interface{}, error) {
 	cfg, err := loadConfiguration()
 	if err != nil {
 		panic(err)
@@ -53,20 +53,20 @@ func eventShow(event string) (map[string]interface{}, error) {
 
 var event string
 
-var eventCmd = &cobra.Command{
-	Use:   "event",
+var eventsCmd = &cobra.Command{
+	Use:   "events",
 	Short: "Lists and details deck events",
 	Long: `
 	Lists and details deck events.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		dat, _ := eventShow(event)
+		dat, _ := eventsShow(event)
 		s, _ := prettyjson.Marshal(dat)
 		fmt.Println(string(s))
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(eventCmd)
-	eventCmd.Flags().StringVarP(&event, "event", "e", "", "event to query")
+	rootCmd.AddCommand(eventsCmd)
+	eventsCmd.Flags().StringVarP(&event, "event", "e", "", "event to query")
 }

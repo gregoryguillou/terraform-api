@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func user() (map[string]interface{}, error) {
+func projects() (map[string]interface{}, error) {
 	cfg, err := loadConfiguration()
 	if err != nil {
 		panic(err)
@@ -25,7 +25,7 @@ func user() (map[string]interface{}, error) {
 		CheckRedirect: nil,
 	}
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/user", cfg.endpoint), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/projects", cfg.endpoint), nil)
 	if err != nil {
 		panic(err)
 	}
@@ -51,19 +51,19 @@ func user() (map[string]interface{}, error) {
 	return dat, nil
 }
 
-var infoCmd = &cobra.Command{
-	Use:   "info",
-	Short: "Provides API settings",
+var projectsCmd = &cobra.Command{
+	Use:   "projects",
+	Short: "List existing projects",
 	Long: `
-	Provides API settings for the current user. 
+	Lists existing projects
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		dat, _ := user()
+		dat, _ := projects()
 		s, _ := prettyjson.Marshal(dat)
 		fmt.Println(string(s))
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(infoCmd)
+	rootCmd.AddCommand(projectsCmd)
 }

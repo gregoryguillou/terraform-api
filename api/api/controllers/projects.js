@@ -32,7 +32,7 @@ function branches (req, res) {
             list.push({name: branches[j]})
           }
           if (list.length > 0) {
-            res.json(list)
+            res.json({branches: list})
           } else {
             res.status(400).json({message: util.format('No branch found for {%s}', pproject)})
           }
@@ -60,28 +60,12 @@ function describe (req, res) {
   }
 }
 
-function events (req, res) {
-  var pproject = req.swagger.params.project.value
-  let event = {}
-  for (var i = 0, size = projects.length; i < size; i++) {
-    if (projects[i].name === pproject) {
-      event = {time: '1970-01-01 00:00:00', description: 'The environment has been registered', reference: util.format('/projects/%s/workspace/staging', pproject)}
-    }
-  }
-
-  if (event.time) {
-    res.json([event])
-  } else {
-    res.status(404).json({message: util.format('Project {%s} not found', pproject)})
-  }
-}
-
 function list (req, res) {
   let output = []
   for (var i = 0, size = projects.length; i < size; i++) {
     output.push({type: projects[i].type, name: projects[i].name, description: projects[i].description})
   }
-  res.json(output)
+  res.json({projects: output})
 }
 
 function tags (req, res) {
@@ -96,12 +80,29 @@ function tags (req, res) {
             list.push({name: tags[j]})
           }
           if (list.length > 0) {
-            res.json(list)
+            res.json({tags: list})
           } else {
-            res.status(400).json({message: util.format('No tag found for {%s}', pproject)})
+            res.status(404).json({message: util.format('No tag found for {%s}', pproject)})
           }
         }
       )
+    }
+  }
+}
+
+function workspaces (req, res) {
+  var pproject = req.swagger.params.project.value
+  for (var i = 0, size = projects.length; i < size; i++) {
+    if (projects[i].name === pproject) {
+      let list = []
+      for (var j = 0, wsize = projects[i].workspaces.length; j < wsize; j++) {
+        list.push({name: projects[i].workspaces[j]})
+      }
+      if (list.length > 0) {
+        res.json({workspaces: list})
+      } else {
+        res.status(404).json({message: util.format('No workspaces found for {%s}', pproject)})
+      }
     }
   }
 }
@@ -110,7 +111,7 @@ module.exports = {
   project_action: action,
   project_branches: branches,
   project_describe: describe,
-  project_events: events,
   projects_list: list,
-  project_tags: tags
+  project_tags: tags,
+  project_workspaces: workspaces
 }

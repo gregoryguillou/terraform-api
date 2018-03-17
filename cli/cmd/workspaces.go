@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func user() (map[string]interface{}, error) {
+func workspaces(project string) (map[string]interface{}, error) {
 	cfg, err := loadConfiguration()
 	if err != nil {
 		panic(err)
@@ -25,7 +25,7 @@ func user() (map[string]interface{}, error) {
 		CheckRedirect: nil,
 	}
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/user", cfg.endpoint), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/projects/%s/workspaces", cfg.endpoint, project), nil)
 	if err != nil {
 		panic(err)
 	}
@@ -44,26 +44,28 @@ func user() (map[string]interface{}, error) {
 		panic(err)
 	}
 
-	if err := json.Unmarshal(data, &dat); err != nil {		
+	if err := json.Unmarshal(data, &dat); err != nil {
 		panic(err)
 	}
 
 	return dat, nil
 }
 
-var infoCmd = &cobra.Command{
-	Use:   "info",
-	Short: "Provides API settings",
+var workspacesCmd = &cobra.Command{
+	Use:   "workspaces",
+	Short: "Manages deck workspaces",
 	Long: `
-	Provides API settings for the current user. 
+	Lists, shows details deck workspaces. This command also set the
+	default workspace.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		dat, _ := user()
+		dat, _ := workspaces(project)
 		s, _ := prettyjson.Marshal(dat)
 		fmt.Println(string(s))
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(infoCmd)
+	rootCmd.AddCommand(workspacesCmd)
+	workspacesCmd.Flags().StringVarP(&project, "project", "p", "", "project to show")
 }
