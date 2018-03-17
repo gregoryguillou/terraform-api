@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func workspaceShow() (map[string]interface{}, error) {
+func workspaceShow(project string, workspace string) (map[string]interface{}, error) {
 	cfg, err := loadConfiguration()
 	if err != nil {
 		panic(err)
@@ -25,7 +25,7 @@ func workspaceShow() (map[string]interface{}, error) {
 		CheckRedirect: nil,
 	}
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/projects/demonstration/workspaces/staging", cfg.endpoint), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/projects/%s/workspaces/%s", cfg.endpoint, project, workspace), nil)
 	if err != nil {
 		panic(err)
 	}
@@ -51,6 +51,8 @@ func workspaceShow() (map[string]interface{}, error) {
 	return dat, nil
 }
 
+var workspace, project string
+
 var workspaceshowCmd = &cobra.Command{
 	Use:   "show",
 	Short: "Shows properties of a workspace",
@@ -59,7 +61,7 @@ var workspaceshowCmd = &cobra.Command{
 	project.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		dat, _ := workspaceShow()
+		dat, _ := workspaceShow(project, workspace)
 		s, _ := prettyjson.Marshal(dat)
 		fmt.Println(string(s))
 	},
@@ -67,4 +69,6 @@ var workspaceshowCmd = &cobra.Command{
 
 func init() {
 	workspaceCmd.AddCommand(workspaceshowCmd)
+	workspaceshowCmd.Flags().StringVarP(&workspace, "workspace", "w", "", "workspace to show")
+	workspaceshowCmd.Flags().StringVarP(&project, "project", "p", "", "project to show")
 }
