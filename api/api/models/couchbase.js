@@ -21,8 +21,8 @@ class EchoStream extends stream.Writable {
     this.line = 0
   }
   _write (chunk, enc, next) {
-    let lines = chunk.toString().split("\n")
-    for (var i = 0, size = lines.length ; i < size ; i++) {
+    let lines = chunk.toString().split('\n')
+    for (var i = 0, size = lines.length; i < size; i++) {
       this.line++
       this.log[this.key].push({line: this.line, text: lines[i]})
     }
@@ -181,7 +181,7 @@ function actionWorkspace (workspace, request, callback) {
       payload[key]['lastEvents'] = data[key]['lastEvents']
       if (payload[key]['lastEvents']) {
         payload[key]['lastEvents'].unshift(event)
-        payload[key]['lastEvents'] = payload[key]['lastEvents'].slice(0,20)
+        payload[key]['lastEvents'] = payload[key]['lastEvents'].slice(0, 20)
       } else {
         payload[key]['lastEvents'] = [ event ]
       }
@@ -279,7 +279,7 @@ function feedWorkspace (workspace, result, callback) {
     if (err) {
       callback(err, null)
     } else if (data && data[key]) {
-      logger.info(`${workspace['project']}:${workspace['workspace']}[${data[key]['lastEvents'][0]}] returns (${(data[key].request ? data[key].request.action : "undefined")}->${result.status})`)
+      logger.info(`${workspace['project']}:${workspace['workspace']}[${data[key]['lastEvents'][0]}] returns (${(data[key].request ? data[key].request.action : 'undefined')}->${result.status})`)
       let payload = data
       let request = { }
       if (payload[key].request) {
@@ -301,16 +301,16 @@ function feedWorkspace (workspace, result, callback) {
           if (request.action === 'check') {
             payload[key]['lastChecked'] = {
               date: Date.now(),
-              state: (results.status === 'differs'),
-              ref: request.ref 
+              state: 'differs',
+              ref: request.ref
             }
           } else {
             logger.error(`${workspace['project']}:${workspace['workspace']} should not differ with action = ${request.action}`)
             payload[key]['lastChecked'] = {
               date: Date.now(),
               state: (result.status === 'error'),
-              ref: request.ref 
-            }              
+              ref: request.ref
+            }
           }
           break
         case 'succeed':
@@ -327,7 +327,7 @@ function feedWorkspace (workspace, result, callback) {
               payload[key]['lastChecked'] = {
                 date: Date.now(),
                 state: 'destroyed',
-                ref: request.ref 
+                ref: request.ref
               }
               payload[key].state = 'destroyed'
               break
@@ -335,21 +335,21 @@ function feedWorkspace (workspace, result, callback) {
               payload[key]['lastChecked'] = {
                 date: Date.now(),
                 state: 'checked',
-                ref: request.ref 
+                ref: request.ref
               }
               break
             default:
               logger.error(`${workspace['project']}:${workspace['workspace']} error with (${request.action}->${result.status})`)
               break
           }
-          break           
+          break
         case 'fail':
           switch (request.action) {
             case 'apply':
               payload[key]['lastChecked'] = {
                 date: Date.now(),
                 state: 'failed',
-                ref: request.ref 
+                ref: request.ref
               }
               payload[key].state = 'apply - failed'
               logger.info(`${workspace['project']}:${workspace['workspace']}, action = ${request.action} failed'`)
@@ -358,7 +358,7 @@ function feedWorkspace (workspace, result, callback) {
               payload[key]['lastChecked'] = {
                 date: Date.now(),
                 state: 'failed',
-                ref: request.ref 
+                ref: request.ref
               }
               payload[key].state = 'destroy - failed'
               logger.info(`${workspace['project']}:${workspace['workspace']}, action = ${request.action} destroyed'`)
@@ -367,7 +367,7 @@ function feedWorkspace (workspace, result, callback) {
               payload[key]['lastChecked'] = {
                 date: Date.now(),
                 state: 'failed',
-                ref: request.ref 
+                ref: request.ref
               }
               logger.info(`${workspace['project']}:${workspace['workspace']}, action = ${request.action} checked'`)
               break
@@ -382,14 +382,15 @@ function feedWorkspace (workspace, result, callback) {
       }
       bucket.upsert(payload, (err, data) => {
         if (err) callback(err, null)
-        else if (result.status != 'clean') {
+        else if (result.status !== 'clean') {
           const evtkey = `evt:${request.event}`
           bucket.get(evtkey, (err, data) => {
             if (err) callback(err, null)
             else {
               let event = data
-              event[evtkey].status = (result.status == 'succeed' ? "succeeded" :
-                result.status == 'fail' ? "failed" : result.status)
+              event[evtkey].status = (result.status === 'succeed' ? 'succeeded'
+                : (result.status === 'fail' ? 'failed' : result.status)
+              )
               event[evtkey].end = Date.now()
               bucket.upsert(event, (err, data) => {
                 if (err) callback(err, null)

@@ -287,6 +287,12 @@ paths:
       responses:
         "200":
           description: Success
+          schema:
+            $ref: "#/definitions/StatusResponse"
+        "404":
+          description: Success
+          schema:
+            $ref: "#/definitions/StatusResponse"
         default:
           description: Error
           schema:
@@ -420,6 +426,26 @@ definitions:
               type: string
             status:
               type: string
+  StatusResponse:
+    required:
+      - quickCheck
+      - state
+    properties:
+      quickCheck:
+        type: string
+      ref:
+        type: string
+      state:
+        type: string
+      lastChecked:
+        type: object
+        properties:
+          date:
+            type: integer
+          state:
+            type: string
+          ref:
+            type: string
   Tag:
     required:
       - name
@@ -450,6 +476,15 @@ definitions:
         type: array
         items:
           type: string
+      lastChecked:
+        type: object
+        properties:
+          date:
+            type: integer
+          state:
+            type: string
+          ref:
+            type: string
       project:
         type: string
       ref:

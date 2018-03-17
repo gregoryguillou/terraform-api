@@ -44,6 +44,7 @@ function quickcheck (req, res) {
     project: req.swagger.params.project.value,
     workspace: req.swagger.params.workspace.value
   }
+  const key = `ws:${workspace['project']}:${workspace['workspace']}`
   const project = workspace['project']
   let cwd = ''
   let command = [ ]
@@ -59,15 +60,35 @@ function quickcheck (req, res) {
       }
     }
   }
-  sh(command[0], {cwd: cwd}, (err, data) => {
+  showWorkspace(workspace, (err, wk) => {
     if (err) {
-      if (err.code === 1 && err.killed === false) {
-        res.status(404).json()
-      } else {
-        res.status(500).json({message: err})
-      }
+      return res.status(500).json({message: 'Unexpected error'})
     }
-    res.status(200).json()
+    if (!wk) {
+      return res.status(404).json({message: `${workspace['project']}:${workspace['workspace']} Not Found`})
+    } else {
+      sh(command[0], {cwd: cwd}, (err, data) => {
+        if (err) {
+          if (err.code === 1 && err.killed === false) {
+            res.status(404).json({
+              quickCheck: 'failure',
+              lastChecked: wk[key]['lastChecked'],
+              ref: wk[key]['ref'],
+              state: wk[key]['state']
+            })
+          } else {
+            res.status(500).json({message: 'Fatal Error'})
+          }
+        } else {
+          res.json({
+            quickCheck: 'success',
+            lastChecked: wk[key]['lastChecked'],
+            ref: wk[key]['ref'],
+            state: wk[key]['state']
+          })
+        }
+      })
+    }
   })
 }
 
