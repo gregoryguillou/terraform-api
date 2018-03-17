@@ -51,7 +51,7 @@ function checkConnectivity (callback) {
       if (err) {
         callback(err, null)
       } else {
-        callback(null, null)
+        callback(null, result)
       }
     })
   })

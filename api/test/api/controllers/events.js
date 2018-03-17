@@ -69,7 +69,6 @@ describe('controllers', function () {
           .expect(200)
           .end((err, res) => {
             should.not.exist(err)
-            console.log(res.body)
             res.body.should.containEql({
               logs: [
                 { line: 1, text: 'output log: line 1' },
