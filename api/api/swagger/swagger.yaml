@@ -351,6 +351,8 @@ definitions:
         type: string
       ref:
         type: string
+      status:
+        type: string
       workspace:
         type: string
   EventDescription:

@@ -82,7 +82,8 @@ function actionWorkspace (workspace, request, callback) {
     project: workspace['project'],
     workspace: workspace['workspace'],
     creation: eventDate,
-    action: request['action']
+    action: request['action'],
+    status: 'requested'
   }
 
   if (request['ref']) {
