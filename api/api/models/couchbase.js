@@ -15,16 +15,18 @@ const logs = couchnode.wrap(cluster.openBucket(couchparam['log_bucket'], couchpa
 class EchoStream extends stream.Writable {
   constructor (event, ...params) {
     super(...params)
-    this.event = event
-    this.key = 1
+    this.key = `logs:${this.event}`
+    this.log = { }
+    this.log[key] = [ ]
+    this.line = 0
   }
-
   _write (chunk, enc, next) {
-    const key = `logs:${this.event}:${this.key}`
-    let log = {}
-    log[key] = {type: 'log', chunk: this.key, msg: chunk.toString()}
-    this.key++
-    logs.upsert(log, function (err, result) {
+    let lines = chunk.toString().split("\n")
+    for (var i = 0, size = lines.length ; i < size ; i++) {
+      this.line++
+      this.log[key].push({line: this.line, text: lines[i]})
+    }
+    logs.upsert(this.log, function (err, result) {
       if (err) throw err
       next()
     })
