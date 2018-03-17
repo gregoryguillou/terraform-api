@@ -17,7 +17,7 @@ func versionService() {
 			client := &http.Client{
 				CheckRedirect: nil,
 			}
-			req, err := http.NewRequest("GET", "http://localhost:10010/version", nil)
+			req, err := http.NewRequest("GET", fmt.Sprintf("%s/version", cfg.endpoint), nil)
 			if err != nil {
 				log.Fatal(err)
 			}

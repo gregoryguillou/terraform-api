@@ -88,6 +88,7 @@ function actionWorkspace (workspace, request, callback) {
   if (request['ref']) {
     eventPayload[eventKey]['ref'] = request['ref']
   }
+  logger.info(`${workspace['project']}:${workspace['workspace']}[${event}] requests ${request['action']}`)
 
   if (!verifyWorkspace(workspace)) {
     callback(new Error(`Workspace/Project does not exist. Check ${workspace['project']}/${workspace['workspace']}`), null)
@@ -144,7 +145,8 @@ function actionWorkspace (workspace, request, callback) {
       }
       payload[key]['lastEvents'] = data[key]['lastEvents']
       if (payload[key]['lastEvents']) {
-        payload[key]['lastEvents'].unshift(event).slice(0, 20)
+        payload[key]['lastEvents'].unshift(event)
+        payload[key]['lastEvents'] = payload[key]['lastEvents'].slice(0,20)
       } else {
         payload[key]['lastEvents'] = [ event ]
       }
@@ -216,12 +218,13 @@ function feedWorkspace (workspace, result, callback) {
     if (err) {
       callback(err, null)
     } else if (data && data[key]) {
+      logger.info(`${workspace['project']}:${workspace['workspace']}[${data[key]['lastEvents'][0]}] returns (${(data[key].request ? data[key].request.action : "undefined")}->${result.status})`)
       let payload = data
       let request = { }
       if (payload[key].request) {
         request = {
           action: payload[key].request.action,
-          ref: (payload[key].request.ref ? payload[key].request.ref : 'unknown')
+          ref: (payload[key].request.ref ? payload[key].request.ref : (payload[key].ref ? payload[key].ref : 'unknown'))
         }
         delete payload[key].request
       }
@@ -234,7 +237,6 @@ function feedWorkspace (workspace, result, callback) {
           break
         case 'differ':
           if (request.action === 'check') {
-            logger.info(`Check ${workspace['project']}:${workspace['workspace']} and it differs`)
             payload[key]['lastChecked'] = {
               date: Date.now(),
               state: (results.status === 'differs'),
@@ -254,11 +256,10 @@ function feedWorkspace (workspace, result, callback) {
             case 'apply':
               payload[key]['lastChecked'] = {
                 date: Date.now(),
-                state: 'checked',
+                state: 'applied',
                 ref: request.ref
               }
               payload[key].state = 'applied'
-              logger.info(`${workspace['project']}:${workspace['workspace']}, action = ${request.action} succeeded'`)
               break
             case 'destroy':
               payload[key]['lastChecked'] = {
@@ -267,7 +268,6 @@ function feedWorkspace (workspace, result, callback) {
                 ref: request.ref 
               }
               payload[key].state = 'destroyed'
-              logger.info(`${workspace['project']}:${workspace['workspace']}, action = ${request.action} destroyed'`)
               break
             case 'check':
               payload[key]['lastChecked'] = {
@@ -275,10 +275,9 @@ function feedWorkspace (workspace, result, callback) {
                 state: 'checked',
                 ref: request.ref 
               }
-              logger.info(`${workspace['project']}:${workspace['workspace']}, action = ${request.action} succeeded'`)
               break
             default:
-              logger.info(`${workspace['project']}:${workspace['workspace']}, action = ${request.action} should not be managed'`)
+              logger.error(`${workspace['project']}:${workspace['workspace']} error with (${request.action}->${result.status})`)
               break
           }
           break           
