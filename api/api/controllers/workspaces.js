@@ -81,8 +81,6 @@ function action (req, res) {
     feedWorkspace({project: workspace['project'], workspace: workspace['workspace']}, {status: 'clean'}, (err, data) => {
       if (err) {
         logger.error(`${workspace['project']}/${workspace['workspace']} failed to clean`)
-      } else {
-        logger.info(`${workspace['project']}/${workspace['workspace']} has successfully clean the resource`)
       }
     })
     res.status(201).json({event: 'none'})
@@ -111,7 +109,7 @@ function action (req, res) {
             workspace: workspace['workspace'],
             ref: (req.swagger.params.action.value['ref'] ? req.swagger.params.action.value['ref'] : (data[key]['ref'] ? data[key]['ref'] : 'branch:master')),
             event: data[key].request.event
-          }   
+          }
           apply(request, (err, data) => {
             let status = 'succeed'
             if (err) {
@@ -124,8 +122,6 @@ function action (req, res) {
             feedWorkspace({project: workspace['project'], workspace: workspace['workspace']}, {status: status}, (err, data) => {
               if (err) {
                 logger.error(`${workspace['project']}/${workspace['workspace']} failed store check ${status}`)
-              } else {
-                logger.info(`${workspace['project']}/${workspace['workspace']} has successfully registered ${status}`)
               }
             })
           })
@@ -143,8 +139,6 @@ function action (req, res) {
             feedWorkspace({project: workspace['project'], workspace: workspace['workspace']}, {status: status}, (err, data) => {
               if (err) {
                 logger.error(`${workspace['project']}/${workspace['workspace']} failed store check ${status}`)
-              } else {
-                logger.info(`${workspace['project']}/${workspace['workspace']} has successfully registered ${status}`)
               }
             })
           })
@@ -165,8 +159,6 @@ function action (req, res) {
             feedWorkspace({project: workspace['project'], workspace: workspace['workspace']}, {status: status}, (err, data) => {
               if (err) {
                 logger.error(`${workspace['project']}/${workspace['workspace']} failed store check ${status}`)
-              } else {
-                logger.info(`${workspace['project']}/${workspace['workspace']} has successfully ${status}`)
               }
             })
           })
