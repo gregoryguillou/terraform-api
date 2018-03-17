@@ -218,7 +218,7 @@ function feedWorkspace (workspace, result, callback) {
     if (err) {
       callback(err, null)
     } else if (data && data[key]) {
-      logger.info(`${workspace['project']}:${workspace['workspace']}[${data[key]['lastEvents'][0]}] returns (${data[key].request.action}->${result.status})`)
+      logger.info(`${workspace['project']}:${workspace['workspace']}[${data[key]['lastEvents'][0]}] returns (${(data[key].request ? data[key].request.action : "undefined")}->${result.status})`)
       let payload = data
       let request = { }
       if (payload[key].request) {
