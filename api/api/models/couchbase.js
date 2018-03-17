@@ -144,7 +144,8 @@ function actionWorkspace (workspace, request, callback) {
       }
       payload[key]['lastEvents'] = data[key]['lastEvents']
       if (payload[key]['lastEvents']) {
-        payload[key]['lastEvents'].unshift(event).slice(0, 20)
+        payload[key]['lastEvents'].unshift(event)
+        payload[key]['lastEvents'] = payload[key]['lastEvents'].slice(0,20)
       } else {
         payload[key]['lastEvents'] = [ event ]
       }
