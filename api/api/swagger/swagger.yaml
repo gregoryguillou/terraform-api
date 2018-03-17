@@ -35,7 +35,11 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: "#/definitions/EventDescription"
+            $ref: "#/definitions/Event"
+        "404":
+          description: Event Not Found
+          schema:
+            $ref: "#/definitions/ErrorResponse"
         default:
           description: Error
           schema:
@@ -170,30 +174,6 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-  /projects/{project}/events:
-    x-swagger-router-controller: projects
-    get:
-      tags:
-        - main
-      description: Returns a list of events associated with a given project
-      operationId: project_events
-      parameters:
-        - in: path
-          name: project
-          type: string
-          required: true
-          description: Project to get events from.
-      responses:
-        "200":
-          description: Success
-          schema:
-            type: array
-            items:
-              $ref: "#/definitions/Event"
-        default:
-          description: Error
-          schema:
-            $ref: "#/definitions/ErrorResponse"
   /projects/{project}/tags:
     x-swagger-router-controller: projects
     get:
@@ -284,35 +264,6 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-  /projects/{project}/workspaces/{workspace}/events:
-    x-swagger-router-controller: workspaces
-    get:
-      tags:
-        - main
-      description: Returns a list of events associated with a given project/workspace
-      operationId: workspace_events
-      parameters:
-        - in: path
-          name: project
-          type: string
-          required: true
-          description: Project to get events from.
-        - in: path
-          name: workspace
-          type: string
-          required: true
-          description: Workspace to get events from.
-      responses:
-        "200":
-          description: Success
-          schema:
-            type: array
-            items:
-              $ref: "#/definitions/Event"
-        default:
-          description: Error
-          schema:
-            $ref: "#/definitions/ErrorResponse"
   /projects/{project}/workspaces/{workspace}/status:
     x-swagger-router-controller: workspaces
     get:
@@ -388,15 +339,19 @@ definitions:
         type: string
   Event:
     required:
-      - time
-      - description
-      - reference
+      - action
+      - creation
+      - project
     properties:
-      time:
+      action:
         type: string
-      description:
+      creation:
+        type: integer
+      project:
         type: string
-      reference:
+      ref:
+        type: string
+      workspace:
         type: string
   EventDescription:
     required:

@@ -181,6 +181,19 @@ function deleteWorkspace (workspace, callback) {
   })
 }
 
+function showEvent (event, callback) {
+  const key = `evt:${event}`
+  bucket.get(key, (err, results, cas, misses) => {
+    if (err) {
+      callback(err, null)
+    } else if (results && results[key]) {
+      callback(null, results[key])
+    } else {
+      callback(null, null)
+    }
+  })
+}
+
 function showWorkspace (workspace, callback) {
   const key = `ws:${workspace['project']}:${workspace['workspace']}`
   const eventDate = Date.now()
@@ -336,5 +349,6 @@ module.exports = {
   actionWorkspace: actionWorkspace,
   feedWorkspace: feedWorkspace,
   deleteWorkspace: deleteWorkspace,
+  showEvent: showEvent,
   showWorkspace: showWorkspace
 }

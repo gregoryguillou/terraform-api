@@ -62,14 +62,14 @@ app.use(
   }
 )
 
-app.use(
-  '/events',
-  passport.authenticate(
-    'jwt', { session: false }),
-  (req, res, next) => {
-    next()
-  }
-)
+// app.use(
+//   '/events',
+//   passport.authenticate(
+//     'jwt', { session: false }),
+//   (req, res, next) => {
+//     next()
+//   }
+// )
   
 app.use(
   '/projects',
