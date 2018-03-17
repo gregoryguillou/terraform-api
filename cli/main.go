@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/gregoryguillou/terraform-lineup/cli/cmd"
+	"github.com/gregoryguillou/terraform-deck/cli/cmd"
 )
 
 var version string

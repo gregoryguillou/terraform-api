@@ -13,11 +13,11 @@ var cfgFile string
 var version = "undefined"
 
 var rootCmd = &cobra.Command{
-	Use:   "lineup",
-	Short: "Lineup command line interface",
+	Use:   "deck",
+	Short: "Deck command line interface",
 	Long: `
-Lineup command line interface provides a simple way to interact with the
-lineup API and manage terraform infrastructures.`,
+Deck command line interface provides a simple way to interact with the
+Deck API and manage terraform infrastructures.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	//	Run: func(cmd *cobra.Command, args []string) { },

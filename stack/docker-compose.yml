@@ -1,8 +1,8 @@
 version: '3.2'
 
 services:
-  lineup-service:
-    image: lineup-service:alpha1
+  deck-service:
+    image: deck-service:alpha1
     ports:
       - 10010:10010
     volumes:
@@ -20,7 +20,7 @@ services:
     ports:
       - 8500:8500
     labels:
-      - "lineup.role=consul"
+      - "deck.role=consul"
     restart: "always"
 
   couchbase:

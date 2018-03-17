@@ -1,6 +1,6 @@
 {
-  "name": "lineup-docker",
-  "description": "Build docker artefact for the lineup service",
+  "name": "deck-docker",
+  "description": "Build docker artefact for the deck service",
   "version": "0.0.1",
   "main": "",
   "scripts": {

@@ -1,6 +1,6 @@
 .DEFAULT_GOAL=linux
 
-BINARY=lineup
+BINARY=deck
 GOARCH = amd64
 
 COMMIT=$(shell git rev-parse HEAD | cut -c1-7)

@@ -55,9 +55,9 @@ var event string
 
 var eventCmd = &cobra.Command{
 	Use:   "event",
-	Short: "Lists and details lineup events",
+	Short: "Lists and details deck events",
 	Long: `
-	Lists and details lineup events.
+	Lists and details deck events.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		dat, _ := eventShow(event)

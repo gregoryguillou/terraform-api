@@ -61,9 +61,9 @@ var textOutput bool
 
 var logsCmd = &cobra.Command{
 	Use:   "logs",
-	Short: "Queries lineup logs",
+	Short: "Queries deck logs",
 	Long: `
-	Queries lineup logs associated with events and previously executed
+	Queries deck logs associated with events and previously executed
 	commands.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
