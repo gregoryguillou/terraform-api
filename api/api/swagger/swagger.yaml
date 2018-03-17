@@ -61,9 +61,11 @@ paths:
         "200":
           description: Success
           schema:
-            type: array
-            items: 
-              $ref: "#/definitions/Log"
+            $ref: "#/definitions/Logs"
+        "404":
+          description: Event Not Found
+          schema:
+            $ref: "#/definitions/ErrorResponse"
         default:
           description: Error
           schema:
@@ -369,12 +371,22 @@ definitions:
         type: string
       token:
         type: string
-  Log:
+  Logs:
     required:
-      - message
+      - logs
     properties:
-      message:
-        type: string
+      logs:
+        type: array
+        items:
+          type: object
+          required:
+            - line
+            - text
+          properties:
+            line:
+              type: integer
+            text:
+              type: string
   Project:
     required:
       - name
