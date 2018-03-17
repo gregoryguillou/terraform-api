@@ -416,6 +416,8 @@ definitions:
               type: integer
             text:
               type: string
+      type:
+        type: string
   Projects:
     required:
       - projects

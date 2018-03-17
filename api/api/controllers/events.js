@@ -22,7 +22,7 @@ function logs (req, res) {
     if (err) {
       res.status(500).json({'message': 'Exception occured'})
     } else if (data) {
-      res.json({logs: data})
+      res.json(data)
     } else {
       res.status(404).json({'message': `Logs for ${pevent} not found`})
     }

@@ -17,14 +17,14 @@ class EchoStream extends stream.Writable {
     super(...params)
     this.key = `logs:${event}`
     this.log = { }
-    this.log[this.key] = [ ]
+    this.log[this.key] = {logs: [ ], type: 'logs'}
     this.line = 0
   }
   _write (chunk, enc, next) {
     let lines = chunk.toString().split('\n')
     for (var i = 0, size = lines.length; i < size; i++) {
       this.line++
-      this.log[this.key].push({line: this.line, text: lines[i]})
+      this.log[this.key]['logs'].push({line: this.line, text: lines[i]})
     }
     logs.upsert(this.log, function (err, result) {
       if (err) throw err
@@ -73,8 +73,8 @@ function checkEventLogs (callback) {
     if (err) {
       callback(err, null)
     } else {
-      let log = {}
-      log['logs:00000000-0000-0000-0000-000000000000'] = [{ line: 1, text: 'output log: line 1' }, { line: 2, text: 'output log: line 2' }]
+      let log = { }
+      log['logs:00000000-0000-0000-0000-000000000000'] = {logs: [{ line: 1, text: 'output log: line 1' }, { line: 2, text: 'output log: line 2' }], type: 'logs'}
       logs.upsert(
         log,
         (err, result) => {
