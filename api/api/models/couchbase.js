@@ -188,6 +188,8 @@ function showEvent (event, callback) {
       callback(err, null)
     } else if (results && results[key]) {
       callback(null, results[key])
+    } else {
+      callback(null, null)
     }
   })
 }

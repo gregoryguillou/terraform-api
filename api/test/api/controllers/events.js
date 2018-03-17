@@ -24,18 +24,30 @@ describe('controllers', function () {
     })
 
     describe('GET /events/{event} and GET /events/{event}/logs', () => {
-      it('should describe a given event', (done) => {
+      it('Should describe an existing event when it exists', (done) => {
         request(server)
-          .get('/events/1234')
+          .get('/events/0c26b2b3-af6f-4dac-a1af-42c7498c120c')
           .set('Accept', 'application/json')
           .set('Authorization', token)
           .expect('Content-Type', /json/)
           .expect(200)
           .end((err, res) => {
             should.not.exist(err)
-            res.body.should.be.eql({
-              event: '1234'
+            res.body.should.containEql({
+              workspace: 'staging'
             })
+            done()
+          }
+        )
+      })
+
+      it('Should fail with HTTP-404 when event does not exist', (done) => {
+        request(server)
+          .get('/events/0c26b2b3-af6f-4dac-a1af-42c7498c120d')
+          .set('Accept', 'application/json')
+          .set('Authorization', token)
+          .expect(404)
+          .end((err, res) => {
             done()
           }
         )

@@ -74,7 +74,7 @@ describe('controllers', function () {
       })
     })
 
-    describe('GET /projects/{project}/branches, /projects/{project}/events and /projects/{project}/tags', () => {
+    describe('GET /projects/{project}/branches and /projects/{project}/tags', () => {
       it('should list branches associated with a project', (done) => {
         request(server)
           .get('/projects/demonstration/branches')
@@ -90,23 +90,7 @@ describe('controllers', function () {
             done()
           })
       })
-      it('should list events associated with a project', (done) => {
-        request(server)
-          .get('/projects/demonstration/events')
-          .set('Accept', 'application/json')
-          .set('Authorization', token)
-          .expect('Content-Type', /json/)
-          .expect(200)
-          .end((err, res) => {
-            should.not.exist(err)
-            res.body.should.containEql({
-              description: 'The environment has been registered',
-              reference: '/projects/demonstration/workspace/staging',
-              time: '1970-01-01 00:00:00'
-            })
-            done()
-          })
-      })
+
       it('should list tags associated with a project', (done) => {
         request(server)
           .get('/projects/demonstration/tags')

@@ -4,10 +4,14 @@ const { showEvent } = require('../models/couchbase')
 function describe (req, res) {
   var pevent = req.swagger.params.event.value
   showEvent(pevent, (err, data) => {
+    let payload = data
     if (err) {
-      res.sendStatus(404)
+      res.status(500).json({"message": "Exception occured"})
+    } else if (data) {
+      delete payload.type
+      res.json(payload)
     } else {
-      res.json(data)
+      res.status(404).json({"message": `Event ${pevent} not found`})
     }
   })
 }
