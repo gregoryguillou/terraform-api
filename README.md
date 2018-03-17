@@ -1,6 +1,6 @@
-# Terraform-Deck
+# Terraform-deck
 
-`Terraform-Deck` relies on containers to manage a set of terraform projects and 
+`Terraform-deck` relies on containers to manage a set of terraform projects and 
 workspaces. Access it securely from a Command Line Interface or via the REST
 API, and:
 
@@ -13,15 +13,15 @@ API, and:
   SaaS environments
 - Be creative...
 
-# Try Terraform-Deck
+# Try Terraform-deck
 
-Try `Terraform-Deck` now. Read and comment the documents:
+Try `Terraform-deck` now. Read and comment the documents:
 
-- [A step-by-step demonstration of Terraform-Deck with Consul](docs/TUTORIAL.md)
+- [A step-by-step demonstration of Terraform-deck with Consul](docs/TUTORIAL.md)
 - [The concept guide](docs/CONCEPT.md)
 - [The installation guide](docs/INSTALLATION.md)
 - [A short introduction to the CLI](docs/CLI.md)
-- [The guidelines to develop and deploy scripts for Terraform-Deck](docs/GUIDELINES.md)
+- [The guidelines to develop and deploy scripts for Terraform-deck](docs/GUIDELINES.md)
 - [The reference documentation for the API](docs/REFERENCE.adoc)
 
 If you have any question, open an issue or create a PR on Github. Get involved,

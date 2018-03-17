@@ -22,7 +22,7 @@ type config struct {
 func readConfiguration() config {
 
 	endpoint := ""
-	fmt.Print("Deck Endpoint (default: http://localhost:10010): ")
+	fmt.Print("Terraform deck Endpoint (default: http://localhost:10010): ")
 	fmt.Scanln(&endpoint)
 	if endpoint == "" {
 		endpoint = "http://localhost:10010"
@@ -32,7 +32,7 @@ func readConfiguration() config {
 		endpoint = endpoint[:len(endpoint)-1]
 	}
 
-	fmt.Print("Deck API Key: ")
+	fmt.Print("Terraform deck API Key: ")
 	apikey := ""
 	fmt.Scanln(&apikey)
 	cfg := config{endpoint: endpoint, apikey: apikey}

@@ -1,6 +1,6 @@
 # Guidelines to develop and deploy a project management automation script
 
-Deck allows to create, update, destroy and check environments on-demand. In
+Terraform-deck allows to create, update, destroy and check environments on-demand. In
 order to do that, it requires you build a project artefact. These guidelines
 go from a general overview to the principles of developing the project
 automation. The last section digs into some principles associated with
