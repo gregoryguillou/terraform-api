@@ -10,17 +10,17 @@ describe('controllers', function () {
   describe('projects', () => {
     before((done) => {
       request(server)
-      .get('/login')
-      .set('Accept', 'application/json')
-      .set('Authorization', 'Key bm9wcXJzdHV2d3h5ego=')
-      .expect('Content-Type', /json/)
-      .expect(200)
-      .end((err, res) => {
-        should.not.exist(err)
-        token = 'Bearer ' + res.body['token']
-        res.body.should.containEql({message: 'Authenticated'})
-        done()
-      })
+        .get('/login')
+        .set('Accept', 'application/json')
+        .set('Authorization', 'Key bm9wcXJzdHV2d3h5ego=')
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .end((err, res) => {
+          should.not.exist(err)
+          token = 'Bearer ' + res.body['token']
+          res.body.should.containEql({message: 'Authenticated'})
+          done()
+        })
     })
 
     describe('GET /projects and GET /projects/{project}', () => {
@@ -84,9 +84,7 @@ describe('controllers', function () {
           .expect(200)
           .end((err, res) => {
             should.not.exist(err)
-            res.body.should.containEql({
-              name: 'master'
-            })
+            res.body['branches'].should.containEql({name: 'master'})
             done()
           })
       })
@@ -100,12 +98,8 @@ describe('controllers', function () {
           .expect(200)
           .end((err, res) => {
             should.not.exist(err)
-            res.body.should.containEql({
-              name: 'v0.0.1'
-            })
-            res.body.should.containEql({
-              name: 'v0.0.2'
-            })
+            res.body['tags'].should.containEql({name: 'v0.0.1'})
+            res.body['tags'].should.containEql({name: 'v0.0.2'})
             done()
           })
       })

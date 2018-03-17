@@ -169,9 +169,7 @@ paths:
         "200":
           description: Success
           schema:
-            type: array
-            items:
-              $ref: "#/definitions/Branch"
+            $ref: "#/definitions/Branches"
         default:
           description: Error
           schema:
@@ -193,9 +191,7 @@ paths:
         "200":
           description: Success
           schema:
-            type: array
-            items:
-              $ref: "#/definitions/Tag"
+            $ref: "#/definitions/Tags"
         default:
           description: Error
           schema:
@@ -333,12 +329,19 @@ paths:
     x-swagger-pipe: swagger_raw
 # complex objects have schema definitions
 definitions:
-  Branch:
+  Branches:
     required:
-      - name
+      - branches
     properties:
-      name:
-        type: string
+      branches:
+        type: array
+        items:
+          type: object
+          required:
+            - name
+          properties:
+            name:
+              type: string
   ErrorResponse:
     required:
       - message
@@ -446,12 +449,19 @@ definitions:
             type: string
           ref:
             type: string
-  Tag:
+  Tags:
     required:
-      - name
+      - tags
     properties:
-      name:
-        type: string
+      tags:
+        type: array
+        items:
+          type: object
+          required:
+            - name
+          properties:
+            name:
+              type: string
   User:
     required:
       - username
