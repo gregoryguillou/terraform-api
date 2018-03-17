@@ -65,7 +65,7 @@ function list (req, res) {
   for (var i = 0, size = projects.length; i < size; i++) {
     output.push({type: projects[i].type, name: projects[i].name, description: projects[i].description})
   }
-  res.json(output)
+  res.json({projects: output})
 }
 
 function tags (req, res) {
@@ -82,10 +82,27 @@ function tags (req, res) {
           if (list.length > 0) {
             res.json({tags: list})
           } else {
-            res.status(400).json({message: util.format('No tag found for {%s}', pproject)})
+            res.status(404).json({message: util.format('No tag found for {%s}', pproject)})
           }
         }
       )
+    }
+  }
+}
+
+function workspaces (req, res) {
+  var pproject = req.swagger.params.project.value
+  for (var i = 0, size = projects.length; i < size; i++) {
+    if (projects[i].name === pproject) {
+      let list = []
+      for (var j = 0, wsize = projects[i].workspaces.length; j < wsize; j++) {
+        list.push({name: projects[i].workspaces[j]})
+      }
+      if (list.length > 0) {
+        res.json({workspaces: list})
+      } else {
+        res.status(404).json({message: util.format('No workspaces found for {%s}', pproject)})
+      }
     }
   }
 }
@@ -95,5 +112,6 @@ module.exports = {
   project_branches: branches,
   project_describe: describe,
   projects_list: list,
-  project_tags: tags
+  project_tags: tags,
+  project_workspaces: workspaces
 }

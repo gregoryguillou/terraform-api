@@ -33,7 +33,7 @@ describe('controllers', function () {
           .expect(200)
           .end((err, res) => {
             should.not.exist(err)
-            res.body.should.containEql({
+            res.body['projects'].should.containEql({
               type: 'terraform',
               name: 'demonstration',
               description: 'A demonstration project that relies on Terraform/Consul'
@@ -74,7 +74,7 @@ describe('controllers', function () {
       })
     })
 
-    describe('GET /projects/{project}/branches and /projects/{project}/tags', () => {
+    describe('GET /projects/{project}/branches, /projects/{project}/tags and /projects/{project}/workspaces', () => {
       it('should list branches associated with a project', (done) => {
         request(server)
           .get('/projects/demonstration/branches')
@@ -100,6 +100,20 @@ describe('controllers', function () {
             should.not.exist(err)
             res.body['tags'].should.containEql({name: 'v0.0.1'})
             res.body['tags'].should.containEql({name: 'v0.0.2'})
+            done()
+          })
+      })
+
+      it('should list workspaces associated with a project', (done) => {
+        request(server)
+          .get('/projects/demonstration/workspaces')
+          .set('Accept', 'application/json')
+          .set('Authorization', token)
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end((err, res) => {
+            should.not.exist(err)
+            res.body['workspaces'].should.containEql({name: 'staging'})
             done()
           })
       })

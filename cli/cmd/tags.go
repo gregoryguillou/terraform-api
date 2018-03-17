@@ -43,7 +43,7 @@ func tags(project string) (map[string]interface{}, error) {
 	if err != nil {
 		panic(err)
 	}
-  fmt.Println(string(data[:]))
+
 	if err := json.Unmarshal(data, &dat); err != nil {
 		panic(err)
 	}

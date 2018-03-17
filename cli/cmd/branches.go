@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func workspaceShow(project string, workspace string) (map[string]interface{}, error) {
+func branches(project string) (map[string]interface{}, error) {
 	cfg, err := loadConfiguration()
 	if err != nil {
 		panic(err)
@@ -25,7 +25,7 @@ func workspaceShow(project string, workspace string) (map[string]interface{}, er
 		CheckRedirect: nil,
 	}
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/projects/%s/workspaces/%s", cfg.endpoint, project, workspace), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/projects/%s/branches", cfg.endpoint, project), nil)
 	if err != nil {
 		panic(err)
 	}
@@ -51,24 +51,20 @@ func workspaceShow(project string, workspace string) (map[string]interface{}, er
 	return dat, nil
 }
 
-var workspace, project string
-
-var workspaceshowCmd = &cobra.Command{
-	Use:   "show",
-	Short: "Shows properties of a workspace",
+var branchesCmd = &cobra.Command{
+	Use:   "branches",
+	Short: "Lists project branches",
 	Long: `
-	Shows properties of a workspace for a project or for the current
-	project.
+	Lists branches that can be used to run the apply command.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		dat, _ := workspaceShow(project, workspace)
+		dat, _ := branches(project)
 		s, _ := prettyjson.Marshal(dat)
 		fmt.Println(string(s))
 	},
 }
 
 func init() {
-	workspaceCmd.AddCommand(workspaceshowCmd)
-	workspaceshowCmd.Flags().StringVarP(&workspace, "workspace", "w", "", "workspace to show")
-	workspaceshowCmd.Flags().StringVarP(&project, "project", "p", "", "project to show")
+	rootCmd.AddCommand(branchesCmd)
+	branchesCmd.Flags().StringVarP(&project, "project", "p", "", "project to show")
 }
