@@ -15,16 +15,18 @@ const logs = couchnode.wrap(cluster.openBucket(couchparam['log_bucket'], couchpa
 class EchoStream extends stream.Writable {
   constructor (event, ...params) {
     super(...params)
-    this.event = event
-    this.key = 1
+    this.key = `logs:${event}`
+    this.log = { }
+    this.log[this.key] = [ ]
+    this.line = 0
   }
-
   _write (chunk, enc, next) {
-    const key = `logs:${this.event}:${this.key}`
-    let log = {}
-    log[key] = {type: 'log', chunk: this.key, msg: chunk.toString()}
-    this.key++
-    logs.upsert(log, function (err, result) {
+    let lines = chunk.toString().split("\n")
+    for (var i = 0, size = lines.length ; i < size ; i++) {
+      this.line++
+      this.log[this.key].push({line: this.line, text: lines[i]})
+    }
+    logs.upsert(this.log, function (err, result) {
       if (err) throw err
       next()
     })
@@ -41,17 +43,49 @@ class ActionError extends Error {
   }
 }
 
-function test (callback) {
-  bucket.upsert({'testdoc': { name: 'Gregory' }}, function (err, result) {
+function checkConnectivity (callback) {
+  bucket.upsert({'tst:1': { status: 'OK' }}, function (err, result) {
     if (err) throw err
 
-    bucket.get('testdoc', function (err, result) {
+    bucket.get('tst:1', function (err, result) {
       if (err) {
         callback(err, null)
       } else {
         callback(null, result)
       }
     })
+  })
+}
+
+function checkEventLogs (callback) {
+  bucket.upsert({
+    'evt:00000000-0000-0000-0000-000000000000': {
+      type: 'event',
+      project: 'demonstration',
+      workspace: 'staging',
+      creation: 1521288520083,
+      action: 'apply',
+      status: 'succeeded',
+      ref: 'branch:master',
+      end: 1521288527721
+    }
+  }, (err, result) => {
+    if (err) {
+      callback(err, null)
+    } else {
+      let log = {}
+      log['logs:00000000-0000-0000-0000-000000000000'] = [{ line: 1, text: 'output log: line 1' }, { line: 2, text: 'output log: line 2' }]
+      logs.upsert(
+        log,
+        (err, result) => {
+          if (err) {
+            callback(err, null)
+          } else {
+            callback(null, null)
+          }
+        }
+      )
+    }
   })
 }
 
@@ -185,6 +219,19 @@ function deleteWorkspace (workspace, callback) {
 function showEvent (event, callback) {
   const key = `evt:${event}`
   bucket.get(key, (err, results, cas, misses) => {
+    if (err) {
+      callback(err, null)
+    } else if (results && results[key]) {
+      callback(null, results[key])
+    } else {
+      callback(null, null)
+    }
+  })
+}
+
+function showLogs (event, callback) {
+  const key = `logs:${event}`
+  logs.get(key, (err, results, cas, misses) => {
     if (err) {
       callback(err, null)
     } else if (results && results[key]) {
@@ -365,11 +412,13 @@ function feedWorkspace (workspace, result, callback) {
 
 module.exports = {
   EchoStream: EchoStream,
-  test: test,
+  checkConnectivity: checkConnectivity,
+  checkEventLogs: checkEventLogs,
   ActionError: ActionError,
   actionWorkspace: actionWorkspace,
   feedWorkspace: feedWorkspace,
   deleteWorkspace: deleteWorkspace,
   showEvent: showEvent,
+  showLogs: showLogs,
   showWorkspace: showWorkspace
 }

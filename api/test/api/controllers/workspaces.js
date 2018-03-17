@@ -155,7 +155,7 @@ describe('controllers', function () {
           })
       })
 
-      it('Wait up to 20s before the creation is considered failed', (done) => {
+      it('Wait up to 30s before the creation is considered failed', (done) => {
         i = 0
         queryWorkspace(() => {
           done()
@@ -189,7 +189,7 @@ describe('controllers', function () {
           })
       })
 
-      it('Wait up to 20s before the creation is considered failed', (done) => {
+      it('Wait up to 30s before the creation is considered failed', (done) => {
         i = 0
         queryWorkspace(() => {
           done()
@@ -239,7 +239,7 @@ describe('controllers', function () {
           })
       })
 
-      it('Wait up to 20s before the creation is considered failed', (done) => {
+      it('Wait up to 30s before the creation is considered failed', (done) => {
         i = 0
         queryWorkspace(() => {
           done()
@@ -268,7 +268,7 @@ describe('controllers', function () {
           })
       })
 
-      it('Wait up to 20s before the creation is considered failed', (done) => {
+      it('Wait up to 30s before the creation is considered failed', (done) => {
         i = 0
         queryWorkspace(() => {
           done()
@@ -289,7 +289,7 @@ describe('controllers', function () {
           })
       })
 
-      it('Wait up to 20s before the creation is considered failed', (done) => {
+      it('Wait up to 30s before the creation is considered failed', (done) => {
         i = 0
         queryWorkspace(() => {
           done()
@@ -310,7 +310,7 @@ describe('controllers', function () {
           })
       })
 
-      it('Wait up to 20s before the creation is considered failed', (done) => {
+      it('Wait up to 30s before the creation is considered failed', (done) => {
         i = 0
         queryWorkspace(() => {
           done()
@@ -333,7 +333,7 @@ describe('controllers', function () {
           })
       })
 
-      it('Wait up to 20s before the destruction is considered failed', (done) => {
+      it('Wait up to 30s before the destruction is considered failed', (done) => {
         i = 0
         queryWorkspace(() => {
           done()
@@ -367,7 +367,7 @@ describe('controllers', function () {
           })
       })
 
-      it('Wait up to 20s before the destruction is considered failed', (done) => {
+      it('Wait up to 30s before the destruction is considered failed', (done) => {
         i = 0
         queryWorkspace(() => {
           done()
@@ -401,7 +401,7 @@ describe('controllers', function () {
           })
       })
 
-      it('Wait up to 20s before the creation is considered failed', (done) => {
+      it('Wait up to 30s before the creation is considered failed', (done) => {
         i = 0
         queryWorkspace(() => {
           done()
