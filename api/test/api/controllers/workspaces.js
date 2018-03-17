@@ -11,22 +11,22 @@ let i = 0
 function queryWorkspace (callback) {
   setTimeout(function () {
     i++
-    if (i < 20) {
+    if (i < 30) {
       request(server)
-      .get('/projects/demonstration/workspaces/staging')
-      .set('Accept', 'application/json')
-      .set('Authorization', token)
-      .expect('Content-Type', /json/)
-      .expect(200)
-      .end((err, res) => {
-        should.not.exist(err)
-        if (res.body['request']) {
-          queryWorkspace(callback)
-        } else {
-          callback()
-          i = 20
-        }
-      })
+        .get('/projects/demonstration/workspaces/staging')
+        .set('Accept', 'application/json')
+        .set('Authorization', token)
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .end((err, res) => {
+          should.not.exist(err)
+          if (res.body['request']) {
+            queryWorkspace(callback)
+          } else {
+            callback()
+            i = 30
+          }
+        })
     } else {
       should.fail('finish', 'ongoing')
       callback()
@@ -34,8 +34,8 @@ function queryWorkspace (callback) {
   }, 1000)
 }
 
-describe.skip('controllers', function () {
-  describe('JSON Web Token', () => { 
+describe('controllers', function () {
+  describe('JSON Web Token', () => {
     it('GET /projects/{project} should return 401 when unauthenticated', (done) => {
       request(server)
         .get('/projects/demonstration')
@@ -68,26 +68,25 @@ describe.skip('controllers', function () {
           done()
         })
     })
-
   })
 })
 
-describe.skip('controllers', function () {
+describe('controllers', function () {
   this.timeout(60000)
   describe('workspace', () => {
     before((done) => {
       request(server)
-      .get('/login')
-      .set('Accept', 'application/json')
-      .set('Authorization', 'Key bm9wcXJzdHV2d3h5ego=')
-      .expect('Content-Type', /json/)
-      .expect(200)
-      .end((err, res) => {
-        should.not.exist(err)
-        token = 'Bearer ' + res.body['token']
-        res.body.should.containEql({message: 'Authenticated'})
-        done()
-      })
+        .get('/login')
+        .set('Accept', 'application/json')
+        .set('Authorization', 'Key bm9wcXJzdHV2d3h5ego=')
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .end((err, res) => {
+          should.not.exist(err)
+          token = 'Bearer ' + res.body['token']
+          res.body.should.containEql({message: 'Authenticated'})
+          done()
+        })
     })
 
     describe('GET /projects/{project}/workspaces/{workspace}', () => {
@@ -135,7 +134,7 @@ describe.skip('controllers', function () {
 
     describe('POST /projects/{project}/workspaces/{workspace} with {status: "clean"}', () => {
       it('Remove pending action on demonstration/staging', (done) => {
-          feedWorkspace({project: 'demonstration', workspace: 'staging'}, {status: 'clean'}, (err, data) => {
+        feedWorkspace({project: 'demonstration', workspace: 'staging'}, {status: 'clean'}, (err, data) => {
           should.not.exist(err)
           should.not.exist(data['ws:demonstration:staging']['request'])
           done()
@@ -249,9 +248,9 @@ describe.skip('controllers', function () {
 
       it('Wait up to 5s to let people verify the stack status', (done) => {
         setTimeout(() => {
-            done()
-          }, 
-          5000
+          done()
+        },
+        5000
         )
       })
 
@@ -420,7 +419,6 @@ describe.skip('controllers', function () {
             done()
           })
       })
-
     })
   })
 })
