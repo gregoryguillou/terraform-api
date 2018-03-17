@@ -47,9 +47,9 @@ func versionService() {
 }
 var versionCmd = &cobra.Command{
 	Use:   "version",
-	Short: "Displays lineup versions",
+	Short: "Displays deck versions",
 	Long: `
-	Displays lineup versions on the client and on the server.
+	Displays deck versions on the client and on the server.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		  versionService()

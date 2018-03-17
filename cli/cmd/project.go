@@ -8,9 +8,9 @@ import (
 
 var projectCmd = &cobra.Command{
 	Use:   "project",
-	Short: "Manages lineup projects",
+	Short: "Manages deck projects",
 	Long: `
-	Lists, shows details lineup projects. This command also set the
+	Lists, shows details deck projects. This command also set the
 	default project.
 `,
 	Run: func(cmd *cobra.Command, args []string) {

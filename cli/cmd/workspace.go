@@ -8,9 +8,9 @@ import (
 
 var workspaceCmd = &cobra.Command{
 	Use:   "workspace",
-	Short: "Manages lineup workspaces",
+	Short: "Manages deck workspaces",
 	Long: `
-	Lists, shows details lineup workspaces. This command also set the
+	Lists, shows details deck workspaces. This command also set the
 	default workspace.
 `,
 	Run: func(cmd *cobra.Command, args []string) {

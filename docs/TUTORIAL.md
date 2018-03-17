@@ -1,30 +1,30 @@
-# A step-by-step demonstration of Lineup with Consul
+# A step-by-step demonstration of Deck with Consul
 
 HashiCorp Consul is easy to run on a laptop with docker. In dev mode, it consumes
 only few resources. It is a perfect match for terraform as it can both be used to
 store its state and as a target environment. This tutorial will guide you through
-the steps to configuring and using `lineup` on a laptop:
+the steps to configuring and using `deck` on a laptop:
 
 1. make sure your laptop matches the system pre-requisites
 2. start consul for demonstration purpose
 3. create your terraform project to provide environments to your users
-4. build and test the `lineup-terraform` container with your terraform project
-5. start and configure `lineup` to run locally
-6. demonstrate how to use `lineup` web API to create/destroy project environments
-7. package `lineup` in a container to run it on a server
-8. develop `lineup` from the environment you've just built
+4. build and test the `deck-terraform` container with your terraform project
+5. start and configure `deck` to run locally
+6. demonstrate how to use `deck` web API to create/destroy project environments
+7. package `deck` in a container to run it on a server
+8. develop `deck` from the environment you've just built
 
-> **Important**: `lineup` is a tool for developers who want to get access to
+> **Important**: `deck` is a tool for developers who want to get access to
   resources from a simple command. It does not support to run tests, neither
   it does integrate a CI/CD pipeline. If that is what you want to do, there are
   better ways.
 
-This tutorial presents many aspects of `Lineup` for 4 reasons:
+This tutorial presents many aspects of `Deck` for 4 reasons:
 
 - So that you can have a working environment to demonstrate it
-- So that you understand how pieces work together and make Lineup work
+- So that you understand how pieces work together and make Deck work
 - So that you understand the requirements and guideline for your terraform
-  project to be integrated in lineup
+  project to be integrated in deck
 - So that you have an environment you can use to 
 
 ## Checking your system pre-requisites and cloning the project
@@ -48,8 +48,8 @@ installed:
 To start with this tutorial, you will clone the git repository as shown below:
 
 ```shell
-git clone https://github.com/gregoryguillou/lineup.git
-cd lineup
+git clone https://github.com/gregoryguillou/deck.git
+cd deck
 ```
 
 In the remaining sections of this tutorial we will assume the base directory of our
@@ -58,7 +58,7 @@ work is the project home.
 ## Using Consul as a stack example
 
 The `stack` directory of the project contains a `docker-compose.yml` file that
-references all the artefacts needed to run and test `lineup`. Consul is part of
+references all the artefacts needed to run and test `deck`. Consul is part of
 it. You should just run that container from there with the command below:
 
 ```shell
@@ -71,7 +71,7 @@ command like below:
 
 ```shell
 docker-compose ps consul
-docker ps -f "label=lineup.role=consul" -f status=running --format "{{.ID}}"
+docker ps -f "label=deck.role=consul" -f status=running --format "{{.ID}}"
 ```
 
 Once you've made sure it was up and running, you could query the HTTP api with
@@ -83,7 +83,7 @@ curl --silent 0.0.0.0:8500/v1/catalog/nodes | jq -r '.[0].Node'
 
 > **Note:** Lets assume the CONSUL_DOCKER variable includes Consul Docker
   Identifier. Run this command to set the variable:
-  `export CONSUL_DOCKER=$(docker ps -f "label=lineup.role=consul" -f status=running --format "{{.ID}}")`.
+  `export CONSUL_DOCKER=$(docker ps -f "label=deck.role=consul" -f status=running --format "{{.ID}}")`.
 
 Before we move on, we will discover the network GATEWAY that should be used to access
 Consul container. In order to do that :
@@ -96,7 +96,7 @@ The script below execute those 3 steps:
 
 
 ```shell
-export CONSUL_DOCKER=$(docker ps -f "label=lineup.role=consul" -f status=running --format "{{.ID}}")
+export CONSUL_DOCKER=$(docker ps -f "label=deck.role=consul" -f status=running --format "{{.ID}}")
 export CONSUL_BRIDGE=$(docker inspect ${CONSUL_DOCKER} | jq -r ".[0].NetworkSettings.Networks | to_entries | .[0].key")
 CONSUL_GATEWAY=$(docker inspect ${CONSUL_DOCKER} | jq -r ".[0].NetworkSettings.Networks.${CONSUL_BRIDGE}.Gateway")
 curl --silent ${CONSUL_GATEWAY}:8500/v1/catalog/nodes | jq
@@ -208,21 +208,21 @@ should be able to build the container with the script below:
 ```shell
 cd stack
 npm install
-LINEUP_CONTAINER=lineup-terraform npx run build
+DECK_CONTAINER=deck-terraform npx run build
 ```
 
 Again, you should be able to see the how the container is working to manage those terraform
 stacks. 
 
 ```shell
-docker run -it --rm -e CONSUL_IP=${CONSUL_GATEWAY} --env-file .env lineup-terraform -c apply -w qa
-docker run -it --rm -e CONSUL_IP=${CONSUL_GATEWAY} --env-file .env lineup-terraform -c list -w qa
-docker run -it --rm -e CONSUL_IP=${CONSUL_GATEWAY} --env-file .env lineup-terraform -c destroy -w qa
+docker run -it --rm -e CONSUL_IP=${CONSUL_GATEWAY} --env-file .env deck-terraform -c apply -w qa
+docker run -it --rm -e CONSUL_IP=${CONSUL_GATEWAY} --env-file .env deck-terraform -c list -w qa
+docker run -it --rm -e CONSUL_IP=${CONSUL_GATEWAY} --env-file .env deck-terraform -c destroy -w qa
 ```
 
-## Running the `lineup` service locally
+## Running the `deck` service locally
 
-`lineup` is a Node API based on Swagger/Express. You can start it with the command below:
+`deck` is a Node API based on Swagger/Express. You can start it with the command below:
 
 ```shell
 cd api
@@ -235,9 +235,9 @@ If you want to test it, you shoud simply run the command below:
 npm test
 ```
 
-## Using the `lineup` API to work with your environment
+## Using the `deck` API to work with your environment
 
-## Packaging the `lineup` API in a container
+## Packaging the `deck` API in a container
 
-## Developing `lineup` from your environment
+## Developing `deck` from your environment
 

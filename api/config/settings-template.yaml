@@ -17,9 +17,9 @@ projects:
   - type: terraform
     name: demonstration
     description: A demonstration project that relies on Terraform/Consul
-    docker-image: "lineup-terraform:alpha1"
+    docker-image: "deck-terraform:alpha1"
     git:
-      repository: github.com/gregoryguillou/terraform-lineup.git
+      repository: github.com/gregoryguillou/terraform-deck.git
       branch: master
       username: gregoryguillou
       password: "1234567880"
@@ -42,7 +42,7 @@ projects:
       post-finish:
         - echo "Ready to begin..."
       status:
-        - ./status.sh -w {{lineup.WORKSPACE}}
+        - ./status.sh -w {{deck.WORKSPACE}}
     # Define the environment variables that should be used when running the project
     # management commands (i.e. apply, destroy, list and check)
     setenv:

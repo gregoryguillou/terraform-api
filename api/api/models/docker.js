@@ -11,7 +11,7 @@ let startoptions = {}
 
 function version (callback) {
   const stdout = new EchoStream('version')
-  docker.run('lineup-terraform', ['-v'], stdout, createoptions, startoptions, function (err, data, container) {
+  docker.run('deck-terraform', ['-v'], stdout, createoptions, startoptions, function (err, data, container) {
     if (!err) {
       callback(null, data)
     } else {
@@ -37,14 +37,14 @@ function command (command, config, callback) {
     createoptions = {env: env}
     let args = ['-c', command, '-w', config['workspace']]
     if (command === 'apply' && config['ref'] ) {
-       args.push('-r')
-       args.push(config['ref'])
+      args.push('-r')
+      args.push(config['ref'])
     }
-    docker.run('lineup-terraform', args, stdout, createoptions, startoptions, function (err, data, container) {
+    docker.run('deck-terraform', args, stdout, createoptions, startoptions, function (err, data, container) {
       if (!err) {
         callback(null, data)
       } else {
-        logger.error(`docker lineup-terraform has failed with ${err.error}`)
+        logger.error(`docker deck-terraform has failed with ${err.error}`)
         callback(err, data)
       }
     })

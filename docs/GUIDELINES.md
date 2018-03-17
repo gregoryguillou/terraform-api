@@ -1,6 +1,6 @@
 # Guidelines to develop and deploy a project management automation script
 
-Lineup allows to create, update, destroy and check environments on-demand. In
+Deck allows to create, update, destroy and check environments on-demand. In
 order to do that, it requires you build a project artefact. These guidelines
 go from a general overview to the principles of developing the project
 automation. The last section digs into some principles associated with
@@ -41,7 +41,7 @@ the interface is
 
 #### Create the project extra-scripts
 
- for now only a status script. It usually reference the {{lineup.WORKSPACE}}
+ for now only a status script. It usually reference the {{deck.WORKSPACE}}
  for now but we could imagine to enrich it later on
 
 ### Deploy and configure a project artefact
@@ -51,7 +51,7 @@ in settings-template.yaml
 
 It should also describe the variable that are accessible:
 
-- lineup.WORKSPACE
+- deck.WORKSPACE
 - env.[VARIABLE]
 
 ### Test the project

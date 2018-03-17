@@ -1,4 +1,4 @@
-= Terraform Lineup
+= Terraform Deck
 
 
 [[_overview]]

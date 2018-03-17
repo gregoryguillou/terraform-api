@@ -1,11 +1,11 @@
 # Installation Guide
 
-Terraform Lineup relies on the local docker daemon. This limits the number of
+Terraform Deck relies on the local docker daemon. This limits the number of
 container instances it can start and its ability to scale. It also prevents it
 from running several instances of the API. On the other hand, it makes its 
 configuration very easy as explained below.
 
-> **Note**: Future releases of Terraform Lineup might support docker
+> **Note**: Future releases of Terraform Deck might support docker
   orchestration platforms, like Kubernetes.  
 
 ## Building containers
@@ -13,8 +13,8 @@ configuration very easy as explained below.
 ```shell
 cd stack
 npm install
-LINEUP_CONTAINER=lineup-service npx run build
-LINEUP_CONTAINER=lineup-terraform npx run build
+DECK_CONTAINER=deck-service npx run build
+DECK_CONTAINER=deck-terraform npx run build
 ```
 
 ## Docker Compose
@@ -31,7 +31,7 @@ docker-compose up -d
 
 ## Other considerations
 
-Installing the Terraform Lineup on other Cloud Provider or on-premises should
+Installing the Terraform Deck on other Cloud Provider or on-premises should
 not be too difficult. 
 
 Remarks:
