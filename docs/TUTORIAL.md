@@ -208,7 +208,7 @@ should be able to build the container with the script below:
 ```shell
 cd stack
 npm install
-LINEUP_CONTAINER=deck-terraform npx run build
+DECK_CONTAINER=deck-terraform npx run build
 ```
 
 Again, you should be able to see the how the container is working to manage those terraform

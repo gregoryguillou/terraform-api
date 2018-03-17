@@ -13,8 +13,8 @@ configuration very easy as explained below.
 ```shell
 cd stack
 npm install
-LINEUP_CONTAINER=deck-service npx run build
-LINEUP_CONTAINER=deck-terraform npx run build
+DECK_CONTAINER=deck-service npx run build
+DECK_CONTAINER=deck-terraform npx run build
 ```
 
 ## Docker Compose

@@ -15,8 +15,8 @@ const containers = {
   }
 }
 
-const container = process.env.LINEUP_CONTAINER || 'deck-terraform'
-const version = process.env.LINEUP_VERSION || containers[container]['version']
+const container = process.env.DECK_CONTAINER || 'deck-terraform'
+const version = process.env.DECK_VERSION || containers[container]['version']
 const path = containers[container]['path']
 
 function build () {
@@ -44,8 +44,8 @@ function doc () {
 help(build, {
   description: 'Build the docker containers',
   examples: `
-    LINEUP_CONTAINER=deck-api npx run build
-    LINEUP_CONTAINER=deck-terraform npx run build
+    DECK_CONTAINER=deck-api npx run build
+    DECK_CONTAINER=deck-terraform npx run build
   `
 })
 
