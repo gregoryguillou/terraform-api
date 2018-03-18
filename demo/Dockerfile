@@ -13,19 +13,10 @@ RUN cd /usr/local/bin && \
     rm -f /app/terraform.zip && \
     mkdir /github
 
-COPY terraform /app/terraform
-COPY bin /app/bin
-COPY entrypoint.sh /app/entrypoint.sh
+COPY . /app
 ENTRYPOINT [ "/app/entrypoint.sh" ]
 
-ARG GITHUB_REPOSITORY 
-ARG GITHUB_USERNAME 
-ARG GITHUB_PASSWORD
+ARG GITHUB_REPOSITORY=https://github.com/gregoryguillou/terraform-deck.git
 ARG CACHEBUST=1
 
-RUN echo "machine github.com" >~/.netrc && \
-    echo "login ${GITHUB_USERNAME}" >>~/.netrc && \
-    echo "password ${GITHUB_PASSWORD}" >>~/.netrc && \
-    chmod 600 ~/.netrc && \
-    git clone ${GITHUB_REPOSITORY} /github/repository && \
-    rm -f ~/.netrc
+RUN git clone ${GITHUB_REPOSITORY} /github/repository
