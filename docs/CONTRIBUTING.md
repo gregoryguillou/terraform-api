@@ -9,7 +9,7 @@ There are many ways to contribute to `Terraform-deck`:
 - If you like it, watch it on github, write tweets or article, share your
   experience with others; put some videos on Youtube...
 - If face a problem, OPEN AN ISSUE! Describe it as much as you can. Be kind and
-  follow the [code of conduct](CODE_OF_CONDUCT.md). We value your feedback!
+  follow the [code of conduct](https://github.com/gregoryguillou/terraform-deck/blob/master/docs/CODE_OF_CONDUCT.md). We value your feedback!
 - If you have ideas for enhancements or new business cases that you do not
   manage to handle, don't hesitate to open an issue too or, if you prefer
   [contact m from github](https://github.com/gregoryguillou).
@@ -33,8 +33,9 @@ there are several ways:
     would agree this jobs to benefit the open-source community
 
 - You can also fork the project and correct the code. Before you do it, read
-  [concept guide](CONCEPT.md) and go through the [tutorial](TUTORIAL.md). The
-  later, should provide you with most of what you need to understand about
+  [concept guide](https://github.com/gregoryguillou/terraform-deck/blob/master/docs/CONCEPT.md)
+  and go through the [tutorial](https://github.com/gregoryguillou/terraform-deck/blob/master/docs/TUTORIAL.md).
+  The later, should provide you with most of what you need to understand about
   the architecture and will allow you to install a full development stack with
   some working example.
 
