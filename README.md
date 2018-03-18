@@ -1,5 +1,7 @@
 # Terraform-deck
 
+[![Build status](https://api.travis-ci.org/gregoryguillou/terraform-deck.svg?branch=master)](https://api.travis-ci.org/gregoryguillou/terraform-deck)
+
 `Terraform-deck` helps you manage projects and workspaces from the Cloud.
 Access them securely from a command line or via a REST API. You should be
 able to use Terraform from anywhere and:
