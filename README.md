@@ -18,13 +18,13 @@ able to use Terraform from anywhere and:
 
 Try `Terraform-deck` now. Read and comment the documents below:
 
-- [A step-by-step demonstration of Terraform-deck with Consul](docs/TUTORIAL.md)
-- [The concept guide](docs/CONCEPT.md)
-- [The installation guide](docs/INSTALLATION.md)
-- [A short introduction to the CLI](docs/CLI.md)
-- [The guidelines to develop and deploy scripts for Terraform-deck](docs/GUIDELINES.md)
-- [The reference documentation for the API](docs/REFERENCE.adoc)
+- [A step-by-step demonstration of Terraform-deck with Consul](https://github.com/gregoryguillou/terraform-deck/blob/master/docs/TUTORIAL.md)
+- [The concept guide](https://github.com/gregoryguillou/terraform-deck/blob/master/docs/CONCEPT.md)
+- [The installation guide](https://github.com/gregoryguillou/terraform-deck/blob/master/docs/INSTALLATION.md)
+- [A short introduction to the CLI](https://github.com/gregoryguillou/terraform-deck/blob/master/docs/CLI.md)
+- [The guidelines to develop and deploy scripts for Terraform-deck](https://github.com/gregoryguillou/terraform-deck/blob/master/docs/GUIDELINES.md)
+- [The reference documentation for the API](https://github.com/gregoryguillou/terraform-deck/blob/master/docs/REFERENCE.adoc)
 
 If you have any question, open an issue or create a PR on Github. Get involved,
-read the [Code of Conduct](docs/CODE_OF_CONDUCT.md) and the
-[Contribution Guide](docs/CONTRIBUTION.md).
+read the [Code of Conduct](https://github.com/gregoryguillou/terraform-deck/blob/master/docs/CODE_OF_CONDUCT.md) and the
+[Contribution Guide](https://github.com/gregoryguillou/terraform-deck/blob/master/docs/CONTRIBUTION.md).

@@ -10,7 +10,7 @@ different `commit`. It also supports running different version of
 of containers running `terraform`, `git` and connected to your
 repository as show in the schema below:
 
-![Architecture](img/architecture.png)
+![Architecture](https://github.com/gregoryguillou/terraform-deck/blob/master/docs/img/architecture.png)
 
 Terraform-deck main components are:
 

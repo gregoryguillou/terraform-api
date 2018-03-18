@@ -216,11 +216,12 @@ terraform workspace select default
 ---
 # 4. Building a container to manage your Terraform project
 
-A full description of how the container that embed the feature of `terraform` is out of the
-scope of this tutorial. You should review the scripts and the
-[Development Guidelines](GUIDELINES.md). For more details. However, in order to build the 
-container, you will need to add your github repository, username and token to an `.env` file
-in `stack`. You can use `.env.template` as a template for this `.env` file. Once done, you
+A full description of how the container that embed the feature of 
+`terraform` is out of the scope of this tutorial. You should review the scripts
+and the [Development Guidelines](https://github.com/gregoryguillou/terraform-deck/blob/master/docs/GUIDELINES.md). 
+For more details. However, in order to build the container, you will need to
+add your github repository, username and token to an `.env` file in `stack`.
+You can use `.env.template` as a template for this `.env` file. Once done, you
 should be able to build the container with the script below:
 
 ```shell
@@ -346,9 +347,9 @@ deck destroy -p demonstration -w qa
 ## Accessing deck using the REST API
 
 The REST API is an OPEN API implemented with Swagger. For details about how
-to use it, see the [Reference Guide](REFERENCE.adoc). This secution will
-detail how to connect. Assuming you rely on the default APIKEY, this is a
-simple set of commands that connects, applies and destroys the `qa`
+to use it, see the [Reference Guide](https://github.com/gregoryguillou/terraform-deck/blob/master/docs/REFERENCE.adoc).
+This section details how to connect. Assuming you rely on the default APIKEY,
+this is a simple set of commands that connects, applies and destroys the `qa`
 workspace.
 
 ```shell
