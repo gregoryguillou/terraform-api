@@ -3,12 +3,14 @@ language: go
 go:
 - 1.10.x
 
+services:
+- docker
+
 before_install:
 - echo "Running pre-install steps"
 
 install:
-- echo "Do not install as it relies on godep"
-- go version
+- echo "Replace golang install as we rely on godep"
 
 script:
 - bin/build-cli.sh
