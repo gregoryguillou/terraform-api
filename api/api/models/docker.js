@@ -21,7 +21,6 @@ function version (callback) {
 }
 
 function command (command, config, callback) {
-
   if (!config || !config['project'] || !config['workspace'] || !config['event']) {
     callback(new Error('Cannot run docker; you need the workspace and the event id'), null)
   } else {
@@ -36,7 +35,7 @@ function command (command, config, callback) {
     }
     createoptions = {env: env}
     let args = ['-c', command, '-w', config['workspace']]
-    if (command === 'apply' && config['ref'] ) {
+    if (command === 'apply' && config['ref']) {
       args.push('-r')
       args.push(config['ref'])
     }
