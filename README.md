@@ -27,4 +27,4 @@ Try `Terraform-deck` now. Read and comment the documents below:
 
 If you have any question, open an issue or create a PR on Github. Get involved,
 read the [Code of Conduct](https://github.com/gregoryguillou/terraform-deck/blob/master/docs/CODE_OF_CONDUCT.md) and the
-[Contribution Guide](https://github.com/gregoryguillou/terraform-deck/blob/master/docs/CONTRIBUTION.md).
+[Contribution Guide](https://github.com/gregoryguillou/terraform-deck/blob/master/docs/CONTRIBUTING.md).
