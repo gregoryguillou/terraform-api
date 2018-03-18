@@ -19,7 +19,7 @@ able to use Terraform from anywhere and:
 - Manage your SaaS environments
 - Be creative...
 
-# Try Terraform-deck
+# Try it
 
 Try `Terraform-deck` now. Read and comment the documents below:
 
