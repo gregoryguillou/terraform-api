@@ -1,21 +1,22 @@
 # Terraform-deck
 
-`Terraform-deck` relies on containers to manage a set of terraform projects and 
-workspaces. Access it securely from a Command Line Interface or via the REST
-API, and:
+`Terraform-deck` helps you manage projects and workspaces from the Cloud.
+Access them securely from a command line or via a REST API. You should be
+able to use Terraform from anywhere and:
 
 - Create and destroy development, training or demonstration environments 
   on-demand.
 - Update environments on-demand from a git branch/tag
 - Build frontend applications and chatbots
-- **Reduce cost** by managing systematic destruction and time lease
-- Build temporary infrastructure for demonstration, training and manage your
-  SaaS environments
+- Destroy your environment any time. Add the associated commands in a scheduler
+  to keep your environments always clean and lean
+- Build temporary infrastructure for demonstration, training
+- Manage your SaaS environments
 - Be creative...
 
 # Try Terraform-deck
 
-Try `Terraform-deck` now. Read and comment the documents:
+Try `Terraform-deck` now. Read and comment the documents below:
 
 - [A step-by-step demonstration of Terraform-deck with Consul](docs/TUTORIAL.md)
 - [The concept guide](docs/CONCEPT.md)
