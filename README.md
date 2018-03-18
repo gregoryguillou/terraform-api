@@ -1,5 +1,5 @@
 <p align="left">
-  <a href="https://api.travis-ci.org/gregoryguillou/terraform-deck"><img src="https://api.travis-ci.org/gregoryguillou/terraform-deck.svg?branch=master" alt="Travis Build"></img></a>
+  <a href="https://travis-ci.org/gregoryguillou/terraform-deck"><img src="https://api.travis-ci.org/gregoryguillou/terraform-deck.svg?branch=master" alt="Travis Build"></img></a>
   <a href="https://hub.docker.com/r/gregoryguillou/terraform-deck"><img src="https://img.shields.io/docker/automated/gregoryguillou/terraform-deck.svg" alt="Docker Hub"></a>
 </p>
 
