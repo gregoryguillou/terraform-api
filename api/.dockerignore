@@ -1,3 +1,4 @@
+node_modules
 /config/settings.yaml
 Dokerfile
 .gitignore
