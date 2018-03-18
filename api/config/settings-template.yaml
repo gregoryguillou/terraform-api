@@ -1,7 +1,7 @@
 api:
   clone-directory: /tmp
 couchbase:
-  url: 127.0.0.1:8091
+  url: couchbase:8091
   username: admin
   password: couchbase
   data_bucket: data

@@ -5,7 +5,7 @@ const dotenv = require('dotenv')
 const containers = {
   'deck-api': {
     name: 'deck-api',
-    version: 'alpha1',
+    version: 'beta',
     path: '../api'
   },
   'deck-terraform': {
@@ -23,7 +23,7 @@ function build () {
   dotenv.config()
   process.chdir(path)
   if (container === 'deck-api') {
-    run(util.format('docker build --build-arg CACHEBUST=$(date +%s) -t %s:%s -t %s:latest .', '%s', container, container, version))
+    run(util.format('docker build --build-arg CACHEBUST=$(date +%s) -t %s:latest -t %s:%s .', '%s', container, container, version))
   } else {
     run(util.format('docker build --build-arg CACHEBUST=$(date +%s) --build-arg GITHUB_REPOSITORY=%s  --build-arg GITHUB_USERNAME=%s --build-arg GITHUB_PASSWORD=%s -t %s:latest -t %s:%s .',
       '%s', process.env.GITHUB_REPOSITORY, process.env.GITHUB_USERNAME, process.env.GITHUB_PASSWORD, container, container, version))

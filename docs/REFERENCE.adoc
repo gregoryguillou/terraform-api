@@ -1,4 +1,4 @@
-= Terraform Deck
+= Terraform-deck
 
 
 [[_overview]]
@@ -6,7 +6,7 @@
 
 === Version information
 [%hardbreaks]
-__Version__ : 0.0.1
+__Version__ : 0.1.0
 
 
 === URI scheme
@@ -53,7 +53,8 @@ __required__|Event to get.|string
 [options="header", cols=".^2,.^14,.^4"]
 |===
 |HTTP Code|Description|Schema
-|**200**|Success|<<_eventdescription,EventDescription>>
+|**200**|Success|<<_event,Event>>
+|**404**|Event Not Found|<<_errorresponse,ErrorResponse>>
 |**default**|Error|<<_errorresponse,ErrorResponse>>
 |===
 
@@ -85,7 +86,8 @@ __required__|Event to get.|string
 [options="header", cols=".^2,.^14,.^4"]
 |===
 |HTTP Code|Description|Schema
-|**200**|Success|< <<_log,Log>> > array
+|**200**|Success|<<_logs,Logs>>
+|**404**|Event Not Found|<<_errorresponse,ErrorResponse>>
 |**default**|Error|<<_errorresponse,ErrorResponse>>
 |===
 
@@ -129,7 +131,7 @@ Return a list of projects managed by the API
 [options="header", cols=".^2,.^14,.^4"]
 |===
 |HTTP Code|Description|Schema
-|**200**|Success|< <<_project,Project>> > array
+|**200**|Success|<<_projects,Projects>>
 |**default**|Error|<<_errorresponse,ErrorResponse>>
 |===
 
@@ -164,7 +166,7 @@ __required__|The action to execute|<<_project_action_action,action>>
 |===
 |Name|Schema
 |**action** +
-__required__|enum (reserve, release)
+__required__|enum (reserve, release, refresh)
 |===
 
 
@@ -236,39 +238,7 @@ __required__|Project to get events from.|string
 [options="header", cols=".^2,.^14,.^4"]
 |===
 |HTTP Code|Description|Schema
-|**200**|Success|< <<_branch,Branch>> > array
-|**default**|Error|<<_errorresponse,ErrorResponse>>
-|===
-
-
-==== Tags
-
-* main
-
-
-[[_project_events]]
-=== GET /projects/{project}/events
-
-==== Description
-Returns a list of events associated with a given project
-
-
-==== Parameters
-
-[options="header", cols=".^2,.^3,.^9,.^4"]
-|===
-|Type|Name|Description|Schema
-|**Path**|**project** +
-__required__|Project to get events from.|string
-|===
-
-
-==== Responses
-
-[options="header", cols=".^2,.^14,.^4"]
-|===
-|HTTP Code|Description|Schema
-|**200**|Success|< <<_event,Event>> > array
+|**200**|Success|<<_branches,Branches>>
 |**default**|Error|<<_errorresponse,ErrorResponse>>
 |===
 
@@ -300,7 +270,39 @@ __required__|Project to get tags from.|string
 [options="header", cols=".^2,.^14,.^4"]
 |===
 |HTTP Code|Description|Schema
-|**200**|Success|< <<_tag,Tag>> > array
+|**200**|Success|<<_tags,Tags>>
+|**default**|Error|<<_errorresponse,ErrorResponse>>
+|===
+
+
+==== Tags
+
+* main
+
+
+[[_project_workspaces]]
+=== GET /projects/{project}/workspaces
+
+==== Description
+Returns a list of tags associated with a given project
+
+
+==== Parameters
+
+[options="header", cols=".^2,.^3,.^9,.^4"]
+|===
+|Type|Name|Description|Schema
+|**Path**|**project** +
+__required__|Project to get workspaces from.|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2,.^14,.^4"]
+|===
+|HTTP Code|Description|Schema
+|**200**|Success|<<_workspaces,Workspaces>>
 |**default**|Error|<<_errorresponse,ErrorResponse>>
 |===
 
@@ -337,7 +339,9 @@ __required__|The action to execute|<<_workspace_action_action,action>>
 |===
 |Name|Schema
 |**action** +
-__required__|enum (apply, destroy)
+__required__|enum (apply, check, clean, destroy)
+|**ref** +
+__optional__|string
 |===
 
 
@@ -346,7 +350,8 @@ __required__|enum (apply, destroy)
 [options="header", cols=".^2,.^14,.^4"]
 |===
 |HTTP Code|Description|Schema
-|**201**|Created|No Content
+|**201**|Created|<<_eventdescription,EventDescription>>
+|**default**|Error|<<_errorresponse,ErrorResponse>>
 |===
 
 
@@ -389,11 +394,11 @@ __required__|Workspace to get|string
 * main
 
 
-[[_workspace_events]]
-=== GET /projects/{project}/workspaces/{workspace}/events
+[[_workspace_status]]
+=== GET /projects/{project}/workspaces/{workspace}/status
 
 ==== Description
-Returns a list of events associated with a given project/workspace
+Returns the description of a given project/workspace
 
 
 ==== Parameters
@@ -402,9 +407,9 @@ Returns a list of events associated with a given project/workspace
 |===
 |Type|Name|Description|Schema
 |**Path**|**project** +
-__required__|Project to get events from.|string
+__required__|Project to get the workspace from.|string
 |**Path**|**workspace** +
-__required__|Workspace to get events from.|string
+__required__|Workspace to get|string
 |===
 
 
@@ -413,7 +418,8 @@ __required__|Workspace to get events from.|string
 [options="header", cols=".^2,.^14,.^4"]
 |===
 |HTTP Code|Description|Schema
-|**200**|Success|< <<_event,Event>> > array
+|**200**|Success|<<_statusresponse,StatusResponse>>
+|**404**|Success|<<_statusresponse,StatusResponse>>
 |**default**|Error|<<_errorresponse,ErrorResponse>>
 |===
 
@@ -445,13 +451,45 @@ Return the username of the caller based on the JWT token
 * auth
 
 
+[[_version]]
+=== GET /version
+
+==== Description
+Return the API version
+
+
+==== Responses
+
+[options="header", cols=".^2,.^14,.^4"]
+|===
+|HTTP Code|Description|Schema
+|**200**|Success|<<_version,Version>>
+|**default**|Error|<<_errorresponse,ErrorResponse>>
+|===
+
+
+==== Tags
+
+* auth
+
+
 
 
 [[_definitions]]
 == Definitions
 
-[[_branch]]
-=== Branch
+[[_branches]]
+=== Branches
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**branches** +
+__required__|< <<_branches_branches,branches>> > array
+|===
+
+[[_branches_branches]]
+**branches**
 
 [options="header", cols=".^3,.^4"]
 |===
@@ -478,12 +516,18 @@ __required__|string
 [options="header", cols=".^3,.^4"]
 |===
 |Name|Schema
-|**description** +
+|**action** +
 __required__|string
-|**reference** +
+|**creation** +
+__required__|integer
+|**project** +
 __required__|string
-|**time** +
-__required__|string
+|**ref** +
+__optional__|string
+|**status** +
+__optional__|string
+|**workspace** +
+__optional__|string
 |===
 
 
@@ -493,7 +537,7 @@ __required__|string
 [options="header", cols=".^3,.^4"]
 |===
 |Name|Schema
-|**id** +
+|**event** +
 __required__|string
 |===
 
@@ -511,28 +555,27 @@ __required__|string
 |===
 
 
-[[_log]]
-=== Log
+[[_logs]]
+=== Logs
 
 [options="header", cols=".^3,.^4"]
 |===
 |Name|Schema
-|**message** +
-__required__|string
-|===
-
-
-[[_project]]
-=== Project
-
-[options="header", cols=".^3,.^4"]
-|===
-|Name|Schema
-|**description** +
-__optional__|string
-|**name** +
-__required__|string
+|**logs** +
+__required__|< <<_logs_logs,logs>> > array
 |**type** +
+__optional__|string
+|===
+
+[[_logs_logs]]
+**logs**
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**line** +
+__required__|integer
+|**text** +
 __required__|string
 |===
 
@@ -566,8 +609,74 @@ __optional__|string
 |===
 
 
-[[_tag]]
-=== Tag
+[[_projects]]
+=== Projects
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**projects** +
+__required__|< <<_projects_projects,projects>> > array
+|===
+
+[[_projects_projects]]
+**projects**
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**description** +
+__optional__|string
+|**name** +
+__required__|string
+|**type** +
+__required__|string
+|===
+
+
+[[_statusresponse]]
+=== StatusResponse
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**lastChecked** +
+__optional__|<<_statusresponse_lastchecked,lastChecked>>
+|**quickCheck** +
+__required__|string
+|**ref** +
+__optional__|string
+|**state** +
+__required__|string
+|===
+
+[[_statusresponse_lastchecked]]
+**lastChecked**
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**date** +
+__optional__|integer
+|**ref** +
+__optional__|string
+|**state** +
+__optional__|string
+|===
+
+
+[[_tags]]
+=== Tags
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**tags** +
+__required__|< <<_tags_tags,tags>> > array
+|===
+
+[[_tags_tags]]
+**tags**
 
 [options="header", cols=".^3,.^4"]
 |===
@@ -588,15 +697,91 @@ __required__|string
 |===
 
 
+[[_version]]
+=== Version
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**version** +
+__required__|string
+|===
+
+
 [[_workspace]]
 === Workspace
 
 [options="header", cols=".^3,.^4"]
 |===
 |Name|Schema
-|**name** +
+|**creation** +
+__optional__|integer
+|**lastChecked** +
+__optional__|<<_workspace_lastchecked,lastChecked>>
+|**lastEvents** +
+__optional__|< string > array
+|**project** +
 __required__|string
-|**status** +
+|**ref** +
+__optional__|string
+|**request** +
+__optional__|<<_workspace_request,request>>
+|**state** +
+__required__|string
+|**type** +
+__optional__|string
+|**workspace** +
+__required__|string
+|===
+
+[[_workspace_lastchecked]]
+**lastChecked**
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**date** +
+__optional__|integer
+|**ref** +
+__optional__|string
+|**state** +
+__optional__|string
+|===
+
+[[_workspace_request]]
+**request**
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**action** +
+__optional__|string
+|**date** +
+__optional__|integer
+|**event** +
+__optional__|string
+|**ref** +
+__optional__|string
+|===
+
+
+[[_workspaces]]
+=== Workspaces
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**workspaces** +
+__required__|< <<_workspaces_workspaces,workspaces>> > array
+|===
+
+[[_workspaces_workspaces]]
+**workspaces**
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**name** +
 __required__|string
 |===
 
