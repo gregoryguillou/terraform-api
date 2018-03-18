@@ -4,9 +4,11 @@ go:
 - 1.10.x
 
 before_install:
-- curl -L -s https://github.com/golang/dep/releases/download/v0.4.1/dep-linux-amd64
-  -o $GOPATH/bin/dep
-- chmod +x $GOPATH/bin/dep
+- echo "Running pre-install steps"
+
+install:
+- echo "Do not install as it relies on godep"
+- go version
 
 script:
 - bin/build-cli.sh
@@ -16,7 +18,10 @@ deploy:
   api_key:
     secure: tldhFCxZg7nyrXJwQQBtY1FFZlyPvzAG3FDQ9RjIoQOj5Xz/iJDkyjxjlai1a+ZUyHHY6NYA9vXl7je8/a/IYiu8gz9XGKK7/lbGtBGIXOWXhsD6w3TgrSzzZv3XlX+PLVRddCP0r7FxrVRSsmTgGnnJHoluDzgFSpLdrg2ASkbeC6JQb+5Cl0wGpsn6Bv+R8I3DI72L4K25PROmlRfMRfj+lRyoSrAPiAcwX1rHhyVamVQ7rumwH570liUZf5wqIph7cfauEdoXxwovOC0Z3i0wGtAqqHv7IjKHsuyWdTk2f9IwU0mwujwG61A1SRPz7pU4wE+0skg1su43xT9Mbp/PJApLcFsvcS4kn7tN+kts4VKltLp9a/zuZpIPcq+yDqkw+ScievU2wRYM9uNOu7Sd5JoLQh39QxEP+TlgJ5xtnzUt7hMyKI6oIei4Ch/q3rcXlgY3/GLsXLSUWIXMFmvKs3AaTyNyFsbM1RkSeyJYGVBNbnDiHYKEOMXr1qo62hPpKQCr5i71I85SofaUCESiwoNWvx/Y/T56ZzZf7C2Xl8UTz9ehDAwhBa6pS0FNah5nUA7HzrekLUFcLBjmTP20V+O3TkimCnyKtz3tOTnA3xwlJT26VoPmRqROIyISruWazsanzqNLME23b6U2V6z1yqSYYWIopRyrdEAgMFs=
   skip_cleanup: true
-  file: "cli/build/deck-*"
+  file: 
+    - cli/build/deck-linux-amd64
+    - cli/build/deck-darwin-amd64
+    - cli/build/deck-windows-amd64
   on:
     repo: gregoryguillou/terraform-deck
     branch: feature/travis-ci
