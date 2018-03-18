@@ -1,14 +1,16 @@
 version: '3.2'
 
 services:
-  deck-service:
-    image: deck-service:alpha1
+  deck-api:
+    image: deck-api:beta
     ports:
       - 10010:10010
     volumes:
      - /var/run/docker.sock:/var/run/docker.sock
+     - $PWD/../api/config/settings.yaml:/app/config/settings.yaml
     depends_on:
       - consul
+      - couchbase
     environment:
       SECRETORKEY: secret
       CONSUL_IP: "172.28.0.1"

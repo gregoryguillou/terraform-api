@@ -13,7 +13,7 @@ configuration very easy as explained below.
 ```shell
 cd stack
 npm install
-DECK_CONTAINER=deck-service npx run build
+DECK_CONTAINER=deck-api npx run build
 DECK_CONTAINER=deck-terraform npx run build
 ```
 
