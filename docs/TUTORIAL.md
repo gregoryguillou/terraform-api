@@ -256,7 +256,7 @@ You should then change the following:
 
 - Request a github token and replace the `password` in the git section of the project
 - Set your github username to monitor the API access to github too
-- **Important** change the JWT secretOrKey and make sure it cannot be access
+- **Important** Change the JWT secretOrKey and make sure it cannot be access
 - **Important** Change the username and apikey in the user section of the file
 - **Important** Remove the existing the username apikey from the file
 - **Important** Change the couchbase `username`, `password` and `bucket-password`
@@ -313,7 +313,8 @@ npm start
 ---
 # 6. Using `deck`
 
-## Using the CLI
+There are many ways to use `deck`. We will explore the CLI and REST API below.
+## Accessing deck with the CLI
 
 The easiest way to use deck should be from the CLI. You can build it like
 below:
@@ -342,7 +343,7 @@ deck logs -t -e ${EVENT}
 deck destroy -p demonstration -w qa
 ```
 
-## Using the REST API
+## Accessing deck using the REST API
 
 The REST API is an OPEN API implemented with Swagger. For details about how
 to use it, see the [Reference Guide](REFERENCE.adoc). This secution will
@@ -407,8 +408,13 @@ following command:
 ```shell
 cd stack
 DECK_CONTAINER=deck-api npx run build
-docker-compose up -d deck
+docker-compose up -d
 ```
+
+You should then be able to work with the CLI and the REST API from
+anywhere. Note that this is the prefered way to install `deck`. It also
+suppose you change all the passwords/keys and you configure the
+`api/config/settings.yaml` file as you should.
 
 ---
 # 8. Developing `deck` from your environment
