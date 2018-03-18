@@ -8,7 +8,9 @@ RUN curl -sL https://deb.nodesource.com/setup_9.x | bash - && \
 
 EXPOSE 10010
 
-COPY . /app/
+COPY package.json /app/
 WORKDIR /app
 RUN npm install
 CMD [ "npm", "start" ]
+
+COPY . /app/
