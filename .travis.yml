@@ -21,7 +21,8 @@ deploy:
   file: 
     - cli/build/deck-linux-amd64
     - cli/build/deck-darwin-amd64
-    - cli/build/deck-windows-amd64
+    - cli/build/deck-windows-amd64.exe
   on:
     repo: gregoryguillou/terraform-deck
-    branch: feature/travis-ci
+    branch: master
+    tags: true
