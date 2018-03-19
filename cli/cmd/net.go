@@ -72,12 +72,12 @@ func post(url string, payload map[string]string) (map[string]interface{}, error)
 
 	jsonPayload, _ := json.Marshal(payload)
 	req, err := http.NewRequest("POST",
-		fmt.Sprintf("%s%s", cfg.endpoint, url), 
+		fmt.Sprintf("%s%s", cfg.endpoint, url),
 		bytes.NewReader(jsonPayload))
-		if err != nil {
-			panic(err)
-		}
-	
+	if err != nil {
+		panic(err)
+	}
+
 	var dat map[string]interface{}
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Accept", "application/json")

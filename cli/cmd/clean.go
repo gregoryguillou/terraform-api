@@ -11,7 +11,7 @@ import (
 var cleanCmd = &cobra.Command{
 	Use:   "clean",
 	Short: "Cleans a workspace",
-	Long: `Cleans a workspace, when one of the previous apply or 
+	Long: `Cleans a workspace, when one of the previous apply or
 	destroy has failed and its state remains pending to avoid
 	concurrent access.
 	`,
