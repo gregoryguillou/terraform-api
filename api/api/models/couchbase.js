@@ -71,21 +71,24 @@ function checkEventLogs (callback) {
     }
   }, (err, result) => {
     if (err) {
-      callback(err, null)
-    } else {
-      let log = { }
-      log['logs:00000000-0000-0000-0000-000000000000'] = {logs: [{ line: 1, text: 'output log: line 1' }, { line: 2, text: 'output log: line 2' }], type: 'logs'}
-      logs.upsert(
-        log,
-        (err, result) => {
-          if (err) {
-            callback(err, null)
-          } else {
-            callback(null, null)
-          }
-        }
-      )
+      return callback(err, null)
     }
+    const log = {
+      'logs:00000000-0000-0000-0000-000000000000': {
+        logs: [
+          { line: 1, text: 'output log: line 1' },
+          { line: 2, text: 'output log: line 2' }
+        ],
+        type: 'logs'
+      }
+    }
+    logs.upsert(log, (err, result) => {
+      if (err) {
+        return callback(err, null)
+      }
+      callback(null, null)
+    }
+    )
   })
 }
 
@@ -132,8 +135,9 @@ function actionWorkspace (workspace, request, callback) {
 
   bucket.get(key, function (err, data) {
     if (err) {
-      callback(err, null)
-    } else if (!data || !data[key]) {
+      return callback(err, null)
+    }
+    if (!data || !data[key]) {
       let payload = {}
       payload[key] = {
         type: 'workspace',
@@ -142,9 +146,9 @@ function actionWorkspace (workspace, request, callback) {
         state: 'new',
         creation: eventDate,
         request: {
-          date: eventDate,
+          event,
           action: request['action'],
-          event: event
+          date: eventDate
         },
         lastEvents: [ event ]
       }
@@ -155,15 +159,14 @@ function actionWorkspace (workspace, request, callback) {
 
       bucket.insert(payload, (err, cas, existing) => {
         if (err) {
-          callback(err, null)
-        } else {
-          bucket.upsert(eventPayload, (err, data) => {
-            if (err) {
-              logger.error('Error inserting the following key in bucket', eventPayload)
-            }
-          })
-          callback(null, payload)
+          return callback(err, null)
         }
+        bucket.upsert(eventPayload, (err, data) => {
+          if (err) {
+            logger.error('Error inserting the following key in bucket', eventPayload)
+          }
+        })
+        callback(null, payload)
       })
     } else if (data[key] && data[key]['request'] && data[key]['request']['action']) {
       const pendingAction = new ActionError(409, 'There is already one pending action on the workspace')
@@ -187,15 +190,14 @@ function actionWorkspace (workspace, request, callback) {
       }
       bucket.upsert(payload, (err, data) => {
         if (err) {
-          callback(err, null)
-        } else {
-          bucket.upsert(eventPayload, (err, data) => {
-            if (err) {
-              logger.error('Error inserting the following key in bucket', eventPayload)
-            }
-          })
-          callback(null, payload)
+          return callback(err, null)
         }
+        bucket.upsert(eventPayload, (err, data) => {
+          if (err) {
+            logger.error('Error inserting the following key in bucket', eventPayload)
+          }
+        })
+        callback(null, payload)
       })
     }
   })
@@ -209,10 +211,9 @@ function deleteWorkspace (workspace, callback) {
   const key = `ws:${workspace['project']}:${workspace['workspace']}`
   bucket.remove(key, (err, cas, misses) => {
     if (err) {
-      callback(err, null)
-    } else {
-      callback(null, null)
+      return callback(err, null)
     }
+    callback(null, null)
   })
 }
 
@@ -220,12 +221,12 @@ function showEvent (event, callback) {
   const key = `evt:${event}`
   bucket.get(key, (err, results, cas, misses) => {
     if (err) {
-      callback(err, null)
-    } else if (results && results[key]) {
-      callback(null, results[key])
-    } else {
-      callback(null, null)
+      return callback(err, null)
     }
+    if (results && results[key]) {
+      return callback(null, results[key])
+    }
+    callback(null, null)
   })
 }
 
@@ -233,12 +234,12 @@ function showLogs (event, callback) {
   const key = `logs:${event}`
   logs.get(key, (err, results, cas, misses) => {
     if (err) {
-      callback(err, null)
-    } else if (results && results[key]) {
-      callback(null, results[key])
-    } else {
-      callback(null, null)
+      return callback(err, null)
     }
+    if (results && results[key]) {
+      return callback(null, results[key])
+    }
+    callback(null, null)
   })
 }
 
@@ -277,149 +278,150 @@ function feedWorkspace (workspace, result, callback) {
   const key = `ws:${workspace['project']}:${workspace['workspace']}`
   bucket.get(key, function (err, data) {
     if (err) {
-      callback(err, null)
-    } else if (data && data[key]) {
-      logger.info(`${workspace['project']}:${workspace['workspace']}[${data[key]['lastEvents'][0]}] returns (${(data[key].request ? data[key].request.action : 'undefined')}->${result.status})`)
-      let payload = data
-      let request = { }
-      if (payload[key].request) {
-        request = {
-          action: payload[key].request.action,
-          ref: (payload[key].request.ref ? payload[key].request.ref : (payload[key].ref ? payload[key].ref : 'unknown')),
-          event: payload[key].request.event
-        }
-        delete payload[key].request
+      return callback(err, null)
+    }
+    if (!data && !data[key]) {
+      logger.error(`ERROR: Cannot find workspace ${key}`)
+      return callback(null, null)
+    }
+    logger.info(`${workspace['project']}:${workspace['workspace']}[${data[key]['lastEvents'][0]}] returns (${(data[key].request ? data[key].request.action : 'undefined')}->${result.status})`)
+    let payload = data
+    let request = { }
+    if (payload[key].request) {
+      request = {
+        action: payload[key].request.action,
+        ref: (payload[key].request.ref ? payload[key].request.ref : (payload[key].ref ? payload[key].ref : 'unknown')),
+        event: payload[key].request.event
       }
-      switch (result.status) {
-        case 'clean':
+      delete payload[key].request
+    }
+    switch (result.status) {
+      case 'clean':
+        payload[key]['lastChecked'] = {
+          date: Date.now(),
+          state: 'cleaned'
+        }
+        break
+      case 'differ':
+        if (request.action === 'check') {
           payload[key]['lastChecked'] = {
             date: Date.now(),
-            state: 'cleaned'
+            state: 'differs',
+            ref: request.ref
           }
-          break
-        case 'differ':
-          if (request.action === 'check') {
-            payload[key]['lastChecked'] = {
-              date: Date.now(),
-              state: 'differs',
-              ref: request.ref
-            }
-          } else {
-            logger.error(`${workspace['project']}:${workspace['workspace']} should not differ with action = ${request.action}`)
-            payload[key]['lastChecked'] = {
-              date: Date.now(),
-              state: (result.status === 'error'),
-              ref: request.ref
-            }
-          }
-          break
-        case 'succeed':
-          switch (request.action) {
-            case 'apply':
-              payload[key]['lastChecked'] = {
-                date: Date.now(),
-                state: 'applied',
-                ref: request.ref
-              }
-              payload[key].state = 'applied'
-              break
-            case 'destroy':
-              payload[key]['lastChecked'] = {
-                date: Date.now(),
-                state: 'destroyed',
-                ref: request.ref
-              }
-              payload[key].state = 'destroyed'
-              break
-            case 'check':
-              payload[key]['lastChecked'] = {
-                date: Date.now(),
-                state: 'checked',
-                ref: request.ref
-              }
-              break
-            default:
-              logger.error(`${workspace['project']}:${workspace['workspace']} error with (${request.action}->${result.status})`)
-              break
-          }
-          break
-        case 'fail':
-          switch (request.action) {
-            case 'apply':
-              payload[key]['lastChecked'] = {
-                date: Date.now(),
-                state: 'failed',
-                ref: request.ref
-              }
-              payload[key].state = 'apply - failed'
-              logger.info(`${workspace['project']}:${workspace['workspace']}, action = ${request.action} failed'`)
-              break
-            case 'destroy':
-              payload[key]['lastChecked'] = {
-                date: Date.now(),
-                state: 'failed',
-                ref: request.ref
-              }
-              payload[key].state = 'destroy - failed'
-              logger.info(`${workspace['project']}:${workspace['workspace']}, action = ${request.action} destroyed'`)
-              break
-            case 'check':
-              payload[key]['lastChecked'] = {
-                date: Date.now(),
-                state: 'failed',
-                ref: request.ref
-              }
-              logger.info(`${workspace['project']}:${workspace['workspace']}, action = ${request.action} checked'`)
-              break
-            default:
-              logger.info(`${workspace['project']}:${workspace['workspace']}, action = ${request.action} should not be managed'`)
-              break
-          }
-          break
-        default:
-          logger.error(`Sorry, we are out of range action = ${request.action} ; result = ${result.status}`)
-          break
-      }
-      bucket.upsert(payload, (err, data) => {
-        if (err) callback(err, null)
-        else if (result.status !== 'clean') {
-          const evtkey = `evt:${request.event}`
-          bucket.get(evtkey, (err, data) => {
-            if (err) callback(err, null)
-            else {
-              let event = data
-              event[evtkey].status = (result.status === 'succeed' ? 'succeeded'
-                : (result.status === 'fail' ? 'failed' : result.status)
-              )
-              event[evtkey].end = Date.now()
-              bucket.upsert(event, (err, data) => {
-                if (err) callback(err, null)
-                else {
-                  callback(null, payload)
-                }
-              })
-            }
-          })
         } else {
-          callback(null, payload)
+          logger.error(`${workspace['project']}:${workspace['workspace']} should not differ with action = ${request.action}`)
+          payload[key]['lastChecked'] = {
+            date: Date.now(),
+            state: (result.status === 'error'),
+            ref: request.ref
+          }
+        }
+        break
+      case 'succeed':
+        switch (request.action) {
+          case 'apply':
+            payload[key]['lastChecked'] = {
+              date: Date.now(),
+              state: 'applied',
+              ref: request.ref
+            }
+            payload[key].state = 'applied'
+            break
+          case 'destroy':
+            payload[key]['lastChecked'] = {
+              date: Date.now(),
+              state: 'destroyed',
+              ref: request.ref
+            }
+            payload[key].state = 'destroyed'
+            break
+          case 'check':
+            payload[key]['lastChecked'] = {
+              date: Date.now(),
+              state: 'checked',
+              ref: request.ref
+            }
+            break
+          default:
+            logger.error(`${workspace['project']}:${workspace['workspace']} error with (${request.action}->${result.status})`)
+            break
+        }
+        break
+      case 'fail':
+        switch (request.action) {
+          case 'apply':
+            payload[key]['lastChecked'] = {
+              date: Date.now(),
+              state: 'failed',
+              ref: request.ref
+            }
+            payload[key].state = 'apply - failed'
+            logger.info(`${workspace['project']}:${workspace['workspace']}, action = ${request.action} failed'`)
+            break
+          case 'destroy':
+            payload[key]['lastChecked'] = {
+              date: Date.now(),
+              state: 'failed',
+              ref: request.ref
+            }
+            payload[key].state = 'destroy - failed'
+            logger.info(`${workspace['project']}:${workspace['workspace']}, action = ${request.action} destroyed'`)
+            break
+          case 'check':
+            payload[key]['lastChecked'] = {
+              date: Date.now(),
+              state: 'failed',
+              ref: request.ref
+            }
+            logger.info(`${workspace['project']}:${workspace['workspace']}, action = ${request.action} checked'`)
+            break
+          default:
+            logger.info(`${workspace['project']}:${workspace['workspace']}, action = ${request.action} should not be managed'`)
+            break
+        }
+        break
+      default:
+        logger.error(`Sorry, we are out of range action = ${request.action} ; result = ${result.status}`)
+        break
+    }
+    bucket.upsert(payload, (err, data) => {
+      if (err) {
+        return callback(err, null)
+      }
+      if (result.status === 'clean') {
+        return callback(null, payload)
+      }
+      const evtkey = `evt:${request.event}`
+      bucket.get(evtkey, (err, data) => {
+        if (err) callback(err, null)
+        else {
+          let event = data
+          event[evtkey].status = (result.status === 'succeed' ? 'succeeded'
+            : (result.status === 'fail' ? 'failed' : result.status)
+          )
+          event[evtkey].end = Date.now()
+          bucket.upsert(event, (err, data) => {
+            if (err) {
+              return callback(err, null)
+            }
+            callback(null, payload)
+          })
         }
       })
-    } else {
-      logger.error(`ERROR: Cannot find workspace ${key}`)
-      callback(null, null)
-    }
+    })
   })
 }
 
 module.exports = {
-  EchoStream: EchoStream,
-  checkConnectivity: checkConnectivity,
-  checkEventLogs: checkEventLogs,
-  ActionError: ActionError,
-  actionWorkspace: actionWorkspace,
-  feedWorkspace: feedWorkspace,
-  deleteWorkspace: deleteWorkspace,
-  showEvent: showEvent,
-  showLogs: showLogs,
-  showWorkspace: showWorkspace
+  ActionError,
+  actionWorkspace,
+  checkConnectivity,
+  checkEventLogs,
+  deleteWorkspace,
+  EchoStream,
+  feedWorkspace,
+  showEvent,
+  showLogs,
+  showWorkspace
 }

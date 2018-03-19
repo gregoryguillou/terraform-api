@@ -11,11 +11,9 @@ let startoptions = {}
 
 function version (callback) {
   const stdout = new EchoStream('version')
-  docker.run('deck-terraform', ['-v'], stdout, createoptions, startoptions, function (err, data, container) {
-    if (!err) {
-      callback(null, data)
-    } else {
-      callback(err, data)
+  docker.run('deck-terraform', ['-v'], stdout, createoptions, startoptions, (err, data) => {
+    if (err) {
+      return callback(err, data)
     }
   })
 }

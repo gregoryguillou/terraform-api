@@ -6,10 +6,10 @@ const fs = require('fs')
 const logger = require('./logger')
 
 function update (project, callback) {
-  let gitProps = project['git']
-  const localProject = '/tmp/' + project['name']
+  let gitProps = project.git
+  const localProject = '/tmp/' + project.name
   let remote = ''
-  if (gitProps['login']) {
+  if (gitProps.login) {
     remote = util.format('https://%s:%s@%s', gitProps['login'], gitProps['password'], gitProps['repository'])
   } else {
     remote = util.format('https://%s', gitProps['repository'])
@@ -26,55 +26,48 @@ function update (project, callback) {
       .catch((err) => logger.error(util.format('Error cloning https://%s:\n', gitProps['repository']), err))
   } else {
     logger.info('Start updating https://%s...', gitProps['repository'])
-    git(localProject)
-      .fetch(
-        remote,
-        'master',
-        { '--prune': null, '--tags': null }
-      )
+    git(localProject).fetch(remote, 'master', { '--prune': null, '--tags': null })
       .then(() => {
         logger.info('Finish updating https://%s with success!', gitProps['repository'])
         callback()
       })
-      .catch((err) => logger.error(util.format('Error cloning https://%s:\n', gitProps['repository']), err))
+      .catch(err => {
+        logger.error(util.format('Error cloning https://%s:\n', gitProps['repository']), err)
+      })
   }
 }
 
 function updateAll (callback) {
   let nbProjects = projects.length
   for (var i = 0, size = projects.length; i < size; i++) {
-    update(
-      projects[i],
-      () => {
-        nbProjects--
-        if (nbProjects === 0) {
-          callback()
-        }
+    update(projects[i], () => {
+      nbProjects--
+      if (nbProjects === 0) {
+        callback()
       }
-    )
+    })
   }
 }
 
 function getTags (project, callback) {
-  const localProject = '/tmp/' + project['name']
-  require('simple-git')(localProject)
-    .tags((err, tags) => {
-      if (!err) {
-        callback(tags['all'])
-      }
-    })
+  const localProject = '/tmp/' + project.name
+  require('simple-git')(localProject).tags((err, tags) => {
+    if (!err) {
+      callback(tags.all)
+    }
+  })
 }
 
 function getBranches (project, callback) {
-  const localProject = '/tmp/' + project['name']
+  const localProject = '/tmp/' + project.name
   require('simple-git')(localProject)
     .branch((err, branches) => {
       let list = []
       if (!err) {
         const re = /remotes\/origin\//
-        for (var i = 0, size = branches['all'].length; i < size; i++) {
-          if (branches['all'][i].match(re)) {
-            list.push(branches['all'][i].replace(/remotes\/origin\/(.*)/, '$1'))
+        for (var i = 0, size = branches.all.length; i < size; i++) {
+          if (branches.all[i].match(re)) {
+            list.push(branches.all[i].replace(/remotes\/origin\/(.*)/, '$1'))
           }
         }
         callback(list)
@@ -83,7 +76,7 @@ function getBranches (project, callback) {
 }
 
 module.exports = {
-  getBranches: getBranches,
-  getTags: getTags,
-  updateAll: updateAll
+  getBranches,
+  getTags,
+  updateAll
 }
