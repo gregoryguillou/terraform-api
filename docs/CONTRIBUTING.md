@@ -53,11 +53,15 @@ to be prapare before you roll out a new tag; some are
 
 - Add the version tag in `docker-compose.yml`
 - Change the version in the `settings-template.yaml`
-
+- Change the version in package.json
+- change the version in swagger.yaml
 ### After you deploy the version
 
-- Make sure deployment works with 
+Make sure deployment works with docker compose by running the following
+command and testing on it.
 
 ```shell
-
+cd stack
+docker-compose up -d
 ```
+
