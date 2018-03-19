@@ -54,7 +54,8 @@ func get(url string, display bool) (map[string]interface{}, error) {
 			fmt.Println(string(s))
 		}
 		return dat, nil
-	}
+	} 
+	fmt.Println(string(data))
 	return nil, nil
 }
 
@@ -105,5 +106,6 @@ func post(url string, payload map[string]string) (map[string]interface{}, error)
 		fmt.Println(string(s))
 		return dat, nil
 	}
+	fmt.Println(string(data))
 	return nil, nil
 }

@@ -1,5 +1,6 @@
 const couchbase = require('couchbase')
 const couchnode = require('couchnode')
+const process = require('process')
 const stream = require('stream')
 const YAML = require('yamljs')
 const couchparam = YAML.load('config/settings.yaml').couchbase
@@ -7,10 +8,20 @@ const projects = YAML.load('config/settings.yaml').projects
 const uuidv4 = require('uuid/v4')
 const logger = require('./logger')
 
-const cluster = new couchbase.Cluster(couchparam.url)
-cluster.authenticate(couchparam.username, couchparam.password)
-const bucket = couchnode.wrap(cluster.openBucket(couchparam.data_bucket, couchparam['bucket-password']))
-const logs = couchnode.wrap(cluster.openBucket(couchparam.log_bucket, couchparam['bucket-password']))
+const cluster = new couchbase.Cluster(couchparam['url'])
+cluster.authenticate(couchparam['username'], couchparam['password'])
+const bucket = couchnode.wrap(cluster.openBucket(couchparam['data_bucket'], couchparam['bucket-password'], (err) => {
+  if (err) {
+    logger.fatal('Cannot open couchbase bucket for data')
+    process.exit(1)
+  }
+}))
+const logs = couchnode.wrap(cluster.openBucket(couchparam['log_bucket'], couchparam['bucket-password'], (err) => {
+  if (err) {
+    logger.fatal('Cannot open couchbase bucket for logs')
+    process.exit(1)
+  }
+}))
 
 const lastCheckedRequest = (state, request) => {
   const date = Date.now()
@@ -247,7 +258,10 @@ function showLogs (event, callback) {
 function showWorkspace (workspace, callback) {
   const key = `ws:${workspace.project}:${workspace.workspace}`
   const eventDate = Date.now()
+  console.log('this is an error 1')
+
   bucket.get(key, (err, results, cas, misses) => {
+    console.log('this is an error 2')
     if (err) {
       return callback(err)
     }
