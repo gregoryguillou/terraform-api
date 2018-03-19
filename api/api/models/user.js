@@ -16,10 +16,9 @@ function findByAPIKey (key, callback) {
 // TODO return an error, or just one argument
 function findByToken (payload, callback) {
   if (payload.username) {
-    callback(null, {username: payload.username})
-  } else {
-    callback()
+    return callback(null, {username: payload.username})
   }
+  callback()
 }
 
 module.exports = {

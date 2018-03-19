@@ -282,7 +282,7 @@ function feedWorkspace (workspace, result, callback) {
     if (err) {
       return callback(err, null)
     }
-    if (!data && !data[key]) {
+    if (!data || !data[key]) {
       logger.error(`ERROR: Cannot find workspace ${key}`)
       return callback()
     }
@@ -362,20 +362,19 @@ function feedWorkspace (workspace, result, callback) {
       }
       const evtkey = `evt:${request.event}`
       bucket.get(evtkey, (err, data) => {
-        if (err) callback(err, null)
-        else {
-          let event = data
-          event[evtkey].status = (result.status === 'succeed' ? 'succeeded'
-            : (result.status === 'fail' ? 'failed' : result.status)
-          )
-          event[evtkey].end = Date.now()
-          bucket.upsert(event, (err, data) => {
-            if (err) {
-              return callback(err, null)
-            }
-            callback(null, payload)
-          })
+        if (err) {
+          return callback(err, null)
         }
+        let event = data
+        event[evtkey].status = result.status === 'succeed' ? 'succeeded'
+          : (result.status === 'fail' ? 'failed' : result.status)
+        event[evtkey].end = Date.now()
+        bucket.upsert(event, (err, data) => {
+          if (err) {
+            return callback(err, null)
+          }
+          callback(null, payload)
+        })
       })
     })
   })

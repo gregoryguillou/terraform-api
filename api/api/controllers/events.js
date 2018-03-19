@@ -4,15 +4,15 @@ const { showEvent, showLogs } = require('../models/couchbase')
 function describe (req, res) {
   var pevent = req.swagger.params.event.value
   showEvent(pevent, (err, data) => {
-    let payload = data
     if (err) {
-      res.status(500).json({message: 'Exception occured'})
-    } else if (data) {
-      delete payload.type
-      res.json(payload)
-    } else {
-      res.status(404).json({message: `Event ${pevent} not found`})
+      return res.status(500).json({message: 'Exception occured'})
     }
+    if (data) {
+      let payload = data
+      delete payload.type
+      return res.json(payload)
+    }
+    res.status(404).json({message: `Event ${pevent} not found`})
   })
 }
 
@@ -20,12 +20,12 @@ function logs (req, res) {
   var pevent = req.swagger.params.event.value
   showLogs(pevent, (err, data) => {
     if (err) {
-      res.status(500).json({message: 'Exception occured'})
-    } else if (data) {
-      res.json(data)
-    } else {
-      res.status(404).json({message: `Logs for ${pevent} not found`})
+      return res.status(500).json({message: 'Exception occured'})
     }
+    if (data) {
+      return res.json(data)
+    }
+    res.status(404).json({message: `Logs for ${pevent} not found`})
   })
 }
 

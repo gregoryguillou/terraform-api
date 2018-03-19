@@ -8,45 +8,43 @@ const logger = require('./logger')
 function update (project, callback) {
   let gitProps = project.git
   const localProject = '/tmp/' + project.name
-  let remote = ''
+  let remote
   if (gitProps.login) {
-    remote = util.format('https://%s:%s@%s', gitProps['login'], gitProps['password'], gitProps['repository'])
+    remote = util.format('https://%s:%s@%s', gitProps.login, gitProps.password, gitProps.repository)
   } else {
-    remote = util.format('https://%s', gitProps['repository'])
+    remote = util.format('https://%s', gitProps.repository)
   }
 
   if (!fs.existsSync(localProject)) {
-    logger.info('Start cloning https://%s...', gitProps['repository'])
-    git().silent(true)
-      .clone(remote, localProject)
+    logger.info('Start cloning https://%s...', gitProps.repository)
+    return git().silent(true).clone(remote, localProject)
       .then(() => {
-        logger.info('Finish cloning https://%s with success!', gitProps['repository'])
+        logger.info('Finish cloning https://%s with success!', gitProps.repository)
         callback()
       })
-      .catch((err) => logger.error(util.format('Error cloning https://%s:\n', gitProps['repository']), err))
-  } else {
-    logger.info('Start updating https://%s...', gitProps['repository'])
-    git(localProject).fetch(remote, 'master', { '--prune': null, '--tags': null })
-      .then(() => {
-        logger.info('Finish updating https://%s with success!', gitProps['repository'])
-        callback()
-      })
-      .catch(err => {
-        logger.error(util.format('Error cloning https://%s:\n', gitProps['repository']), err)
+      .catch((err) => {
+        logger.error(util.format('Error cloning https://%s:\n', gitProps.repository), err)
       })
   }
+  logger.info('Start updating https://%s...', gitProps.repository)
+  git(localProject).fetch(remote, 'master', { '--prune': null, '--tags': null })
+    .then(() => {
+      logger.info('Finish updating https://%s with success!', gitProps.repository)
+      callback()
+    })
+    .catch(err => {
+      logger.error(util.format('Error cloning https://%s:\n', gitProps['repository']), err)
+    })
 }
 
 function updateAll (callback) {
-  let nbProjects = projects.length
-  for (var i = 0, size = projects.length; i < size; i++) {
-    update(projects[i], () => {
-      nbProjects--
-      if (nbProjects === 0) {
+  projects.forEach((project, index, array) => {
+    update(project, () => {
+      if (index === array.length) {
         callback()
       }
     })
-  }
+  })
 }
 
 function getTags (project, callback) {
@@ -60,19 +58,18 @@ function getTags (project, callback) {
 
 function getBranches (project, callback) {
   const localProject = '/tmp/' + project.name
-  require('simple-git')(localProject)
-    .branch((err, branches) => {
-      if (err) {
-        return // TODO have a callback?
+  require('simple-git')(localProject).branch((err, branches) => {
+    if (err) {
+      return // TODO have a callback?
+    }
+    const re = /remotes\/origin\//
+    callback(branches.all.reduce((list, e) => {
+      if (e.match(re)) {
+        list.push(e.replace(/remotes\/origin\/(.*)/, '$1'))
       }
-      const re = /remotes\/origin\//
-      callback(branches.all.reduce((list, e) => {
-        if (e.match(re)) {
-          list.push(e.replace(/remotes\/origin\/(.*)/, '$1'))
-        }
-        return list
-      }, []))
-    })
+      return list
+    }, []))
+  })
 }
 
 module.exports = {

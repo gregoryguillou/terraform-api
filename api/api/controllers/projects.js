@@ -1,110 +1,79 @@
 'use strict'
 
-const util = require('util')
 const YAML = require('yamljs')
 const projects = YAML.load('config/settings.yaml')['projects']
 const { getTags, getBranches } = require('../models/git')
 
 function action (req, res) {
-  var pproject = req.swagger.params.project.value
-  let project = {}
-  for (var i = 0, size = projects.length; i < size; i++) {
-    if (projects[i].name === pproject) {
-      project = {name: projects[i].name}
-    }
+  const name = req.swagger.params.project.value
+  const project = projects.find(p => project.name === name)
+  if (!project) {
+    return res.status(404).json({message: `Project ${name} not found`})
   }
-  if (project.name) {
-    res.status(201).json()
-  } else {
-    res.status(404).json({message: util.format('Project {%s} not found', pproject)})
-  }
+  res.status(201).json()
 }
 
 function branches (req, res) {
-  var pproject = req.swagger.params.project.value
-  for (var i = 0, size = projects.length; i < size; i++) {
-    if (projects[i].name === pproject) {
-      getBranches(
-        {name: pproject},
-        (branches) => {
-          let list = []
-          for (let j = 0, wsize = branches.length; j < wsize; j++) {
-            list.push({name: branches[j]})
-          }
-          if (list.length > 0) {
-            res.json({branches: list})
-          } else {
-            res.status(400).json({message: util.format('No branch found for {%s}', pproject)})
-          }
-        }
-      )
-    }
+  const name = req.swagger.params.project.value
+  const project = projects.find(p => project.name === name)
+  if (!project) {
+    return res.status(404).json({message: `Project ${name} not found`})
   }
+  getBranches({name}, branches => {
+    if (branches.length) {
+      return res.json({branches: branches.map(name => ({name}))})
+    }
+    res.status(400).json({message: `No branch found for ${name}`})
+  })
 }
 
 function describe (req, res) {
-  var pproject = req.swagger.params.project.value
-  let project = {}
-  for (var i = 0, size = projects.length; i < size; i++) {
-    if (projects[i].name === pproject) {
-      project = {type: projects[i].type, name: projects[i].name, description: projects[i].description, workspaces: []}
-      for (var j = 0, wsize = projects[i].workspaces.length; j < wsize; j++) {
-        project['workspaces'].push({name: projects[i].workspaces[j], status: 'stopped'})
-      }
-    }
+  const name = req.swagger.params.project.value
+  const project = projects.find(p => project.name === name)
+  if (!project) {
+    return res.status(404).json({message: `Project ${name} not found`})
   }
-  if (project.name) {
-    res.json(project)
-  } else {
-    res.status(404).json({message: util.format('Project {%s} not found', pproject)})
+  const p = {
+    description: project.description,
+    name: project.name,
+    type: project.type,
+    workspaces: project.workspaces.map(name => ({ name, status: 'stopped' }))
   }
+  return res.json(p)
 }
 
 function list (req, res) {
-  let output = []
-  for (var i = 0, size = projects.length; i < size; i++) {
-    output.push({type: projects[i].type, name: projects[i].name, description: projects[i].description})
-  }
-  res.json({projects: output})
+  res.json({projects: projects.map(p => ({
+    description: p.description,
+    name: p.name,
+    type: p.type
+  }))})
 }
 
 function tags (req, res) {
-  var pproject = req.swagger.params.project.value
-  for (var i = 0, size = projects.length; i < size; i++) {
-    if (projects[i].name === pproject) {
-      getTags(
-        {name: pproject},
-        (tags) => {
-          let list = []
-          for (let j = 0, wsize = tags.length; j < wsize; j++) {
-            list.push({name: tags[j]})
-          }
-          if (list.length > 0) {
-            res.json({tags: list})
-          } else {
-            res.status(404).json({message: util.format('No tag found for {%s}', pproject)})
-          }
-        }
-      )
-    }
+  const name = req.swagger.params.project.value
+  const project = projects.find(p => project.name === name)
+  if (!project) {
+    return res.status(404).json({message: `Project ${name} not found`})
   }
+  getTags({name}, tags => {
+    if (tags.length) {
+      return res.json({tags: tags.map(name => ({name}))})
+    }
+    res.status(404).json({message: `No tag found for ${name}`})
+  })
 }
 
 function workspaces (req, res) {
-  var pproject = req.swagger.params.project.value
-  for (var i = 0, size = projects.length; i < size; i++) {
-    if (projects[i].name === pproject) {
-      let list = []
-      for (var j = 0, wsize = projects[i].workspaces.length; j < wsize; j++) {
-        list.push({name: projects[i].workspaces[j]})
-      }
-      if (list.length > 0) {
-        res.json({workspaces: list})
-      } else {
-        res.status(404).json({message: util.format('No workspaces found for {%s}', pproject)})
-      }
-    }
+  const name = req.swagger.params.project.value
+  const project = projects.find(p => project.name === name)
+  if (!project) {
+    return res.status(404).json({message: `Project ${name} not found`})
   }
+  if (project.workspaces.length) {
+    return res.json({workspaces: project.workspaces.map(name => ({name}))})
+  }
+  res.status(404).json({message: `No workspaces found for ${name}`})
 }
 
 module.exports = {
