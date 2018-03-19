@@ -1,15 +1,17 @@
 /* eslint-env mocha */
 
 const should = require('should')
-const { checkConnectivity, actionWorkspace, deleteWorkspace, feedWorkspace } = require('../../../api/models/couchbase')
+const { checkConnectivity, actionWorkspace, deleteWorkspace, feedWorkspace, testConnection } = require('../../../api/models/couchbase')
 
 describe('models', () => {
   describe('couchbase', function () {
     it('Test connectivity to Couchbase', (done) => {
-      checkConnectivity((err, data) => {
-        should.not.exist(err)
-        should(data).containEql({'tst:1': { status: 'OK' }})
-        done()
+      testConnection(60, () => {
+        checkConnectivity((err, data) => {
+          should.not.exist(err)
+          should(data).containEql({'tst:1': { status: 'OK' }})
+          done()
+        })
       })
     })
 

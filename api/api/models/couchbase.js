@@ -29,20 +29,21 @@ function testConnection (i, callback) {
             }
             process.exit(1)
           }
-          bucket = couchnode.wrap(cluster.openBucket(couchparam['data_bucket'], couchparam['bucket-password'], (err) => {
+          logs = couchnode.wrap(cluster.openBucket(couchparam['log_bucket'], couchparam['bucket-password'], (err) => {
             if (err) {
               logger.fatal('Cannot open couchbase bucket for data')
               process.exit(1)
+            } else {
+              bucket = couchnode.wrap(cluster.openBucket(couchparam['data_bucket'], couchparam['bucket-password'], (err) => {
+                if (err) {
+                  logger.fatal('Cannot open couchbase bucket for data')
+                  process.exit(1)
+                } else {
+                  callback()
+                }
+              }))
             }
           }))
-          bucket = couchnode.wrap(cluster.openBucket(couchparam['log_bucket'], couchparam['bucket-password'], (err) => {
-            if (err) {
-              logger.fatal('Cannot open couchbase bucket for data')
-              process.exit(1)
-            }
-          }))
-
-          callback()
         }
       )
     },
