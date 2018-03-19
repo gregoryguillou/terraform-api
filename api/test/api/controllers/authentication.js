@@ -11,17 +11,17 @@ describe('controllers', function () {
     before((done) => {
       server.on('apiStarted', () => {
         request(server)
-        .get('/login')
-        .set('Accept', 'application/json')
-        .set('Authorization', 'Key bm9wcXJzdHV2d3h5ego=')
-        .expect('Content-Type', /json/)
-        .expect(200)
-        .end((err, res) => {
-          should.not.exist(err)
-          token = 'Bearer ' + res.body['token']
-          res.body.should.containEql({message: 'Authenticated'})
-          done()
-        })
+          .get('/login')
+          .set('Accept', 'application/json')
+          .set('Authorization', 'Key notsosecretadminkey')
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end((err, res) => {
+            should.not.exist(err)
+            token = 'Bearer ' + res.body['token']
+            res.body.should.containEql({message: 'Authenticated'})
+            done()
+          })
       })
     })
 
@@ -30,7 +30,7 @@ describe('controllers', function () {
         request(server)
           .get('/login')
           .set('Accept', 'application/json')
-          .set('Authorization', 'Key bm9wcXJzdHV2d3h5ego=')
+          .set('Authorization', 'Key notsosecretadminkey')
           .expect('Content-Type', /json/)
           .expect(200)
           .end((err, res) => {

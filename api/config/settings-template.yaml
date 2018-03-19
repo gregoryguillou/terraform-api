@@ -17,12 +17,12 @@ projects:
   - type: terraform
     name: demonstration
     description: A demonstration project that relies on Terraform/Consul
-    docker-image: "deck-terraform:alpha1"
+    docker-image: "deck-terraform:v0.1.3-demo"
     git:
       repository: github.com/gregoryguillou/terraform-deck.git
       branch: master
-      username: gregoryguillou
-      password: "1234567880"
+      username: username
+      password: "password"
       directory: /demo/terraform/starter
     workspaces:
       - staging
@@ -50,8 +50,8 @@ projects:
       - AWS_PROFILE={{env.DEMONSTRATION__AWS_PROFILE}}
 users:
   - username: 'gregory'
-    apikey: 'bm9wcXJzdHV2d3h5ego='
+    apikey: 'notsosecretadminkey'
     role: administrator
   - username: 'kilian'
-    apikey: 'YWJjZGVmZ2hpamtsbQo='
+    apikey: 'nososecretuserkey'
     role: user

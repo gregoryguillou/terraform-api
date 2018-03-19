@@ -353,8 +353,8 @@ this is a simple set of commands that connects, applies and destroys the `qa`
 workspace.
 
 ```shell
-curl -H 'Authorization: Key bm9wcXJzdHV2d3h5ego=' localhost:10010/login
-JWT_TOKEN=$(curl --silent -H 'Authorization: Key bm9wcXJzdHV2d3h5ego=' \
+curl -H 'Authorization: Key notsosecretadminkey' localhost:10010/login
+JWT_TOKEN=$(curl --silent -H 'Authorization: Key notsosecretadminkey' \
                localhost:10010/login | jq -r '.token')
 curl -H "Authorization: Bearer ${JWT_TOKEN}" \
      localhost:10010/user

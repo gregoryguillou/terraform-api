@@ -43,3 +43,21 @@ there are several ways:
 
 This section remains WIP. It would be important to describe the organisation
 of the code and that would be a perfect place leave it.
+
+## Deploying a new version
+
+If you plan to deploy a new release, there are a few things to do. Some need
+to be prapare before you roll out a new tag; some are 
+
+### Before you deploy the version
+
+- Add the version tag in `docker-compose.yml`
+- Change the version in the `settings-template.yaml`
+
+### After you deploy the version
+
+- Make sure deployment works with 
+
+```shell
+
+```

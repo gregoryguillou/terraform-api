@@ -7,7 +7,7 @@ services:
       - 10010:10010
     volumes:
      - /var/run/docker.sock:/var/run/docker.sock
-     - $PWD/../api/config/settings.yaml:/app/config/settings.yaml
+     - $PWD/../../api/config/settings-template.yaml:/app/config/settings.yaml
     depends_on:
       - consul
       - couchbase
@@ -50,4 +50,3 @@ services:
       - couchbase
     command: ['/script/couchbase-setup.sh']
     restart: "no"
-
