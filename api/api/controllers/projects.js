@@ -6,7 +6,7 @@ const { getTags, getBranches } = require('../models/git')
 
 function action (req, res) {
   const name = req.swagger.params.project.value
-  const project = projects.find(p => project.name === name)
+  const project = projects.find(p => p.name === name)
   if (!project) {
     return res.status(404).json({message: `Project ${name} not found`})
   }
@@ -15,7 +15,7 @@ function action (req, res) {
 
 function branches (req, res) {
   const name = req.swagger.params.project.value
-  const project = projects.find(p => project.name === name)
+  const project = projects.find(p => p.name === name)
   if (!project) {
     return res.status(404).json({message: `Project ${name} not found`})
   }
@@ -29,7 +29,7 @@ function branches (req, res) {
 
 function describe (req, res) {
   const name = req.swagger.params.project.value
-  const project = projects.find(p => project.name === name)
+  const project = projects.find(p => p.name === name)
   if (!project) {
     return res.status(404).json({message: `Project ${name} not found`})
   }
@@ -52,7 +52,7 @@ function list (req, res) {
 
 function tags (req, res) {
   const name = req.swagger.params.project.value
-  const project = projects.find(p => project.name === name)
+  const project = projects.find(p => p.name === name)
   if (!project) {
     return res.status(404).json({message: `Project ${name} not found`})
   }
@@ -66,7 +66,7 @@ function tags (req, res) {
 
 function workspaces (req, res) {
   const name = req.swagger.params.project.value
-  const project = projects.find(p => project.name === name)
+  const project = projects.find(p => p.name === name)
   if (!project) {
     return res.status(404).json({message: `Project ${name} not found`})
   }

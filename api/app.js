@@ -14,7 +14,7 @@ const config = {
   appRoot: __dirname
 }
 
-const jwtAuth = () => passport.authenticate('headerapikey', { session: false })
+const jwtAuth = () => passport.authenticate('jwt', { session: false })
 const goNext = (req, res, next) => next()
 
 passport.use(new HeaderAPIKeyStrategy({ header: 'Authorization', prefix: 'Key ' }, false, (apikey, done) => {

@@ -8,7 +8,7 @@ function findByAPIKey (key, callback) {
   const username = users.find(user => key.apikey === user.apikey)
 
   if (username) {
-    return callback(null, {username})
+    return callback(null, username)
   }
   callback()
 }

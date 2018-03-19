@@ -38,9 +38,9 @@ function update (project, callback) {
 }
 
 function updateAll (callback) {
-  projects.forEach((project, index, array) => {
+  projects.forEach((project, index) => {
     update(project, () => {
-      if (index === array.length) {
+      if (index === (projects.length - 1)) {
         callback()
       }
     })
