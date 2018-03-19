@@ -2,21 +2,21 @@ package cmd
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
-	"net/http"
 	"io"
 	"io/ioutil"
-	"encoding/json"
+	"net/http"
 	"os"
 	"path"
 	"strings"
-	
+
 	"github.com/spf13/cobra"
 )
 
 type config struct {
 	endpoint string
-  apikey string
+	apikey   string
 }
 
 func readConfiguration() config {
@@ -28,7 +28,7 @@ func readConfiguration() config {
 		endpoint = "http://localhost:10010"
 	}
 	lastCharacter := endpoint[len(endpoint)-1:]
-  if lastCharacter == "/" {
+	if lastCharacter == "/" {
 		endpoint = endpoint[:len(endpoint)-1]
 	}
 
@@ -59,9 +59,9 @@ func saveConfiguration(cfg config) error {
 
 func trimQuotes(s string) string {
 	if len(s) >= 2 {
-			if s[0] == '"' && s[len(s)-1] == '"' {
-					return s[1 : len(s)-1]
-			}
+		if s[0] == '"' && s[len(s)-1] == '"' {
+			return s[1 : len(s)-1]
+		}
 	}
 	return s
 }
@@ -72,67 +72,75 @@ func loadConfiguration() (config, error) {
 	if home == "" {
 		home = os.Getenv("HOMEPATH")
 	}
-	
+
 	filename := path.Join(home, ".deck", "credentials")
 	cfg := config{endpoint: "", apikey: ""}
 
 	if len(filename) == 0 {
-			return cfg, nil
+		return cfg, nil
 	}
 
 	file, err := os.Open(filename)
 	if err != nil {
-			return cfg, err
+		return cfg, err
 	}
 	defer file.Close()
 
 	reader := bufio.NewReader(file)
 
 	for {
-			line, err := reader.ReadString('\n')
-			if equal := strings.Index(line, "="); equal >= 0 {
-					if key := strings.TrimSpace(line[:equal]); len(key) > 0 {
-							value := ""
-							if len(line) > equal {
-									value = strings.TrimSpace(line[equal+1:])
-							}
-							if key == "endpoint" { 
-								cfg.endpoint = trimQuotes(value)
-  						} else if key == "apikey" { 
-								cfg.apikey = trimQuotes(value)
-							}
-					}
+		line, err := reader.ReadString('\n')
+		if equal := strings.Index(line, "="); equal >= 0 {
+			if key := strings.TrimSpace(line[:equal]); len(key) > 0 {
+				value := ""
+				if len(line) > equal {
+					value = strings.TrimSpace(line[equal+1:])
+				}
+				if key == "endpoint" {
+					cfg.endpoint = trimQuotes(value)
+				} else if key == "apikey" {
+					cfg.apikey = trimQuotes(value)
+				}
 			}
-			if err == io.EOF {
-					break
-			}
-			if err != nil {
-					return cfg, err
-			}
+		}
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return cfg, err
+		}
 	}
-  return cfg, nil
+	return cfg, nil
 }
 
 func testConfiguration(cfg config) (string, error) {
-	token, err := connectAPI(cfg)
+	token, _ := connectAPI(cfg)
 	client := &http.Client{
 		CheckRedirect: nil,
 	}
 	req, err := http.NewRequest("GET", "http://localhost:10010/user", nil)
-	if err != nil { return "", err }
+	if err != nil {
+		return "", err
+	}
 
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Authorization", token)
 
 	resp, err := client.Do(req)
-	if err != nil { return "", err }
+	if err != nil {
+		return "", err
+	}
 
 	data, err := ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
-	if err != nil { return "", err }
+	if err != nil {
+		return "", err
+	}
 
 	var dat map[string]interface{}
-	if err = json.Unmarshal(data, &dat); err != nil { return "", err }
+	if err = json.Unmarshal(data, &dat); err != nil {
+		return "", err
+	}
 
 	username := fmt.Sprintf("%s", dat["username"])
 	return username, nil
@@ -143,25 +151,33 @@ func connectAPI(cfg config) (string, error) {
 	client := &http.Client{
 		CheckRedirect: nil,
 	}
-	req, err := http.NewRequest("GET", cfg.endpoint + "/login", nil)
-	if err != nil { return "", err }
+	req, err := http.NewRequest("GET", cfg.endpoint+"/login", nil)
+	if err != nil {
+		return "", err
+	}
 
 	req.Header.Add("Accept", "application/json")
-	req.Header.Add("Authorization", "Key "+ cfg.apikey)
+	req.Header.Add("Authorization", "Key "+cfg.apikey)
 
 	resp, err := client.Do(req)
-	if err != nil { return "", err }
+	if err != nil {
+		return "", err
+	}
 
 	data, err := ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
-	if err != nil { return "", err }
+	if err != nil {
+		return "", err
+	}
 
 	var dat map[string]interface{}
 
-	if err = json.Unmarshal(data, &dat); err != nil { return "", err }
+	if err = json.Unmarshal(data, &dat); err != nil {
+		return "", err
+	}
 
 	token := fmt.Sprintf("Bearer %s", dat["token"])
-  return token, nil
+	return token, nil
 
 }
 
@@ -180,7 +196,9 @@ var configureCmd = &cobra.Command{
 		} else {
 			fmt.Println(fmt.Sprintf("SUCCESS: You are connected as %s...", username))
 			err = saveConfiguration(cfg)
-			if err != nil {panic(err)}	
+			if err != nil {
+				panic(err)
+			}
 		}
 	},
 }
