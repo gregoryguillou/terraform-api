@@ -1,19 +1,29 @@
 version: '3.2'
 
 services:
-  deck-api:
-    image: deck-api:beta
+  terraform-deck:
+    image: gregoryguillou/terraform-deck:v0.1.3
     ports:
       - 10010:10010
     volumes:
      - /var/run/docker.sock:/var/run/docker.sock
-     - $PWD/../api/config/settings.yaml:/app/config/settings.yaml
+     - $PWD/../../api/config/settings-template.yaml:/app/config/settings.yaml
     depends_on:
       - consul
       - couchbase
     environment:
       SECRETORKEY: secret
       CONSUL_IP: "172.28.0.1"
+
+  terraform-demo:
+    image: gregoryguillou/terraform-deck:v0.1.3-demo
+    depends_on:
+      - consul
+    environment:
+      CONSUL_IP: consul
+    command: ["sleep", "10"]
+    entrypoint: ["/bin/bash"]
+    restart: "no"
 
   consul:
     image: consul:1.0.6
@@ -26,14 +36,14 @@ services:
     restart: "always"
 
   couchbase:
-    image: couchbase:5.1.0
+    image: couchbase:community-5.0.1
     ports:
       - 8091-8094:8091-8094
       - 11210:11210
     restart: "always"
 
   couchbase-setup:
-    image: couchbase:5.1.0
+    image: couchbase:community-5.0.1
     volumes:
      - $PWD/couchbase-setup.sh:/script/couchbase-setup.sh
     depends_on:

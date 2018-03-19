@@ -3,23 +3,23 @@
 const should = require('should')
 const request = require('supertest')
 const server = require('../../../app')
-const fs = require('fs');
+const fs = require('fs')
 let token = ''
 
 describe('version', function () {
   before((done) => {
     request(server)
-    .get('/login')
-    .set('Accept', 'application/json')
-    .set('Authorization', 'Key bm9wcXJzdHV2d3h5ego=')
-    .expect('Content-Type', /json/)
-    .expect(200)
-    .end((err, res) => {
-      should.not.exist(err)
-      token = 'Bearer ' + res.body['token']
-      res.body.should.containEql({message: 'Authenticated'})
-      done()
-    })
+      .get('/login')
+      .set('Accept', 'application/json')
+      .set('Authorization', 'Key notsosecretadminkey')
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err, res) => {
+        should.not.exist(err)
+        token = 'Bearer ' + res.body['token']
+        res.body.should.containEql({message: 'Authenticated'})
+        done()
+      })
   })
 
   describe('GET /version', () => {
@@ -32,7 +32,7 @@ describe('version', function () {
         .expect(200)
         .end((err, res) => {
           const obj = JSON.parse(fs.readFileSync('package.json', 'utf8'))
-          version = obj['version']
+          const version = obj['version']
           should.not.exist(err)
           res.body.should.containEql({version: `v${version}`})
           done()

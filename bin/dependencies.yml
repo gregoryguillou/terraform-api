@@ -1,0 +1,7 @@
+dependencies:
+  - stack/package.json
+  - stack/docker/docker-compose.yml
+  - api/Dockerfile
+  - api/package.json
+  - cli/Gopkg.lock
+  - demo/Dockerfile
