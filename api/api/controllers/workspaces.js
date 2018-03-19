@@ -2,7 +2,7 @@
 
 const util = require('util')
 const YAML = require('yamljs')
-const projects = YAML.load('config/settings.yaml')['projects']
+const projects = YAML.load('config/settings.yaml').projects
 const {
   actionWorkspace,
   feedWorkspace,
@@ -15,10 +15,9 @@ const { exec } = require('child_process')
 function sh (cmd, options, callback) {
   exec(cmd, options, (err, stdout, stderr) => {
     if (err) {
-      callback(err, null)
-    } else {
-      callback(null, 'OK')
+      return callback(err)
     }
+    callback(null, 'OK')
   })
 }
 
@@ -27,15 +26,14 @@ function describe (req, res) {
     project: req.swagger.params.project.value,
     workspace: req.swagger.params.workspace.value
   }
-  const key = `ws:${workspace['project']}:${workspace['workspace']}`
+  const key = `ws:${workspace.project}:${workspace.workspace}`
   showWorkspace(workspace, (err, data) => {
     if (err) {
-      res.status(404).json({
-        message: `(${workspace['project']}/${workspace['workspace']} not found`
+      return res.status(404).json({
+        message: `(${workspace.project}/${workspace.workspace} not found`
       })
-    } else {
-      res.json(data[key])
     }
+    res.json(data[key])
   })
 }
 
@@ -44,8 +42,8 @@ function quickcheck (req, res) {
     project: req.swagger.params.project.value,
     workspace: req.swagger.params.workspace.value
   }
-  const key = `ws:${workspace['project']}:${workspace['workspace']}`
-  const project = workspace['project']
+  const key = `ws:${workspace.project}:${workspace.workspace}`
+  const project = workspace.project
   let cwd = ''
   let command = [ ]
   for (var i = 0, size = projects.length; i < size; i++) {
@@ -54,7 +52,7 @@ function quickcheck (req, res) {
       for (var j = 0, wsize = projects[i].lifecycle.status.length; j < wsize; j++) {
         command.push(
           projects[i].lifecycle.status[j].replace(/{{deck\.WORKSPACE}}/,
-            workspace['workspace']
+            workspace.workspace
           )
         )
       }
@@ -65,125 +63,120 @@ function quickcheck (req, res) {
       return res.status(500).json({message: 'Unexpected error'})
     }
     if (!wk) {
-      return res.status(404).json({message: `${workspace['project']}:${workspace['workspace']} Not Found`})
-    } else {
-      sh(command[0], {cwd: cwd}, (err, data) => {
-        if (err) {
-          if (err.code === 1 && err.killed === false) {
-            res.status(404).json({
-              quickCheck: 'failure',
-              lastChecked: wk[key]['lastChecked'],
-              ref: wk[key]['ref'],
-              state: wk[key]['state']
-            })
-          } else {
-            res.status(500).json({message: 'Fatal Error'})
-          }
-        } else {
-          res.json({
-            quickCheck: 'success',
-            lastChecked: wk[key]['lastChecked'],
-            ref: wk[key]['ref'],
-            state: wk[key]['state']
-          })
-        }
-      })
+      return res.status(404).json({message: `${workspace.project}:${workspace.workspace} Not Found`})
     }
+    sh(command[0], {cwd: cwd}, (err, data) => {
+      if (!err) {
+        return res.json({
+          quickCheck: 'success',
+          lastChecked: wk[key].lastChecked,
+          ref: wk[key].ref,
+          state: wk[key].state
+        })
+      }
+      if (err.code !== 1 || err.killed) {
+        res.status(500).json({message: 'Fatal Error'})
+      }
+      res.status(404).json({
+        quickCheck: 'failure',
+        lastChecked: wk[key].lastChecked,
+        ref: wk[key].ref,
+        state: wk[key].state
+      })
+    })
   })
 }
 
 function action (req, res) {
+  const params = req.swagger.params
+  const actionValue = params.action.value
   const workspace = {
-    project: req.swagger.params.project.value,
-    workspace: req.swagger.params.workspace.value
+    project: params.project.value,
+    workspace: params.workspace.value
   }
-  if (req.swagger.params.action.value['action'] === 'clean') {
-    feedWorkspace({project: workspace['project'], workspace: workspace['workspace']}, {status: 'clean'}, (err, data) => {
+  if (actionValue.action === 'clean') {
+    feedWorkspace({project: workspace.project, workspace: workspace.workspace}, {status: 'clean'}, (err, data) => {
       if (err) {
-        logger.error(`${workspace['project']}/${workspace['workspace']} failed to clean`)
+        logger.error(`${workspace.project}/${workspace.workspace} failed to clean`)
       }
     })
-    res.status(201).json({event: 'none'})
-    return
+    return res.status(201).json({event: 'none'})
   }
 
-  actionWorkspace(
-    workspace,
-    {action: req.swagger.params.action.value['action'], ref: req.swagger.params.action.value['ref']},
-    (err, data) => {
-      const key = `ws:${workspace['project']}:${workspace['workspace']}`
-      if (err) {
-        if (err.code && (err.code === 409)) {
-          res.status(409).json({
-            message: `(${workspace['project']}/${workspace['workspace']} has a pending action`
-          })
-        } else {
-          res.status(404).json({ message: `(${workspace['project']}/${workspace['workspace']} not found` })
-        }
+  actionWorkspace(workspace, {action: actionValue.action, ref: actionValue.ref}, (err, data) => {
+    const key = `ws:${workspace.project}:${workspace.workspace}`
+    if (err) {
+      if (err.code && (err.code === 409)) {
+        res.status(409).json({
+          message: `(${workspace.project}/${workspace.workspace} has a pending action`
+        })
       } else {
-        if (req.swagger.params.action.value['action'] === 'apply') {
-          let request = {
-            project: workspace['project'],
-            workspace: workspace['workspace'],
-            ref: (req.swagger.params.action.value['ref'] ? req.swagger.params.action.value['ref'] : (data[key]['ref'] ? data[key]['ref'] : 'branch:master')),
-            event: data[key].request.event
-          }
-          apply(request, (err, data) => {
-            let status = 'succeed'
-            if (err) {
-              logger.error(`${workspace['project']}/${workspace['workspace']} failed to check ${status}`)
-              status = 'fail'
-            } else if (data['StatusCode'] !== 0) {
-              logger.error(`${workspace['project']}/${workspace['workspace']} docker has failed with code: ${data['StatusCode']} - ${status}`)
-              status = 'fail'
-            }
-            feedWorkspace({project: workspace['project'], workspace: workspace['workspace']}, {status: status}, (err, data) => {
-              if (err) {
-                logger.error(`${workspace['project']}/${workspace['workspace']} failed store check ${status}`)
-              }
-            })
-          })
-          res.status(201).json({event: data[key].request.event})
-        } else if (req.swagger.params.action.value['action'] === 'destroy') {
-          destroy({project: workspace['project'], workspace: workspace['workspace'], event: data[key].request.event}, (err, data) => {
-            let status = 'succeed'
-            if (err) {
-              logger.error(`${workspace['project']}/${workspace['workspace']} failed to check ${status}`)
-              status = 'fail'
-            } else if (data['StatusCode'] !== 0) {
-              logger.error(`${workspace['project']}/${workspace['workspace']} docker has failed with code: ${data['StatusCode']} - ${status}`)
-              status = 'fail'
-            }
-            feedWorkspace({project: workspace['project'], workspace: workspace['workspace']}, {status: status}, (err, data) => {
-              if (err) {
-                logger.error(`${workspace['project']}/${workspace['workspace']} failed store check ${status}`)
-              }
-            })
-          })
-          res.status(201).json({event: data[key].request.event})
-        } else if (req.swagger.params.action.value['action'] === 'check') {
-          check({project: workspace['project'], workspace: workspace['workspace'], event: data[key].request.event}, (err, data) => {
-            let status = 'succeed'
-            if (err) {
-              logger.error(`${workspace['project']}/${workspace['workspace']} failed to check ${status}`)
-              status = 'fail'
-            } else if (data['StatusCode'] === 2) {
-              logger.error(`${workspace['project']}/${workspace['workspace']} docker has failed with code: ${data['StatusCode']} - ${status}`)
-              status = 'differ'
-            } else if (data['StatusCode'] !== 0) {
-              logger.error(`${workspace['project']}/${workspace['workspace']} docker has failed with code: ${data['StatusCode']} - ${status}`)
-              status = 'fail'
-            }
-            feedWorkspace({project: workspace['project'], workspace: workspace['workspace']}, {status: status}, (err, data) => {
-              if (err) {
-                logger.error(`${workspace['project']}/${workspace['workspace']} failed store check ${status}`)
-              }
-            })
-          })
-          res.status(201).json({event: data[key].request.event})
+        res.status(404).json({ message: `(${workspace.project}/${workspace.workspace} not found` })
+      }
+    } else {
+      if (actionValue.action === 'apply') {
+        let request = {
+          project: workspace.project,
+          workspace: workspace.workspace,
+          ref: (actionValue.ref ? actionValue.ref : (data[key].ref ? data[key].ref : 'branch:master')),
+          event: data[key].request.event
         }
+        apply(request, (err, data) => {
+          let status = 'succeed'
+          if (err) {
+            logger.error(`${workspace.project}/${workspace.workspace} failed to check ${status}`)
+            status = 'fail'
+          } else if (data.StatusCode !== 0) {
+            logger.error(`${workspace.project}/${workspace.workspace} docker has failed with code: ${data.StatusCode} - ${status}`)
+            status = 'fail'
+          }
+          feedWorkspace({project: workspace.project, workspace: workspace.workspace}, {status: status}, (err, data) => {
+            if (err) {
+              logger.error(`${workspace.project}/${workspace.workspace} failed store check ${status}`)
+            }
+          })
+        })
+        res.status(201).json({event: data[key].request.event})
+      } else if (actionValue.action === 'destroy') {
+        destroy({project: workspace.project, workspace: workspace.workspace, event: data[key].request.event}, (err, data) => {
+          let status = 'succeed'
+          if (err) {
+            logger.error(`${workspace.project}/${workspace.workspace} failed to check ${status}`)
+            status = 'fail'
+          } else if (data.StatusCode !== 0) {
+            logger.error(`${workspace.project}/${workspace.workspace} docker has failed with code: ${data.StatusCode} - ${status}`)
+            status = 'fail'
+          }
+          feedWorkspace({project: workspace.project, workspace: workspace.workspace}, {status: status}, (err, data) => {
+            if (err) {
+              logger.error(`${workspace.project}/${workspace.workspace} failed store check ${status}`)
+            }
+          })
+        })
+        res.status(201).json({event: data[key].request.event})
+      } else if (actionValue.action === 'check') {
+        check({project: workspace.project, workspace: workspace.workspace, event: data[key].request.event}, (err, data) => {
+          let status = 'succeed'
+          if (err) {
+            logger.error(`${workspace.project}/${workspace.workspace} failed to check ${status}`)
+            status = 'fail'
+          } else if (data.StatusCode === 2) {
+            logger.error(`${workspace.project}/${workspace.workspace} docker has failed with code: ${data.StatusCode} - ${status}`)
+            status = 'differ'
+          } else if (data.StatusCode !== 0) {
+            logger.error(`${workspace.project}/${workspace.workspace} docker has failed with code: ${data.StatusCode} - ${status}`)
+            status = 'fail'
+          }
+          feedWorkspace({project: workspace.project, workspace: workspace.workspace}, {status: status}, (err, data) => {
+            if (err) {
+              logger.error(`${workspace.project}/${workspace.workspace} failed store check ${status}`)
+            }
+          })
+        })
+        res.status(201).json({event: data[key].request.event})
       }
     }
+  }
   )
 }
 

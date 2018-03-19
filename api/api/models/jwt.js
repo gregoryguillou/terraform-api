@@ -2,10 +2,10 @@
 
 const { ExtractJwt } = require('passport-jwt')
 const YAML = require('yamljs')
-const secretOrKey = YAML.load('config/settings.yaml')['jwt']['secretOrKey']
+const secretOrKey = YAML.load('config/settings.yaml').jwt.secretOrKey
 
 const params = {
-  secretOrKey: secretOrKey,
+  secretOrKey,
   jwtFromRequest: ExtractJwt.versionOneCompatibility({authScheme: 'Bearer'})
 }
 
