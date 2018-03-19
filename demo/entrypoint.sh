@@ -4,12 +4,12 @@ function usage() {
   echo "Usage: $0 [(-c|--command) command] [(-r|--reference) reference] \\"
   echo "             [(-w|--workspace) workspace]  [((-t|--tag) tag | (-b|--branch) branch)] \\"
   echo "             [-h|--help] [-v|--version]"
-	exit 1
+  exit 1
 }
 
 function version() {
-  echo "deck-terraform version 0.0.1"
-	exit 0
+  echo "terraform-deck version 0.0.1"
+  exit 0
 }
 
 COMMAND=list
@@ -18,7 +18,7 @@ REF=branch:master
 HELP=false
 VERSION=false
 
-TEMP=`getopt -o c:w:r:t:b:hv --long command:,workspace:,reference:,tag:,branch:,help,version -n 'deck' -- "$@"`
+TEMP=$(getopt -o c:w:r:t:b:hv --long command:,workspace:,reference:,tag:,branch:,help,version -n 'deck' -- "$@")
 eval set -- "$TEMP"
 
 while true ; do
@@ -52,7 +52,7 @@ elif [[ "$COMMAND" == "apply" || "$COMMAND" == "destroy" || "$COMMAND" == "list"
       export BRANCH="$LABREF"
     fi
   fi
-  WORKSPACE=${WORKSPACE} TAG=${TAG} BRANCH=${BRANCH} bin/${COMMAND}.sh
+  WORKSPACE=${WORKSPACE} TAG=${TAG} BRANCH=${BRANCH} bin/"${COMMAND}".sh
 else
   usage
 fi
