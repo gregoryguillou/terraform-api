@@ -14,7 +14,7 @@ const logs = couchnode.wrap(cluster.openBucket(couchparam.log_bucket, couchparam
 
 const lastCheckedRequest = (state, request) => {
   const date = Date.now()
-  const ref = request.ref
+  const ref = request ? request.ref : undefined
   return state => ({ date, ref, state })
 }
 
