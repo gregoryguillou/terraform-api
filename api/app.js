@@ -14,84 +14,45 @@ const config = {
   appRoot: __dirname
 }
 
-passport.use(new HeaderAPIKeyStrategy(
-  { header: 'Authorization', prefix: 'Key ' },
-  false,
-  (apikey, done) => {
-    user.findbyapikey(
-      { apikey: apikey },
-      (err, user) => {
-        if (err) { return done(err) }
-        if (!user) { return done(null, false) }
-        return done(null, user)
-      }
-    )
-  }
-))
+const jwtAuth = () => passport.authenticate('headerapikey', { session: false })
+const goNext = (req, res, next) => next()
 
-passport.use(new Strategy(
-  params,
-  (payload, done) => {
-    user.findbytoken(
-      payload,
-      (err, user) => {
-        if (err) { return done(err) }
-        if (!user) { return done(null, false) }
-        return done(null, user)
-      }
-    )
-  }
-))
+passport.use(new HeaderAPIKeyStrategy({ header: 'Authorization', prefix: 'Key ' }, false, (apikey, done) => {
+  user.findByAPIKey({ apikey }, (err, user) => {
+    if (err) {
+      return done(err)
+    }
+    if (!user) {
+      return done(null, false)
+    }
+    done(null, user)
+  })
+}))
+
+passport.use(new Strategy(params, (payload, done) => {
+  user.findByToken(payload, (err, user) => {
+    if (err) {
+      return done(err)
+    }
+    if (!user) {
+      return done(null, false)
+    }
+    done(null, user)
+  })
+}))
 
 app.use(passport.initialize())
-app.use(
-  '/login',
-  passport.authenticate(
-    'headerapikey', { session: false }),
-  (req, res, next) => {
-    next()
-  }
-)
-
-app.use(
-  '/user',
-  passport.authenticate(
-    'jwt', { session: false }),
-  (req, res, next) => {
-    next()
-  }
-)
-
-app.use(
-  '/events',
-  passport.authenticate(
-    'jwt', { session: false }),
-  (req, res, next) => {
-    next()
-  }
-)
-  
-app.use(
-  '/projects',
-  passport.authenticate(
-    'jwt', { session: false }),
-  (req, res, next) => {
-    next()
-  }
-)
-
-app.use(
-  '/version',
-  passport.authenticate(
-    'jwt', { session: false }),
-  (req, res, next) => {
-    next()
-  }
-)
+app.use('/login', passport.authenticate('headerapikey', { session: false }), goNext)
+app.use('/user', jwtAuth(), goNext)
+app.use('/events', jwtAuth(), goNext)
+app.use('/projects', jwtAuth(), goNext)
+app.use('/version', jwtAuth(), goNext)
 
 updateAll(() => {
   SwaggerExpress.create(config, (err, swaggerExpress) => {
-    if (err) { throw err }
+    if (err) {
+      throw err
+    }
     swaggerExpress.register(app)
     const port = process.env.PORT || 10010
     app.listen(port, '0.0.0.0', () => {

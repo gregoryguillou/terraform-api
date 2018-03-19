@@ -62,16 +62,16 @@ function getBranches (project, callback) {
   const localProject = '/tmp/' + project.name
   require('simple-git')(localProject)
     .branch((err, branches) => {
-      let list = []
-      if (!err) {
-        const re = /remotes\/origin\//
-        for (var i = 0, size = branches.all.length; i < size; i++) {
-          if (branches.all[i].match(re)) {
-            list.push(branches.all[i].replace(/remotes\/origin\/(.*)/, '$1'))
-          }
-        }
-        callback(list)
+      if (err) {
+        return // TODO have a callback?
       }
+      const re = /remotes\/origin\//
+      callback(branches.all.reduce((list, e) => {
+        if (e.match(re)) {
+          list.push(e.replace(/remotes\/origin\/(.*)/, '$1'))
+        }
+        return list
+      }, []))
     })
 }
 

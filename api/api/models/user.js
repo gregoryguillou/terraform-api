@@ -1,31 +1,28 @@
 'use strict'
 
 const YAML = require('yamljs')
-let users = YAML.load('config/settings.yaml').users
+const users = YAML.load('config/settings.yaml').users
 
-function findbyapikey (key, callback) {
-  let username = null
-  for (var i = 0, size = users.length; i < size; i++) {
-    if (key['apikey'] === users[i]['apikey']) {
-      username = users[i]['username']
-    }
-  }
+// TODO return an error, or just one argument
+function findByAPIKey (key, callback) {
+  const username = users.find(user => key.apikey === user.apikey)
 
   if (username) {
-    return callback(null, {username: username})
+    return callback(null, {username})
   }
-  callback(null, null)
+  callback()
 }
 
-function findbytoken (payload, callback) {
-  if (payload['username']) {
-    callback(null, {username: payload['username']})
+// TODO return an error, or just one argument
+function findByToken (payload, callback) {
+  if (payload.username) {
+    callback(null, {username: payload.username})
   } else {
-    callback(null, null)
+    callback()
   }
 }
 
 module.exports = {
-  findbyapikey,
-  findbytoken
+  findByAPIKey,
+  findByToken
 }
