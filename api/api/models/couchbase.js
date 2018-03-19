@@ -10,18 +10,45 @@ const logger = require('./logger')
 
 const cluster = new couchbase.Cluster(couchparam['url'])
 cluster.authenticate(couchparam['username'], couchparam['password'])
-const bucket = couchnode.wrap(cluster.openBucket(couchparam['data_bucket'], couchparam['bucket-password'], (err) => {
-  if (err) {
-    logger.fatal('Cannot open couchbase bucket for data')
-    process.exit(1)
-  }
-}))
-const logs = couchnode.wrap(cluster.openBucket(couchparam['log_bucket'], couchparam['bucket-password'], (err) => {
-  if (err) {
-    logger.fatal('Cannot open couchbase bucket for logs')
-    process.exit(1)
-  }
-}))
+
+let bucket
+let logs
+
+function testConnection (i, callback) {
+  setTimeout(
+    () => {
+      cluster.openBucket(
+        couchparam.log_bucket,
+        couchparam['bucket-password'],
+        (err) => {
+          if (err) {
+            logger.info(`Connect to couchbase bucket ${couchparam.log_bucket} failed. Retrying... (${i})`)
+            if (i > 0) {
+              const j = i - 1
+              return testConnection(j, callback)
+            }
+            process.exit(1)
+          }
+          bucket = couchnode.wrap(cluster.openBucket(couchparam['data_bucket'], couchparam['bucket-password'], (err) => {
+            if (err) {
+              logger.fatal('Cannot open couchbase bucket for data')
+              process.exit(1)
+            }
+          }))
+          bucket = couchnode.wrap(cluster.openBucket(couchparam['log_bucket'], couchparam['bucket-password'], (err) => {
+            if (err) {
+              logger.fatal('Cannot open couchbase bucket for data')
+              process.exit(1)
+            }
+          }))
+
+          callback()
+        }
+      )
+    },
+    1000
+  )
+}
 
 const lastCheckedRequest = (state, request) => {
   const date = Date.now()
@@ -258,10 +285,8 @@ function showLogs (event, callback) {
 function showWorkspace (workspace, callback) {
   const key = `ws:${workspace.project}:${workspace.workspace}`
   const eventDate = Date.now()
-  console.log('this is an error 1')
 
   bucket.get(key, (err, results, cas, misses) => {
-    console.log('this is an error 2')
     if (err) {
       return callback(err)
     }
@@ -404,5 +429,6 @@ module.exports = {
   feedWorkspace,
   showEvent,
   showLogs,
-  showWorkspace
+  showWorkspace,
+  testConnection
 }

@@ -9,6 +9,7 @@ const app = require('express')()
 const user = require('./api/models/user')
 const logger = require('./api/models/logger')
 const { updateAll } = require('./api/models/git')
+const { testConnection } = require('./api/models/couchbase')
 
 const config = {
   appRoot: __dirname
@@ -49,15 +50,18 @@ app.use('/projects', jwtAuth(), goNext)
 app.use('/version', jwtAuth(), goNext)
 
 updateAll(() => {
-  SwaggerExpress.create(config, (err, swaggerExpress) => {
-    if (err) {
-      throw err
-    }
-    swaggerExpress.register(app)
-    const port = process.env.PORT || 10010
-    app.listen(port, '0.0.0.0', () => {
-      logger.info('Listening on http://0.0.0.0:%d', port)
-      app.emit('apiStarted')
+  testConnection(60, () => {
+    SwaggerExpress.create(config, (err, swaggerExpress) => {
+      if (err) {
+        throw err
+      }
+      if (err) { throw err }
+      swaggerExpress.register(app)
+      const port = process.env.PORT || 10010
+      app.listen(port, '0.0.0.0', () => {
+        logger.info('Listening on http://0.0.0.0:%d', port)
+        app.emit('apiStarted')
+      })
     })
   })
 })
