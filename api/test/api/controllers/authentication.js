@@ -6,7 +6,7 @@ const server = require('../../../app')
 let token = ''
 
 describe('controllers', function () {
-  this.timeout(10000)
+  this.timeout(60000)
   describe('authentication', () => {
     before((done) => {
       server.on('apiStarted', () => {

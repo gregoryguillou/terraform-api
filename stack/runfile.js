@@ -1,39 +1,30 @@
 const { run, help } = require('runjs')
-const util = require('util')
 const dotenv = require('dotenv')
 
 const containers = {
-  'deck-api': {
-    name: 'deck-api',
-    version: 'beta',
+  'terraform-deck': {
+    name: 'gregoryguillou/terraform-deck',
+    version: 'latest',
     path: '../api'
   },
-  'deck-terraform': {
-    name: 'deck-terraform',
-    version: 'beta',
+  demo: {
+    name: 'gregoryguillou/terraform-deck',
+    version: 'latest-demo',
     path: '../demo'
   }
 }
 
-const container = process.env.DECK_CONTAINER || 'deck-terraform'
-const version = process.env.DECK_VERSION || containers[container]['version']
-const path = containers[container]['path']
-
 function build () {
   dotenv.config()
-  process.chdir(path)
-  if (container === 'deck-api') {
-    run(`docker build -t ${container}:latest -t ${container}:${version} .`)
-  } else {
-    run(util.format('docker build --build-arg CACHEBUST=$(date +%s) --build-arg GITHUB_REPOSITORY=%s  --build-arg GITHUB_USERNAME=%s --build-arg GITHUB_PASSWORD=%s -t %s:latest -t %s:%s .',
-      '%s', process.env.GITHUB_REPOSITORY, process.env.GITHUB_USERNAME, process.env.GITHUB_PASSWORD, container, container, version))
-  }
+  process.chdir(containers['terraform-deck'].path)
+  run(`docker build -t ${containers['terraform-deck'].name}:${containers['terraform-deck'].version} .`)
+  process.chdir(containers.demo.path)
+  run(`docker build --build-arg CACHEBUST=$(date +%s) --build-arg GITHUB_REPOSITORY=${process.env.GITHUB_REPOSITORY} -t ${containers.demo.name}:${containers.demo.version} .`)
 }
 
 function clean () {
-  process.chdir(path)
-  run(util.format('docker rmi %s:%s', container, version))
-  run(util.format('docker build -t %s:latest .', container))
+  run(`docker rmi ${containers['terraform-deck'].name}:${containers['terraform-deck'].version}`)
+  run(`docker rmi ${containers.demo.name}:${containers.demo.version}`)
 }
 
 function doc () {
@@ -44,8 +35,7 @@ function doc () {
 help(build, {
   description: 'Build the docker containers',
   examples: `
-    DECK_CONTAINER=deck-api npx run build
-    DECK_CONTAINER=deck-terraform npx run build
+    npx run build
   `
 })
 
