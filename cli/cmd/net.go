@@ -10,7 +10,7 @@ import (
 	"github.com/hokaccha/go-prettyjson"
 )
 
-func get(url string, display bool) (map[string]interface{}, error) {
+func get(url string, display bool) (map[string]interface{}) {
 	cfg, err := loadConfiguration()
 	if err != nil {
 		panic(err)
@@ -53,10 +53,9 @@ func get(url string, display bool) (map[string]interface{}, error) {
 			s, _ := prettyjson.Marshal(dat)
 			fmt.Println(string(s))
 		}
-		return dat, nil
+		return dat
 	}
-	fmt.Println(string(data))
-	return nil, nil
+	return nil
 }
 
 func post(url string, payload map[string]string) (map[string]interface{}, error) {

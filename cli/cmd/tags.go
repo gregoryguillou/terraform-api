@@ -17,8 +17,8 @@ var tagsCmd = &cobra.Command{
 		if project == "" {
 			return errors.New("You must set the project")
 		}
-		_, err := get(fmt.Sprintf("/projects/%s/tags", project), true)
-		return err
+		_ = get(fmt.Sprintf("/projects/%s/tags", project), true)
+		return nil
 	},
 }
 
