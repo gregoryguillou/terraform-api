@@ -43,7 +43,7 @@ func get(url string, display bool) (map[string]interface{}, error) {
 		panic(err)
 	}
 
-  if resp.StatusCode == 200 {
+	if resp.StatusCode == 200 {
 		var dat map[string]interface{}
 		if err := json.Unmarshal(data, &dat); err != nil {
 			panic(err)
@@ -54,7 +54,7 @@ func get(url string, display bool) (map[string]interface{}, error) {
 			fmt.Println(string(s))
 		}
 		return dat, nil
-	} 
+	}
 	fmt.Println(string(data))
 	return nil, nil
 }
@@ -96,7 +96,7 @@ func post(url string, payload map[string]string) (map[string]interface{}, error)
 		panic(err)
 	}
 
-  if resp.StatusCode == 201 {
+	if resp.StatusCode == 201 {
 		var dat map[string]interface{}
 		if err := json.Unmarshal(data, &dat); err != nil {
 			panic(err)

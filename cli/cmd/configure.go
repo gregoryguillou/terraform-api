@@ -165,8 +165,8 @@ func connectAPI(cfg config) (string, error) {
 	}
 
 	if resp.StatusCode != 200 {
-			fmt.Println("Unauthorized Access, check your credentials")
-			os.Exit(1)
+		fmt.Println("Unauthorized Access, check your credentials")
+		os.Exit(1)
 	}
 
 	data, err := ioutil.ReadAll(resp.Body)
