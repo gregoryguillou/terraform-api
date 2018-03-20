@@ -12,9 +12,9 @@ if [[ "$TEST" -ne 1 ]]; then
    exit 0
 fi
 
-echo "VERSION=latest" >.env
-
 cd ${PROJECT_DIR}/stack/docker
+
+echo "VERSION=latest" >.env
 printf "Starting docker-compose stack...\n"
 docker-compose up -d consul couchbase couchbase-setup
 
