@@ -8,7 +8,7 @@ TEST=$(grep -i "^test:" ${PROJECT_DIR}/stack/.ci.yml | grep "enabled" | wc -l)
 
 if [[ "$TEST" -ne 1 ]]; then
    printf "Integration tests are not enabled: Skipping..\n"
-   printf "  Add add \"test: enabled\" to stack/.ci.yml if needed\n"
+   printf "  Add \"test: enabled\" to stack/.ci.yml\n"
    exit 0
 fi
 
@@ -29,4 +29,11 @@ sleep 10
 printf "\nStarting tests...\n"
 docker-compose run deck npm test
 
-printf "Test succeeded...\n"
+printf "Test succeeded, cleaning docker-compose stack...\n"
+
+docker-compose kill
+docker-compose rm -f
+
+printf "Thank you for your concern...\n"
+
+

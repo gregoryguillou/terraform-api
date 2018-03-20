@@ -1,7 +1,12 @@
-language: go
+language: 
+- go
+- node_js
 
 go:
 - 1.10.x
+
+node_js:
+- "9"
 
 services:
 - docker
@@ -14,6 +19,8 @@ install:
 
 script:
 - bin/build-cli.sh
+- bin/build-api.sh
+- bin/test-api.sh
 
 deploy:
   provider: releases
