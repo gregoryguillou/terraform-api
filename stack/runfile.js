@@ -19,7 +19,7 @@ function build () {
   process.chdir(containers['terraform-deck'].path)
   run(`docker build -t ${containers['terraform-deck'].name}:${containers['terraform-deck'].version} .`)
   process.chdir(containers.demo.path)
-  run(`docker build --build-arg CACHEBUST=$(date +%s) --build-arg GITHUB_REPOSITORY=${process.env.GITHUB_REPOSITORY} -t ${containers.demo.name}:${containers.demo.version} .`)
+  run(`docker build --build-arg CACHEBUST=$(date +%s) -t ${containers.demo.name}:${containers.demo.version} .`)
 }
 
 function clean () {

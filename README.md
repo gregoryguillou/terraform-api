@@ -5,21 +5,21 @@
   <a href="https://hub.docker.com/r/gregoryguillou/terraform-deck"><img src="https://img.shields.io/docker/automated/gregoryguillou/terraform-deck.svg" alt="Docker Hub"></a>
 </p>
 
-`Terraform-deck` helps you manage projects and workspaces from the Cloud.
-Access them securely from a command line or via a REST API. You should be
+`Terraform-deck` helps you manage Terraform projects and workspaces from the
+Cloud. Access them securely from a command line or via a REST API. You should be
 able to use Terraform from anywhere and:
 
+- Build front-end applications and chatbots
 - Create and destroy development, training or demonstration environments 
   on-demand.
 - Update environments on-demand from a git branch/tag
-- Build frontend applications and chatbots
-- Destroy your environment any time. Add the associated commands in a scheduler
-  to keep your environments always clean and lean
-- Build temporary infrastructure for demonstration, training
-- Manage your SaaS environments
-- Be creative...
+- Add and create environments, any time, from a scheduler and keep your
+  stacks clean and lean
+- Build temporary infrastructure for demonstration and training
+- Publish SaaS applications to your customers
+- Integrate other tools and be creative...
 
-# Try Terraform-deck
+## Try it
 
 Try `Terraform-deck` now. Read and comment the documents below:
 
