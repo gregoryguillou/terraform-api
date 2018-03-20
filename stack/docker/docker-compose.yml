@@ -2,7 +2,7 @@ version: '3.2'
 
 services:
   deck:
-    image: "gregoryguillou/terraform-deck:${VERSION:-v0.1.3}"
+    image: "gregoryguillou/terraform-deck:${VERSION:-v0.1.4}"
     ports:
       - 10010:10010
     volumes:
@@ -15,7 +15,7 @@ services:
       SECRETORKEY: secret
 
   demo:
-    image: "gregoryguillou/terraform-deck:${VERSION:-v0.1.3}-demo"
+    image: "gregoryguillou/terraform-deck:${VERSION:-v0.1.4}-demo"
     depends_on:
       - consul
     environment:
