@@ -11,8 +11,8 @@ var projectsCmd = &cobra.Command{
 	Lists existing projects
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		_, err := get("/projects", true)
-		return err
+		_ = get("/projects", true)
+		return nil
 	},
 }
 

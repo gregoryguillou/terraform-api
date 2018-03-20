@@ -11,8 +11,8 @@ var infoCmd = &cobra.Command{
 	Provides API settings for the current user.
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		_, err := get("/user", true)
-		return err
+		_ = get("/user", true)
+		return nil
 	},
 }
 

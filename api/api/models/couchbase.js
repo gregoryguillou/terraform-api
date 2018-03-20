@@ -1,5 +1,6 @@
 const couchbase = require('couchbase')
 const couchnode = require('couchnode')
+const process = require('process')
 const stream = require('stream')
 const YAML = require('yamljs')
 const couchparam = YAML.load('config/settings.yaml').couchbase
@@ -7,10 +8,48 @@ const projects = YAML.load('config/settings.yaml').projects
 const uuidv4 = require('uuid/v4')
 const logger = require('./logger')
 
-const cluster = new couchbase.Cluster(couchparam.url)
-cluster.authenticate(couchparam.username, couchparam.password)
-const bucket = couchnode.wrap(cluster.openBucket(couchparam.data_bucket, couchparam['bucket-password']))
-const logs = couchnode.wrap(cluster.openBucket(couchparam.log_bucket, couchparam['bucket-password']))
+const cluster = new couchbase.Cluster(couchparam['url'])
+cluster.authenticate(couchparam['username'], couchparam['password'])
+
+let bucket
+let logs
+
+function testConnection (i, callback) {
+  setTimeout(
+    () => {
+      cluster.openBucket(
+        couchparam.log_bucket,
+        couchparam['bucket-password'],
+        (err) => {
+          if (err) {
+            logger.info(`Connect to couchbase bucket ${couchparam.log_bucket} failed. Retrying... (${i})`)
+            if (i > 0) {
+              const j = i - 1
+              return testConnection(j, callback)
+            }
+            process.exit(1)
+          }
+          logs = couchnode.wrap(cluster.openBucket(couchparam['log_bucket'], couchparam['bucket-password'], (err) => {
+            if (err) {
+              logger.fatal('Cannot open couchbase bucket for data')
+              process.exit(1)
+            } else {
+              bucket = couchnode.wrap(cluster.openBucket(couchparam['data_bucket'], couchparam['bucket-password'], (err) => {
+                if (err) {
+                  logger.fatal('Cannot open couchbase bucket for data')
+                  process.exit(1)
+                } else {
+                  callback()
+                }
+              }))
+            }
+          }))
+        }
+      )
+    },
+    1000
+  )
+}
 
 const lastCheckedRequest = (state, request) => {
   const date = Date.now()
@@ -247,6 +286,7 @@ function showLogs (event, callback) {
 function showWorkspace (workspace, callback) {
   const key = `ws:${workspace.project}:${workspace.workspace}`
   const eventDate = Date.now()
+
   bucket.get(key, (err, results, cas, misses) => {
     if (err) {
       return callback(err)
@@ -390,5 +430,6 @@ module.exports = {
   feedWorkspace,
   showEvent,
   showLogs,
-  showWorkspace
+  showWorkspace,
+  testConnection
 }

@@ -19,8 +19,8 @@ var statusCmd = &cobra.Command{
 		if workspace == "" || project == "" {
 			return errors.New("You must set the project and workspace")
 		}
-		_, err := get(fmt.Sprintf("/projects/%s/workspaces/%s/status", project, workspace), true)
-		return err
+		_ = get(fmt.Sprintf("/projects/%s/workspaces/%s/status", project, workspace), true)
+		return nil
 	},
 }
 

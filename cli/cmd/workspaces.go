@@ -18,8 +18,8 @@ var workspacesCmd = &cobra.Command{
 		if project == "" {
 			return errors.New("You must set the project")
 		}
-		_, err := get(fmt.Sprintf("/projects/%s/workspaces", project), true)
-		return err
+		_ = get(fmt.Sprintf("/projects/%s/workspaces", project), true)
+		return nil
 	},
 }
 

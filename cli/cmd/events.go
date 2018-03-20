@@ -19,8 +19,8 @@ var eventsCmd = &cobra.Command{
 		if event == "" {
 			return errors.New("You must set an event")
 		}
-		_, err := get(fmt.Sprintf("/events/%s", event), true)
-		return err
+		_ = get(fmt.Sprintf("/events/%s", event), true)
+		return nil
 	},
 }
 

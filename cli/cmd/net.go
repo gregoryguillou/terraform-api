@@ -10,7 +10,7 @@ import (
 	"github.com/hokaccha/go-prettyjson"
 )
 
-func get(url string, display bool) (map[string]interface{}, error) {
+func get(url string, display bool) (map[string]interface{}) {
 	cfg, err := loadConfiguration()
 	if err != nil {
 		panic(err)
@@ -30,7 +30,6 @@ func get(url string, display bool) (map[string]interface{}, error) {
 		panic(err)
 	}
 
-	var dat map[string]interface{}
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Authorization", token)
 	resp, err := client.Do(req)
@@ -44,15 +43,19 @@ func get(url string, display bool) (map[string]interface{}, error) {
 		panic(err)
 	}
 
-	if err := json.Unmarshal(data, &dat); err != nil {
-		panic(err)
-	}
+	if resp.StatusCode == 200 {
+		var dat map[string]interface{}
+		if err := json.Unmarshal(data, &dat); err != nil {
+			panic(err)
+		}
 
-	if display {
-		s, _ := prettyjson.Marshal(dat)
-		fmt.Println(string(s))
+		if display {
+			s, _ := prettyjson.Marshal(dat)
+			fmt.Println(string(s))
+		}
+		return dat
 	}
-	return dat, nil
+	return nil
 }
 
 func post(url string, payload map[string]string) (map[string]interface{}, error) {
@@ -78,7 +81,6 @@ func post(url string, payload map[string]string) (map[string]interface{}, error)
 		panic(err)
 	}
 
-	var dat map[string]interface{}
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Authorization", token)
@@ -93,11 +95,16 @@ func post(url string, payload map[string]string) (map[string]interface{}, error)
 		panic(err)
 	}
 
-	if err := json.Unmarshal(data, &dat); err != nil {
-		panic(err)
-	}
+	if resp.StatusCode == 201 {
+		var dat map[string]interface{}
+		if err := json.Unmarshal(data, &dat); err != nil {
+			panic(err)
+		}
 
-	s, _ := prettyjson.Marshal(dat)
-	fmt.Println(string(s))
-	return dat, nil
+		s, _ := prettyjson.Marshal(dat)
+		fmt.Println(string(s))
+		return dat, nil
+	}
+	fmt.Println(string(data))
+	return nil, nil
 }

@@ -1,8 +1,8 @@
 version: '3.2'
 
 services:
-  terraform-deck:
-    image: gregoryguillou/terraform-deck:v0.1.3
+  deck:
+    image: "gregoryguillou/terraform-deck:${VERSION:-v0.1.3}"
     ports:
       - 10010:10010
     volumes:
@@ -15,13 +15,13 @@ services:
       SECRETORKEY: secret
       CONSUL_IP: "172.28.0.1"
 
-  terraform-demo:
-    image: gregoryguillou/terraform-deck:v0.1.3-demo
+  demo:
+    image: "gregoryguillou/terraform-deck:${VERSION:-v0.1.3}-demo"
     depends_on:
       - consul
     environment:
       CONSUL_IP: consul
-    command: ["sleep", "10"]
+    command: ["-c", "sleep 10"]
     entrypoint: ["/bin/bash"]
     restart: "no"
 

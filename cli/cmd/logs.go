@@ -20,15 +20,15 @@ var logsCmd = &cobra.Command{
 		if event == "" {
 			return errors.New("You must set an event")
 		}
-		dat, err := get(fmt.Sprintf("/events/%s/logs", event), !textOutput)
-		if !textOutput {
+		dat := get(fmt.Sprintf("/events/%s/logs", event), !textOutput)
+		if textOutput {
 			var x map[string]interface{}
 			for v := range dat["logs"].([]interface{}) {
 				x = dat["logs"].([]interface{})[v].(map[string]interface{})
 				fmt.Println(x["text"])
 			}
 		}
-		return err
+		return nil
 	},
 }
 

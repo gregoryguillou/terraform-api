@@ -164,6 +164,11 @@ func connectAPI(cfg config) (string, error) {
 		return "", err
 	}
 
+	if resp.StatusCode != 200 {
+		fmt.Println("Unauthorized Access, check your credentials")
+		os.Exit(1)
+	}
+
 	data, err := ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
 	if err != nil {
@@ -176,8 +181,12 @@ func connectAPI(cfg config) (string, error) {
 		return "", err
 	}
 
-	token := fmt.Sprintf("Bearer %s", dat["token"])
-	return token, nil
+	if dat["token"] == "" {
+		fmt.Println("Unable to get token")
+		os.Exit(1)
+	}
+
+	return fmt.Sprintf("Bearer %s", dat["token"]), nil
 
 }
 

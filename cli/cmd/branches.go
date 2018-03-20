@@ -17,8 +17,8 @@ var branchesCmd = &cobra.Command{
 		if project == "" {
 			return errors.New("You must set the project")
 		}
-		_, err := get(fmt.Sprintf("/projects/%s/branches", project), true)
-		return err
+		_ = get(fmt.Sprintf("/projects/%s/branches", project), true)
+		return nil
 	},
 }
 

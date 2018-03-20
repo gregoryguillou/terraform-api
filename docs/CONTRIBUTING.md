@@ -44,7 +44,7 @@ there are several ways:
 This section remains WIP. It would be important to describe the organisation
 of the code and that would be a perfect place leave it.
 
-## Deploying a new version
+## Testing a new version
 
 If you plan to deploy a new release, there are a few things to do. Some need
 to be prapare before you roll out a new tag; some are 
@@ -61,7 +61,14 @@ Make sure deployment works with docker compose by running the following
 command and testing on it.
 
 ```shell
-cd stack
-docker-compose up -d
+cd stack/docker
+docker-compose up -d consul couchbase couchbase-setup
 ```
+
+```shell
+cd stack/docker
+echo "VERSION=latest" >.env
+docker-compose run deck npm test
+```
+
 
