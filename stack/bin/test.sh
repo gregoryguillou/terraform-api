@@ -35,5 +35,3 @@ docker-compose kill
 docker-compose rm -f
 
 printf "Thank you for your concern...\n"
-
-
