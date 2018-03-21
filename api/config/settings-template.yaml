@@ -33,10 +33,10 @@ projects:
       cwd: projects/demonstration
       getenv:
         - ./getenv.sh {{deck.WORKSPACE}}
+      setenv:
+        - CONSUL_IP={{env.CONSUL}}
       status:
         - ./status.sh -w {{deck.WORKSPACE}}
-    setenv:
-      - CONSUL_IP={{env.CONSUL}}
 users:
   - username: 'gregory'
     apikey: 'notsosecretadminkey'
