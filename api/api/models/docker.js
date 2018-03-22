@@ -13,7 +13,7 @@ function version (name, callback) {
   const stdout = new EchoStream('version')
   docker.run(project['docker-image'], ['-v'], stdout, createoptions, startoptions, (err, data, container) => {
     if (err) { throw err }
-    callback()
+    callback(err, data)
   })
 }
 
@@ -48,7 +48,7 @@ function getenv (state, workspace, callback) {
       }
       command(state, workspace, envs, (err, data) => {
         if (err) { throw err }
-        callback()
+        callback(err, data)
       })
     }
   )
@@ -71,7 +71,7 @@ function command (state, config, env, callback) {
   }
   docker.run(project['docker-image'], args, stdout, createoptions, startoptions, (err, data, container) => {
     if (err) { throw err }
-    callback()
+    callback(err, data)
   })
 }
 
@@ -82,11 +82,15 @@ function apply (config, callback) {
 }
 
 function destroy (config, callback) {
-  command('destroy', config, callback)
+  getenv('destroy', config, (err, data) => {
+    callback(err, data)
+  })
 }
 
 function check (config, callback) {
-  command('check', config, callback)
+  getenv('check', config, (err, data) => {
+    callback(err, data)
+  })
 }
 
 module.exports = {
