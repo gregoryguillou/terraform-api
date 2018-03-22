@@ -2,8 +2,9 @@
 
 set -e
 
-PROJECT_DIR="$(git rev-parse --show-toplevel)"
-cd ${PROJECT_DIR}/api
+PROJECT_DIR=$(dirname $(realpath -s $0))/../..
+
+cd ${PROJECT_DIR}
 export CONSUL=$(node projects/demonstration/consul.js)
 
 printf "CONSUL=${CONSUL}"
