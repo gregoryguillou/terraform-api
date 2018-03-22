@@ -3,26 +3,21 @@ var docker = new Docker({socketPath: '/var/run/docker.sock'})
 const YAML = require('yamljs')
 const projects = YAML.load('config/settings.yaml')['projects']
 const { EchoStream } = require('./couchbase')
-const logger = require('./logger')
 const { exec } = require('child_process')
-// const RegExp = require('regexp')
-
-let env = [ 'CONSUL_IP=172.28.0.1' ]
-let createoptions = {}
-let startoptions = {}
 
 function version (name, callback) {
+  const createoptions = {}
+  const startoptions = {}
   const project = projects.find(p => p.name === name)
 
   const stdout = new EchoStream('version')
-  docker.run(project['docker-image'], ['-v'], stdout, createoptions, startoptions, (err, data) => {
-    callback(err, data)
+  docker.run(project['docker-image'], ['-v'], stdout, createoptions, startoptions, (err, data, container) => {
+    if (err) { throw err }
+    callback()
   })
 }
 
-var workspace = {project: 'demonstration', workspace: 'staging'}
-
-function getenv (command, workspace, callback) {
+function getenv (state, workspace, callback) {
   const project = projects.find(p => p.name === workspace.project)
 
   let populatedEnv = { }
@@ -48,20 +43,20 @@ function getenv (command, workspace, callback) {
         envs.push(changedElement)
       })
       if (project.git && project.git.login) {
-        env.push(`GITHUB_USERNAME=${project.git.login}`)
-        env.push(`GITHUB_PASSWORD=${project.git.password}`)
+        envs.push(`GITHUB_USERNAME=${project.git.login}`)
+        envs.push(`GITHUB_PASSWORD=${project.git.password}`)
       }
+      command(state, workspace, envs, (err, data) => {
+        if (err) { throw err }
+        callback()
+      })
     }
   )
-  console.log(`docker ${command} ${workspace.workspace} ${JSON.stringify(envs)}`)
-  //callback(command, workspace, envs)
 }
 
-const test = apply(workspace, () => {
-  console.log('This is over!!!')
-})
-
-function command (command, config, env, callback) {
+function command (state, config, env, callback) {
+  let createoptions = {}
+  let startoptions = {}
   if (!config || !config.project || !config.workspace || !config.event) {
     return callback(new Error('Cannot run docker; you need the workspace and the event id'), null)
   }
@@ -69,23 +64,20 @@ function command (command, config, env, callback) {
   const project = projects.find(p => p.name === config.project)
 
   createoptions = {env}
-  let args = ['-c', command, '-w', config.workspace]
-  if (command === 'apply' && config.ref) {
+  let args = ['-c', state, '-w', config.workspace]
+  if (state === 'apply' && config.ref) {
     args.push('-r')
     args.push(config.ref)
   }
-  docker.run(project['docker-image'], args, stdout, createoptions, startoptions, (err, data) => {
-    if (err) {
-      logger.error(`docker ${project['docker-image']} has failed with ${err.error}`)
-      return callback(err, data)
-    }
-    callback(null, data)
+  docker.run(project['docker-image'], args, stdout, createoptions, startoptions, (err, data, container) => {
+    if (err) { throw err }
+    callback()
   })
 }
 
 function apply (config, callback) {
-  getenv('apply', workspace, (command, workspace, envs) => {
-    command('apply', config, callback)
+  getenv('apply', config, (err, data) => {
+    callback(err, data)
   })
 }
 
