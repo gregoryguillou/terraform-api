@@ -3,55 +3,94 @@ var docker = new Docker({socketPath: '/var/run/docker.sock'})
 const YAML = require('yamljs')
 const projects = YAML.load('config/settings.yaml')['projects']
 const { EchoStream } = require('./couchbase')
-const logger = require('./logger')
+const { exec } = require('child_process')
 
-let env = [ 'CONSUL_IP=172.28.0.1' ]
-let createoptions = {}
-let startoptions = {}
+function version (name, callback) {
+  const createoptions = {}
+  const startoptions = {}
+  const project = projects.find(p => p.name === name)
 
-function version (callback) {
   const stdout = new EchoStream('version')
-  docker.run('deck-terraform', ['-v'], stdout, createoptions, startoptions, (err, data) => {
+  docker.run(project['docker-image'], ['-v'], stdout, createoptions, startoptions, (err, data, container) => {
+    if (err) { throw err }
     callback(err, data)
   })
 }
 
-function command (command, config, callback) {
+function getenv (state, workspace, callback) {
+  const project = projects.find(p => p.name === workspace.project)
+
+  let populatedEnv = { }
+  let envs = [ ]
+  exec(
+    project.lifecycle.getenv[0].replace(/{{deck\.WORKSPACE}}/, workspace.workspace),
+    {cwd: project.lifecycle.cwd},
+    (err, stdout, stderr) => {
+      if (err) {
+        return err
+      }
+      const val = stdout.split('\n')
+      for (var i in val) {
+        const prop = val[i].split('=')
+        populatedEnv[prop[0]] = prop[1]
+      }
+      project.lifecycle.setenv.forEach(element => {
+        var changedElement = element
+        for (var ev in populatedEnv) {
+          var reg = new RegExp(`{{env.${ev}}}`, 'g')
+          changedElement = changedElement.replace(reg, populatedEnv[`${ev}`])
+        }
+        envs.push(changedElement)
+      })
+      if (project.git && project.git.login) {
+        envs.push(`GITHUB_USERNAME=${project.git.login}`)
+        envs.push(`GITHUB_PASSWORD=${project.git.password}`)
+      }
+      command(state, workspace, envs, (err, data) => {
+        if (err) { throw err }
+        callback(err, data)
+      })
+    }
+  )
+}
+
+function command (state, config, env, callback) {
+  let createoptions = {}
+  let startoptions = {}
   if (!config || !config.project || !config.workspace || !config.event) {
     return callback(new Error('Cannot run docker; you need the workspace and the event id'), null)
   }
   const stdout = new EchoStream(config.event)
-  projects.forEach(project => {
-    if (project.name === config.project && project.git) {
-      env.push(`GITHUB_USERNAME=${project.git.login}`)
-      env.push(`GITHUB_PASSWORD=${project.git.password}`)
-    }
-  })
+  const project = projects.find(p => p.name === config.project)
+
   createoptions = {env}
-  let args = ['-c', command, '-w', config.workspace]
-  if (command === 'apply' && config.ref) {
+  let args = ['-c', state, '-w', config.workspace]
+  if (state === 'apply' && config.ref) {
     args.push('-r')
     args.push(config.ref)
   }
-  docker.run('deck-terraform', args, stdout, createoptions, startoptions, (err, data) => {
-    if (err) {
-      logger.error(`docker deck-terraform has failed with ${err.error}`)
-      return callback(err, data)
-    }
-    callback(null, data)
+  docker.run(project['docker-image'], args, stdout, createoptions, startoptions, (err, data, container) => {
+    if (err) { throw err }
+    callback(err, data)
   })
 }
 
 function apply (config, callback) {
-  command('apply', config, callback)
+  getenv('apply', config, (err, data) => {
+    callback(err, data)
+  })
 }
 
 function destroy (config, callback) {
-  command('destroy', config, callback)
+  getenv('destroy', config, (err, data) => {
+    callback(err, data)
+  })
 }
 
 function check (config, callback) {
-  command('check', config, callback)
+  getenv('check', config, (err, data) => {
+    callback(err, data)
+  })
 }
 
 module.exports = {

@@ -29,23 +29,20 @@ function testConnection (i, callback) {
             }
             process.exit(1)
           }
-          logs = couchnode.wrap(cluster.openBucket(couchparam['log_bucket'], couchparam['bucket-password'], (err) => {
+          bucket = couchnode.wrap(cluster.openBucket(couchparam['data_bucket'], couchparam['bucket-password'], (err) => {
             if (err) {
               logger.fatal('Cannot open couchbase bucket for data')
               process.exit(1)
-            } else {
-              bucket = couchnode.wrap(cluster.openBucket(couchparam['data_bucket'], couchparam['bucket-password'], (err) => {
-                if (err) {
-                  logger.fatal('Cannot open couchbase bucket for data')
-                  process.exit(1)
-                } else {
-                  callback()
-                }
-              }))
             }
+            logs = couchnode.wrap(cluster.openBucket(couchparam['data_bucket'], couchparam['bucket-password'], (err) => {
+              if (err) {
+                logger.fatal('Cannot open couchbase bucket for data')
+                process.exit(1)
+              }
+              callback()
+            }))
           }))
-        }
-      )
+        })
     },
     1000
   )
@@ -63,14 +60,26 @@ class EchoStream extends stream.Writable {
     this.key = `logs:${event}`
     this.log = { [this.key]: {logs: [], type: 'logs'} }
     this.line = 0
+    this.logs = couchnode.wrap(cluster.openBucket(couchparam['log_bucket'], couchparam['bucket-password'], (err) => {
+      if (err) {
+        logger.fatal('Cannot open couchbase bucket for data')
+        process.exit(1)
+      }
+    }))
   }
+
+  _final (callback) {
+    this.logs.bucket.disconnect()
+    callback()
+  }
+
   _write (chunk, enc, next) {
     let lines = chunk.toString().split('\n')
     for (var i = 0, size = lines.length; i < size; i++) {
       this.line++
       this.log[this.key].logs.push({line: this.line, text: lines[i]})
     }
-    logs.upsert(this.log, function (err, result) {
+    this.logs.upsert(this.log, function (err, result) {
       if (err) throw err
       next()
     })

@@ -8,7 +8,7 @@ describe('models', () => {
   describe('docker', function () {
     this.timeout(60000)
     it('Make sure the docker deck container can display a version', (done) => {
-      version((err, data) => {
+      version('demonstration', (err, data) => {
         if (!err) {
           should(data).containEql({ StatusCode: 0 })
           done()
