@@ -2,3 +2,5 @@ node_modules
 /config/settings.yaml
 package-lock.json
 .env
+.env.json
+tools/*
