@@ -10,7 +10,10 @@
   "author": "Gregory Guillou",
   "license": "MIT",
   "devDependencies": {
-    "runjs": "4.3.0"
+    "request": "^2.85.0",
+    "request-promise": "^4.2.2",
+    "runjs": "4.3.0",
+    "unzip": "^0.1.11"
   },
   "dependencies": {
     "dotenv": "5.0.1"
