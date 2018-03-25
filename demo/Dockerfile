@@ -5,8 +5,8 @@ ARG GITHUB_REPOSITORY=https://github.com/gregoryguillou/terraform-deck.git
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get install -y curl unzip git && \ 
-    curl -L -o terraform.zip https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
-    cd /usr/local/bin && unzip /app/terraform.zip && rm -f /app/terraform.zip && \
+    curl -L -o /opt/terraform.zip https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+    cd /usr/local/bin && unzip /opt/terraform.zip && rm -f /opt/terraform.zip && \
     mkdir /github
 
 COPY . /app
