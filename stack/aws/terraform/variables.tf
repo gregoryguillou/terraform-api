@@ -8,6 +8,11 @@ variable "availabilityzone" {
   description = "The AZ the storage will be kept in"
 }
 
+variable "botsfile" {
+  type        = "string"
+  description = "The key of the file for the bots"
+}
+
 variable "configbucket" {
   type        = "string"
   description = "The bucket with the configuration file"

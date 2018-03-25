@@ -25,6 +25,7 @@ data "template_file" "deck-template" {
   vars {
     configbucket = "${var.configbucket}"
     configfile   = "${var.configfile}"
+    botsfile     = "${var.botsfile}"
     device       = "/dev/xvdh"
   }
 }

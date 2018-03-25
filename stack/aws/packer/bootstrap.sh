@@ -15,18 +15,24 @@ curl -L https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/d
   -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
 mkdir -p /mnt/couchbase/data
+mkdir -p /opt/terraform-deck/api
+mkdir -p /opt/terraform-deck/bots
+
 
 docker pull gregoryguillou/terraform-deck:v0.1.4
 docker pull gregoryguillou/terraform-deck:v0.1.4-demo
+docker pull gregoryguillou/terraform-deck:v0.1.4-bots
 docker pull consul:1.0.6
 docker pull couchbase:community-5.0.1
 
 curl -LO $REPOSITORY/master/stack/docker/couchbase-setup.sh
 curl -LO $REPOSITORY/master/stack/docker/docker-compose.yml
-curl -L $REPOSITORY/master/api/config/settings-template.yaml -o settings.yaml
+curl -L $REPOSITORY/master/api/config/settings-template.yaml -o api/settings.yaml
+curl -L $REPOSITORY/master/bots/config/settings-template.yaml -o bots/settings.yaml
 chmod +x couchbase-setup.sh
 
-sed -i 's/\$PWD.*template\.yaml/\/opt\/terraform-deck\/settings.yaml/' docker-compose.yml
+sed -i 's/\$PWD.*api.*template\.yaml/\/opt\/terraform-deck\/api\/settings.yaml/' docker-compose.yml
+sed -i 's/\$PWD.*bots.*template\.yaml/\/opt\/terraform-deck\/bots\/settings.yaml/' docker-compose.yml
 sed -i '/couchbase-server\"/a\ \ \ \ volumes:\n\ \ \ \ \ \ - \"\/mnt\/couchbase\/data:\/opt\/couchbase\/var\/lib\/couchbase\/data\"' \
   docker-compose.yml
 

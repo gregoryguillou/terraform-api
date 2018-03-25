@@ -13,6 +13,17 @@ services:
       - couchbase
     restart: "always"
 
+  bots:
+    image: "gregoryguillou/terraform-deck:${VERSION:-v0.1.5}-bots"
+    ports:
+      - 8080:8080
+    volumes:
+     - $PWD/../../bots/config/settings-template.yaml:/app/config/settings.yaml
+    depends_on:
+      - deck
+      - couchbase
+    restart: "always"
+
   demo:
     image: "gregoryguillou/terraform-deck:${VERSION:-v0.1.4}-demo"
     depends_on:
