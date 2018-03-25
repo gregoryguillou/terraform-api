@@ -1,0 +1,15 @@
+bots:
+  - name: donnatello
+    type: slack
+    prefix: staging
+    apiurl: http://deck:10010
+    apikey: notsosecretadminkey
+    project: demonstration
+    workspace: staging
+    slack:
+      userbot_token: xxx
+      app_token: yyy
+
+
+
+  

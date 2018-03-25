@@ -15,6 +15,11 @@ const containers = {
     name: 'gregoryguillou/terraform-deck',
     version: 'latest-demo',
     path: '../demo'
+  },
+  bots: {
+    name: 'gregoryguillou/terraform-deck',
+    version: 'latest-bots',
+    path: '../bots'
   }
 }
 
@@ -27,6 +32,8 @@ function build () {
   run(`docker build -t ${containers['terraform-deck'].name}:${containers['terraform-deck'].version} .`)
   process.chdir(containers.demo.path)
   run(`docker build --build-arg CACHEBUST=$(date +%s) -t ${containers.demo.name}:${containers.demo.version} .`)
+  process.chdir(containers.bots.path)
+  run(`docker build -t ${containers.bots.name}:${containers.bots.version} .`)
 }
 
 function clean () {
