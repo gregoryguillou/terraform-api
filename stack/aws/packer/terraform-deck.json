@@ -1,7 +1,7 @@
 {
   "variables": {
     "name": "terraform-deck",
-    "ami": "ami-044b047d",
+    "ami": "ami-db1688a2",
     "vpc": "",
     "subnet": "",
     "region": "eu-west-1",
@@ -13,7 +13,7 @@
     "source_ami": "{{user `ami`}}",
     "ami_virtualization_type": "hvm",
     "instance_type": "t2.micro",
-    "ssh_username": "admin",
+    "ssh_username": "ec2-user",
     "ami_name": "{{user `name`}}_{{timestamp}}",
     "subnet_id": "{{user `subnet`}}",
     "vpc_id": "{{user `vpc`}}",
@@ -21,11 +21,18 @@
     "communicator": "ssh",
     "ssh_pty": true,
     "tags": {
-      "OS_Version": "debian",
+      "OS_Version": "Amazon Linux 2",
       "Template": "terraform-deck",
       "Version": "{{user `version`}}"
     }
   }],
+  "provisioners": [
+    {
+      "type": "shell",
+      "script": "packer/bootstrap.sh",
+      "execute_command": "sudo -S sh -c '{{ .Vars }} {{ .Path }}'"
+    }
+  ],
   "post-processors": [
     {
       "type": "manifest",
