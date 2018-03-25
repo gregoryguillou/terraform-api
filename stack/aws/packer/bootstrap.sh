@@ -3,8 +3,9 @@
 set -e
 
 yum install -y docker
+systemctl enable docker
 systemctl start docker
-sleep 10
+yum install -y awslogs amazon-ssm-agent
 
 export COMPOSE_VERSION=1.20.1
 export REPOSITORY=https://raw.githubusercontent.com/gregoryguillou/terraform-deck

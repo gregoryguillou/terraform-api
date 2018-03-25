@@ -2,7 +2,4 @@
 /config/settings.yaml
 package-lock.json
 .env
-.env.json
-build.*
-*.auto.tfvars
 tools/

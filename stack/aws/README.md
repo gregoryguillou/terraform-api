@@ -34,6 +34,8 @@ make list
 
 ## Deploying `terraform-deck`
 
+### Configuration
+
 Once we have built the AMI, you should be able to deploy it. We will assume a
 few things:
 - There is a pre-existing VPC with a subnet you can use to host your service
@@ -54,3 +56,32 @@ The module parameters should look like the one below:
 - `ruleno`:
 - `bucket`:
 - `configfile`:
+
+### About the AMI
+
+COPY the AMI for 2 reasons:
+- It is only availabe on eu-west-1
+- It might be deleted
+
+The best would be in fact to rebuild your AMI to make sure it 
+
+### Configure the application
+
+In order to configure the application, you must:
+
+- copy and modify the `api/config/settings-template.yaml` file according to your
+  needs
+- upload the file on a bucket that is secured and cannot be accessed except for
+  the AWS instance
+- Add the bucket name and bucket key in the deployment module parameters
+
+Assuming you've copied the file to `settings.yaml` before you've modified it and
+you have set `configbucket` and `configfile` to reference the bucket and the key
+you will use to reference the file, you should be able to copy the file with the
+command below:
+
+```shell
+aws s3 cp api/config/settings.yaml s3://${configbucket}${configfile}
+```
+
+### Configure your stack

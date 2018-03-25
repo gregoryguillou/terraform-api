@@ -1,0 +1,6 @@
+/.env.json
+/build.*
+*.auto.tfvars
+provider.tf
+.terraform*
+terraform.tfstate
