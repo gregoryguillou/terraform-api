@@ -1,7 +1,7 @@
 resource "aws_instance" "deck" {
   count = "${(var.deploy == "true" ? 1 : 0)}"
 
-  ami                         = "ami-9c6736e5"
+  ami                         = "${var.ami}"
   instance_type               = "t2.micro"
   vpc_security_group_ids      = ["${aws_security_group.deck_security_group.id}"]
   iam_instance_profile        = "${aws_iam_instance_profile.deck_profile.id}"

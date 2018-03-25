@@ -1,9 +1,12 @@
-# Terraform-deck for AWS
+# Installing Terraform-deck on AWS
 
 This stack is deployment model for `terraform-deck` on AWS. It consists in:
 
 - A packer template that creates an AMI with the project preinstalled on it
 - A terraform module that can be used with the AMI to deploy `terraform-deck`
+
+The sections below detail how to build the AMI, configure the application, 
+deploy the terraform module and test terraform-deck.
 
 ## Building a terraform-deck AMI
 
@@ -32,9 +35,26 @@ make ami
 make list
 ```
 
-## Deploying `terraform-deck`
+## Prepare the configuration file for AWS
 
-### Configuration
+In order to configure the application, you must:
+
+- copy and modify the `api/config/settings-template.yaml` file according to your
+  needs
+- upload the file on a bucket that is secured and cannot be accessed except for
+  the AWS instance
+- Add the bucket name and bucket key in the deployment module parameters
+
+Assuming you've copied the file to `settings.yaml` before you've modified it and
+you have set `configbucket` and `configfile` to reference the bucket and the key
+you will use to reference the file, you should be able to copy the file with the
+command below:
+
+```shell
+aws s3 cp api/config/settings.yaml s3://${configbucket}${configfile}
+```
+
+## Deploy terraform-deck for AWS
 
 Once we have built the AMI, you should be able to deploy it. We will assume a
 few things:
@@ -56,6 +76,7 @@ module "terraform-deck" {
   source = "github.com/gregoryguillou/terraform-deck//stack/aws/terraform"
 
   deploy           = "true"
+  ami              = "<the AMI you've built>"
   availabilityzone = "<Availability Zone>"
   configbucket     = "<Bucket>"
   configfile       = "<Config File>"
@@ -72,6 +93,8 @@ The parameters are the following:
 
 - `deploy` contains the "true" or "false" string and defines if the API is
   deployed. It is useful because you cannot add `count` in a module
+- `ami` The AMI that contains terraform Deck. For now it is not a published
+  AMI so you must create the AMI and reference it.
 - `availabilityzone` defines the Availability that will store the API data
 - `configbucket` is the bucket that will be used to store the API configuration
   data
@@ -86,31 +109,25 @@ The parameters are the following:
 - `subnet` the subnet that will host the EC2 instance
 - `vpc` the VPC that will host the EC2 instance and the listener
 
-### About the AMI
+## Test terraform-deck on AWS
 
-COPY the AMI for 2 reasons:
-- It is only availabe on eu-west-1
-- It might be deleted
-
-The best would be in fact to rebuild your AMI to make sure it 
-
-### Configure the application
-
-In order to configure the application, you must:
-
-- copy and modify the `api/config/settings-template.yaml` file according to your
-  needs
-- upload the file on a bucket that is secured and cannot be accessed except for
-  the AWS instance
-- Add the bucket name and bucket key in the deployment module parameters
-
-Assuming you've copied the file to `settings.yaml` before you've modified it and
-you have set `configbucket` and `configfile` to reference the bucket and the key
-you will use to reference the file, you should be able to copy the file with the
-command below:
+This simplest way to test terraform-deck is by downloading the client from
+the [release page](https://github.com/gregoryguillou/terraform-deck/releases) 
+and configuring it. Below is an example of such a configuration.
 
 ```shell
-aws s3 cp api/config/settings.yaml s3://${configbucket}${configfile}
-```
+export RELEASES=https://github.com/gregoryguillou/terraform-deck/releases
+export VERSION=v0.1.4
+export OS=linux
+curl -L ${RELEASES}/download/${VERSION}/deck-${OS}-amd64 -o deck
 
-### Configure your stack
+chmod +x deck
+./deck configure
+Terraform deck Endpoint (default: http://localhost:10010): [Enter the URL]
+Terraform deck API Key: [Enter and API Key]
+SUCCESS: You are connected as gregory...
+
+./deck version
+client: 0.1.4
+server: v0.1.0
+```
