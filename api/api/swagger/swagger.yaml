@@ -345,6 +345,22 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /status:
+    x-swagger-router-controller: version
+    get:
+      tags:
+        - auth
+      description: Return a 200 to help the loadbalancer check the status
+      operationId: status
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
   /swagger:
     x-swagger-pipe: swagger_raw
 # complex objects have schema definitions

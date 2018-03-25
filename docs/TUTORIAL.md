@@ -98,7 +98,6 @@ Consul container. In order to do that :
 
 The script below execute those 3 steps:
 
-
 ```shell
 export CONSUL_DOCKER=$(docker ps -f "label=deck.role=consul" \
                               -f status=running --format "{{.ID}}")
@@ -155,18 +154,6 @@ The directory also includes the declaration of the provider used to create resou
   version = "1.0.0"
 }
 ```
-
-> **Important:**  In order for that configuration to work on your laptop, you will need
-  the `consul` alias to resolve to the `${CONSUL_IP}` IP. Register the associated alias
-  in the `/etc/hosts` file of your laptop after you've made sure there is no existing alias
-  already (test with `grep consul /etc/hosts`). The command below, assuming, 
-  `${CONSUL_IP}` is set creates that alias as `root`. The command that follows test
-  it to make sure it works as expected:
-
-  ```shell
-  echo "${CONSUL_IP} consul" | sudo tee -a /etc/hosts
-  curl consul:8500/v1/catalog/nodes | jq
-  ```
 
 ## A backend to store Terraform State:
 

@@ -1,7 +1,9 @@
 # Command Line Interface
 
-`Terraform-deck` provides a command line interface written with go to interact with the
-API. To know more about it, run one of the commands below
+`Terraform-deck` provides a command line interface written with go to interact
+with the API. The CLI can be downloaded from the 
+[project release page](https://github.com/gregoryguillou/terraform-deck/releases).
+To know more about it, run one of the commands below:
 
 ```shell
 deck help

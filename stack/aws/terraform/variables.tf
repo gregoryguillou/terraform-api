@@ -1,3 +1,8 @@
+variable "ami" {
+  type        = "string"
+  description = "The AZ the storage will be kept in"
+}
+
 variable "availabilityzone" {
   type        = "string"
   description = "The AZ the storage will be kept in"
