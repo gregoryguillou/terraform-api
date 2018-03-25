@@ -48,14 +48,43 @@ few things:
   be able to pull from it at startup.
 
 
-The module parameters should look like the one below:
-- `vpc`:
-- `subnet`:
-- `loadbalancer`:
-- `hostname`:
-- `ruleno`:
-- `bucket`:
-- `configfile`:
+To use the project, you can simply add a module like the one below in your
+project:
+
+```hcl
+module "terraform-deck" {
+  source = "github.com/gregoryguillou/terraform-deck//stack/aws/terraform"
+
+  deploy           = "true"
+  availabilityzone = "<Availability Zone>"
+  configbucket     = "<Bucket>"
+  configfile       = "<Config File>"
+  environment      = "<Environment>"
+  hostname         = "<FQDN>"
+  keypair          = "<SSH Key Pair Name>"
+  listener         = "<Listener ARN>"
+  subnet           = "<Subnet>"
+  vpc              = "<VPC>"
+}
+```
+
+The parameters are the following:
+
+- `deploy` contains the "true" or "false" string and defines if the API is
+  deployed. It is useful because you cannot add `count` in a module
+- `availabilityzone` defines the Availability that will store the API data
+- `configbucket` is the bucket that will be used to store the API configuration
+  data
+- `configfile` is the configuration file path and name in the bucket
+- `environment` is used to prefix resource name and avoid naming conflicts
+- `hostname` is the fully qualified name with the domain that will forward to
+  the API. Note that the declaration of that name in the DNS is not provided
+  by the module; However, the registration in a target group is.
+- `keypair` a SSH key registered in EC2 and deployed in the ec2-user account at
+   startup
+- `listener` the ARN of the listener that is used as a loadbalancer
+- `subnet` the subnet that will host the EC2 instance
+- `vpc` the VPC that will host the EC2 instance and the listener
 
 ### About the AMI
 

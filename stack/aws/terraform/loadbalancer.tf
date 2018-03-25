@@ -12,7 +12,7 @@ resource "aws_alb_target_group" "terraformdeck_target_group" {
     timeout             = 5
     interval            = 30
     path                = "/version"
-    matcher             = "200"
+    matcher             = "401"
   }
 }
 
@@ -31,4 +31,12 @@ resource "aws_alb_listener_rule" "collector_listener_rule" {
     field  = "host-header"
     values = ["${var.hostname}"]
   }
+}
+
+resource "aws_lb_target_group_attachment" "deck" {
+  count = "${(var.deploy == "true" ? 1 : 0)}"
+
+  target_group_arn = "${aws_lb_target_group.terraformdeck_target_group.arn}"
+  target_id        = "${aws_instance.deck.id}"
+  port             = 10010
 }
