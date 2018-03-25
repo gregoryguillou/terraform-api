@@ -13,6 +13,17 @@ variable "botsfile" {
   description = "The key of the file for the bots"
 }
 
+variable "botsname" {
+  type        = "string"
+  description = "The FQDN of the hostname that serves bots"
+}
+
+variable "botsno" {
+  type        = "string"
+  default     = 88
+  description = "The rule number as seen by the ALB listener"
+}
+
 variable "configbucket" {
   type        = "string"
   description = "The bucket with the configuration file"

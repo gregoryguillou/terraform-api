@@ -59,11 +59,11 @@ resource "aws_alb_target_group" "bots_target_group" {
   }
 }
 
-resource "aws_alb_listener_rule" "bot_listener_rule" {
+resource "aws_alb_listener_rule" "bots_listener_rule" {
   count = "${(var.deploy == "true" ? 1 : 0)}"
 
   listener_arn = "${var.listener}"
-  priority     = "${var.ruleno}"
+  priority     = "${var.botsno}"
 
   action {
     type             = "forward"
@@ -72,7 +72,7 @@ resource "aws_alb_listener_rule" "bot_listener_rule" {
 
   condition {
     field  = "host-header"
-    values = ["${var.hostname}"]
+    values = ["${var.botsname}"]
   }
 }
 
