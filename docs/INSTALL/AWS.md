@@ -52,6 +52,7 @@ command below:
 
 ```shell
 aws s3 cp api/config/settings.yaml s3://${configbucket}${configfile}
+aws s3 cp api/config/settings.yaml s3://${configbucket}${botsfile}
 ```
 
 ## Deploy terraform-deck for AWS

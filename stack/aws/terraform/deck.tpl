@@ -21,7 +21,9 @@ mount /mnt/couchbase/data
 sysctl -w vm.max_map_count=262144
 
 cd /opt/terraform-deck
-rm -f /opt/terraform-deck/settings.yaml
-aws s3 cp s3://${configbucket}${configfile} /opt/terraform-deck/settings.yaml
+rm -f /opt/terraform-deck/api/settings.yaml
+rm -f /opt/terraform-deck/bots/settings.yaml
+aws s3 cp s3://${configbucket}${configfile} /opt/terraform-deck/api/settings.yaml
+aws s3 cp s3://${configbucket}${botsfile} /opt/terraform-deck/bots/settings.yaml
 
 docker-compose up -d
