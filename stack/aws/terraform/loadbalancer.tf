@@ -1,5 +1,6 @@
 resource "aws_alb_target_group" "terraformdeck_target_group" {
-  count    = "${(var.deploy == "true" ? 1 : 0}"
+  count = "${(var.deploy == "true" ? 1 : 0)}"
+
   name     = "${var.environment}-terraformdeck"
   port     = 10010
   protocol = "HTTP"
@@ -16,7 +17,8 @@ resource "aws_alb_target_group" "terraformdeck_target_group" {
 }
 
 resource "aws_alb_listener_rule" "collector_listener_rule" {
-  count        = "${(var.deploy == "true" ? 1 : 0}"
+  count = "${(var.deploy == "true" ? 1 : 0)}"
+
   listener_arn = "${var.listener}"
   priority     = "${var.ruleno}"
 

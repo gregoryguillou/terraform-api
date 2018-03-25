@@ -1,5 +1,5 @@
 resource "aws_instance" "deck" {
-  count = "${(var.deploy == "true" ? 1 : 0}"
+  count = "${(var.deploy == "true" ? 1 : 0)}"
 
   ami                         = "ami-9c6736e5"
   instance_type               = "t2.micro"
@@ -18,7 +18,7 @@ resource "aws_instance" "deck" {
 }
 
 data "template_file" "deck-template" {
-  count = "${(var.deploy == "true" ? 1 : 0}"
+  count = "${(var.deploy == "true" ? 1 : 0)}"
 
   template = "${file("${path.module}/deck.tpl")}"
 
@@ -30,9 +30,10 @@ data "template_file" "deck-template" {
 }
 
 resource "aws_iam_instance_profile" "deck_profile" {
-  count = "${(var.deploy == "true" ? 1 : 0}"
-  name  = "${var.environment}DeckProfile"
-  role  = "${aws_iam_role.ec2_deck_role.name}"
+  count = "${(var.deploy == "true" ? 1 : 0)}"
+
+  name = "${var.environment}DeckProfile"
+  role = "${aws_iam_role.ec2_deck_role.name}"
 
   lifecycle {
     create_before_destroy = true
@@ -40,8 +41,9 @@ resource "aws_iam_instance_profile" "deck_profile" {
 }
 
 resource "aws_iam_role" "ec2_deck_role" {
-  count = "${(var.deploy == "true" ? 1 : 0}"
-  name  = "${var.environment}DeckEC2Role"
+  count = "${(var.deploy == "true" ? 1 : 0)}"
+
+  name = "${var.environment}DeckEC2Role"
 
   assume_role_policy = <<EOF
 {
@@ -67,19 +69,22 @@ EOF
 }
 
 resource "aws_iam_role_policy_attachment" "ec2_role_attachment" {
-  count      = "${(var.deploy == "true" ? 1 : 0}"
+  count = "${(var.deploy == "true" ? 1 : 0)}"
+
   role       = "${aws_iam_role.ec2_deck_role.name}"
   policy_arn = "${aws_iam_policy.ec2_policy.arn}"
 }
 
 resource "aws_iam_role_policy_attachment" "ssm_role_attachment" {
-  count      = "${(var.deploy == "true" ? 1 : 0}"
+  count = "${(var.deploy == "true" ? 1 : 0)}"
+
   role       = "${aws_iam_role.ec2_deck_role.name}"
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM"
 }
 
 resource "aws_iam_policy" "ec2_policy" {
-  count       = "${(var.deploy == "true" ? 1 : 0}"
+  count = "${(var.deploy == "true" ? 1 : 0)}"
+
   name        = "${var.environment}DeckEC2RolePolicy"
   path        = "/"
   description = "Policy used to access Configuration"
@@ -125,7 +130,7 @@ EOF
 }
 
 resource "aws_ebs_volume" "deck" {
-  count = "${(var.deploy == "true" ? 1 : 0}"
+  count = "${(var.deploy == "true" ? 1 : 0)}"
 
   availability_zone = "${var.availabilityzone}"
   size              = "20"
@@ -139,7 +144,7 @@ resource "aws_ebs_volume" "deck" {
 }
 
 resource "aws_volume_attachment" "deck" {
-  count = "${(var.deploy == "true" ? 1 : 0}"
+  count = "${(var.deploy == "true" ? 1 : 0)}"
 
   device_name  = "/dev/xvdh"
   force_detach = "true"
@@ -148,7 +153,8 @@ resource "aws_volume_attachment" "deck" {
 }
 
 resource "aws_security_group" "deck_security_group" {
-  count       = "${(var.deploy == "true" ? 1 : 0}"
+  count = "${(var.deploy == "true" ? 1 : 0)}"
+
   name        = "${var.environment}-deck"
   description = "Allow incoming SSH and HTTP connections"
   vpc_id      = "${var.vpc}"

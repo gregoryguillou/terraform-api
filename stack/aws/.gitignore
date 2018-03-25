@@ -3,4 +3,4 @@
 *.auto.tfvars
 provider.tf
 .terraform*
-terraform.tfstate
+terraform.tfstate*

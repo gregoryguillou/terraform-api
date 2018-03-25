@@ -1,5 +1,6 @@
 resource "aws_ssm_document" "terraformdeck" {
-  count         = "${(var.deploy == "true" ? 1 : 0}"
+  count = "${(var.deploy == "true" ? 1 : 0)}"
+
   name          = "TerraformDeckSshAccessGrant"
   document_type = "Command"
 
