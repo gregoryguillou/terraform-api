@@ -26,6 +26,10 @@ for i in {1..60}; do
 done
 sleep 10
 
+printf "\nCopy template settings...\n"
+cp -f ${PROJECT_DIR}/api/config/settings-template.yaml ${PROJECT_DIR}/api/config/settings.yaml 
+cp -f ${PROJECT_DIR}/bots/config/settings-template.yaml ${PROJECT_DIR}/bots/config/settings.yaml 
+
 printf "\nStarting tests...\n"
 docker-compose run deck npm test
 
