@@ -4,7 +4,7 @@ BINARY=deck
 GOARCH = amd64
 
 COMMIT=$(shell git rev-parse HEAD | cut -c1-7)
-TAG=$(shell git tag -l --contains HEAD | grep "^v" | head -n 1 | sed 's/^v//')
+TAG=$(shell git tag -l --contains HEAD | grep "^v" | head -n 1 )
 VERSION := $(or ${TAG},${COMMIT},unknown)
 
 CURRENT_DIR=$(shell pwd)
