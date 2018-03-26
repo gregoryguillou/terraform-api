@@ -1,6 +1,6 @@
 {
   "name": "terraform-deck",
-  "version": "0.1.0",
+  "version": "0.1.5",
   "private": true,
   "description": "An API Project, built with swagger to create resources with Terraform",
   "keywords": [],

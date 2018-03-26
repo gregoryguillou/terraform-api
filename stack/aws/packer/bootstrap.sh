@@ -19,9 +19,9 @@ mkdir -p /opt/terraform-deck/api
 mkdir -p /opt/terraform-deck/bots
 
 
-docker pull gregoryguillou/terraform-deck:v0.1.4
-docker pull gregoryguillou/terraform-deck:v0.1.4-demo
-docker pull gregoryguillou/terraform-deck:v0.1.4-bots
+docker pull gregoryguillou/terraform-deck:v0.1.5
+docker pull gregoryguillou/terraform-deck:v0.1.5-demo
+docker pull gregoryguillou/terraform-deck:v0.1.5-bots
 docker pull consul:1.0.6
 docker pull couchbase:community-5.0.1
 

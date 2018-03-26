@@ -120,7 +120,7 @@ and configuring it. Below is an example of such a configuration.
 
 ```shell
 export RELEASES=https://github.com/gregoryguillou/terraform-deck/releases
-export VERSION=v0.1.4
+export VERSION=v0.1.5
 export OS=linux
 curl -L ${RELEASES}/download/${VERSION}/deck-${OS}-amd64 -o deck
 
@@ -131,6 +131,6 @@ Terraform deck API Key: [Enter and API Key]
 SUCCESS: You are connected as gregory...
 
 ./deck version
-client: 0.1.4
+client: 0.1.5
 server: v0.1.0
 ```
