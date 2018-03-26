@@ -81,6 +81,7 @@ module "terraform-deck" {
   availabilityzone = "<Availability Zone>"
   configbucket     = "<Bucket>"
   configfile       = "<Config File>"
+  botsfile         = "<Bots File>"
   environment      = "<Environment>"
   hostname         = "<FQDN>"
   keypair          = "<SSH Key Pair Name>"
@@ -100,6 +101,7 @@ The parameters are the following:
 - `configbucket` is the bucket that will be used to store the API configuration
   data
 - `configfile` is the configuration file path and name in the bucket
+- `botsfile` is the configuration file path and name, for the bots API, in the bucket
 - `environment` is used to prefix resource name and avoid naming conflicts
 - `hostname` is the fully qualified name with the domain that will forward to
   the API. Note that the declaration of that name in the DNS is not provided
