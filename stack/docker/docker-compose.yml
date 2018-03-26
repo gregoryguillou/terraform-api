@@ -7,7 +7,7 @@ services:
       - 10010:10010
     volumes:
      - /var/run/docker.sock:/var/run/docker.sock
-     - $PWD/../../api/config/settings-template.yaml:/app/config/settings.yaml
+     - $PWD/../../api/config/settings.yaml:/app/config/settings.yaml
     depends_on:
       - consul
       - couchbase
@@ -18,7 +18,7 @@ services:
     ports:
       - 8080:8080
     volumes:
-     - $PWD/../../bots/config/settings-template.yaml:/app/config/settings.yaml
+     - $PWD/../../bots/config/settings.yaml:/app/config/settings.yaml
     depends_on:
       - deck
       - couchbase

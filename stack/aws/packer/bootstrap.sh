@@ -31,8 +31,8 @@ curl -L $REPOSITORY/master/api/config/settings-template.yaml -o api/settings.yam
 curl -L $REPOSITORY/master/bots/config/settings-template.yaml -o bots/settings.yaml
 chmod +x couchbase-setup.sh
 
-sed -i 's/\$PWD.*api.*template\.yaml/\/opt\/terraform-deck\/api\/settings.yaml/' docker-compose.yml
-sed -i 's/\$PWD.*bots.*template\.yaml/\/opt\/terraform-deck\/bots\/settings.yaml/' docker-compose.yml
+sed -i 's/\$PWD.*api.*settings\.yaml\:/\/opt\/terraform-deck\/api\/settings.yaml:/' docker-compose.yml
+sed -i 's/\$PWD.*bots.*settings\.yaml\:/\/opt\/terraform-deck\/bots\/settings.yaml:/' docker-compose.yml
 sed -i '/couchbase-server\"/a\ \ \ \ volumes:\n\ \ \ \ \ \ - \"\/mnt\/couchbase\/data:\/opt\/couchbase\/var\/lib\/couchbase\/data\"' \
   docker-compose.yml
 
