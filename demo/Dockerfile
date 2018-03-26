@@ -9,6 +9,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     cd /usr/local/bin && unzip /opt/terraform.zip && rm -f /opt/terraform.zip && \
     mkdir /github
 
+WORKDIR /app
 COPY . /app
 
 ENTRYPOINT [ "/app/entrypoint.sh" ]
