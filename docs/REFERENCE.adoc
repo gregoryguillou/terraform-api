@@ -6,7 +6,7 @@
 
 === Version information
 [%hardbreaks]
-__Version__ : 0.1.0
+__Version__ : 0.1.5
 
 
 === URI scheme
@@ -427,6 +427,28 @@ __required__|Workspace to get|string
 ==== Tags
 
 * main
+
+
+[[_status]]
+=== GET /status
+
+==== Description
+Return a 200 to help the loadbalancer check the status
+
+
+==== Responses
+
+[options="header", cols=".^2,.^14,.^4"]
+|===
+|HTTP Code|Description|Schema
+|**200**|Success|<<_errorresponse,ErrorResponse>>
+|**default**|Error|<<_errorresponse,ErrorResponse>>
+|===
+
+
+==== Tags
+
+* auth
 
 
 [[_login_user]]
