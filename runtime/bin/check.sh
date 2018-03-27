@@ -7,7 +7,7 @@ WORKSPACE=${WORKSPACE:-default}
 export PATH=/app:$PATH
 
 $PROJECT_DIR/bin/git-sync.sh
-cd /github/repository/demo/terraform/starter
+cd /github/repository/${GITHUB_DIRECTORY}
 
 terraform init -get-plugins=true >/dev/null 2>&1 || \
   (printf "Error with terraform initialization\n"; exit 1)

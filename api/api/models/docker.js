@@ -43,7 +43,12 @@ function getenv (state, workspace, callback) {
         envs.push(changedElement)
       })
       if (project.git) {
-        envs.push(`GITHUB_REPOSITORY=${project.git.repository}`)
+        envs.push(`GITHUB_REPOSITORY=https://${project.git.repository}`)
+        if (project.git.directory) {
+          envs.push(`GITHUB_DIRECTORY=${project.git.directory}`)
+        } else {
+          envs.push('GITHUB_DIRECTORY=.')
+        }
         if (project.git.login) {
           envs.push(`GITHUB_USERNAME=${project.git.login}`)
           envs.push(`GITHUB_PASSWORD=${project.git.password}`)
