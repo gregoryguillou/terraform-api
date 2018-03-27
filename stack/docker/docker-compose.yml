@@ -24,12 +24,13 @@ services:
       - couchbase
     restart: "always"
 
-  demo:
-    image: "gregoryguillou/terraform-deck:${VERSION:-v0.1.5}-demo"
+  runtime:
+    image: "gregoryguillou/terraform-deck:${VERSION:-v0.1.5}-runtime"
     depends_on:
       - consul
     environment:
       CONSUL_IP: consul
+      GITHUB_REPOSITORY: "https://github.com/gregoryguillou/terraform-deck-stacks.git"
     command: ["-c", "sleep 10"]
     entrypoint: ["/bin/bash"]
     restart: "no"

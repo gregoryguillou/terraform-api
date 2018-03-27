@@ -17,7 +17,7 @@ projects:
   - type: terraform
     name: demonstration
     description: A demonstration project that relies on Terraform/Consul
-    docker-image: "gregoryguillou/terraform-deck:latest-demo"
+    docker-image: "gregoryguillou/terraform-deck:latest-runtime"
     git:
       repository: github.com/gregoryguillou/terraform-deck-stacks.git
       branch: master
