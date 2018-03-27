@@ -1,5 +1,5 @@
 bots:
-  - name: donnatello
+  - name: donatello
     type: slack
     prefix: staging
     apiurl: http://deck:10010

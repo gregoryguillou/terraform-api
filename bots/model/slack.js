@@ -177,6 +177,50 @@ const apply = (props, callback) => {
   })
 }
 
+const check = (props, callback) => {
+  post(props, `/projects/${props.project}/workspaces/${props.workspace}`, {action: 'check'}, (err, response, data) => {
+    if (err) {
+      message(
+        props,
+        'Error detected:\n'
+          .concat(err.text)
+      )
+      return
+    }
+    let respMessage = 'request succeeded :heart_eyes:'
+    if (response.statusCode === 209) {
+      respMessage = 'change pending, please wait :sweat_smile:'
+    } else if (response.statusCode !== 201) {
+      respMessage = 'ough, it has failed :skull_and_crossbones:'
+    }
+    message(
+      props,
+      `I've submitted your request and I got: ${respMessage}\n`)
+  })
+}
+
+const clean = (props, callback) => {
+  post(props, `/projects/${props.project}/workspaces/${props.workspace}`, {action: 'clean'}, (err, response, data) => {
+    if (err) {
+      message(
+        props,
+        'Error detected:\n'
+          .concat(err.text)
+      )
+      return
+    }
+    let respMessage = 'request succeeded :heart_eyes:'
+    if (response.statusCode === 209) {
+      respMessage = 'change pending, please wait :sweat_smile:'
+    } else if (response.statusCode !== 201) {
+      respMessage = 'ough, it has failed :skull_and_crossbones:'
+    }
+    message(
+      props,
+      `I've submitted your request and I got: ${respMessage}\n`)
+  })
+}
+
 const destroy = (props, callback) => {
   post(props, `/projects/${props.project}/workspaces/${props.workspace}`, {action: 'destroy'}, (err, response, data) => {
     if (err) {
@@ -202,6 +246,10 @@ const destroy = (props, callback) => {
 const helpList = [
   { key: 'apply',
     description: 'creates or updates the current project/workspace' },
+  { key: 'check',
+    description: 'checks the full status of the current project/workspace' },
+  { key: 'clean',
+    description: 'cleans the status of the when needed project/workspace' },
   { key: 'destroy',
     description: 'destroys the current project/workspace' },
   { key: 'branches',
@@ -259,6 +307,14 @@ const response = (props, msg) => {
 
   if (verb === 'apply') {
     return apply(props, null)
+  }
+
+  if (verb === 'check') {
+    return check(props, null)
+  }
+
+  if (verb === 'clean') {
+    return clean(props, null)
   }
 
   if (verb === 'destroy') {
