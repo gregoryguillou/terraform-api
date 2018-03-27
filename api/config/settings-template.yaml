@@ -19,11 +19,11 @@ projects:
     description: A demonstration project that relies on Terraform/Consul
     docker-image: "gregoryguillou/terraform-deck:latest-demo"
     git:
-      repository: github.com/gregoryguillou/terraform-deck.git
+      repository: github.com/gregoryguillou/terraform-deck-stacks.git
       branch: master
       username: username
       password: "password"
-      directory: /demo/terraform/starter
+      directory: /demo
     workspaces:
       - staging
       - qa

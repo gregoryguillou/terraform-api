@@ -11,10 +11,10 @@ const containers = {
     version: 'latest',
     path: '../api'
   },
-  demo: {
+  runtime: {
     name: 'gregoryguillou/terraform-deck',
-    version: 'latest-demo',
-    path: '../demo'
+    version: 'latest-runtime',
+    path: '../runtime'
   },
   bots: {
     name: 'gregoryguillou/terraform-deck',
@@ -30,15 +30,16 @@ function build () {
   dotenv.config()
   process.chdir(containers['terraform-deck'].path)
   run(`docker build -t ${containers['terraform-deck'].name}:${containers['terraform-deck'].version} .`)
-  process.chdir(containers.demo.path)
-  run(`docker build --build-arg CACHEBUST=$(date +%s) -t ${containers.demo.name}:${containers.demo.version} .`)
+  process.chdir(containers.runtime.path)
+  run(`docker build -t ${containers.runtime.name}:${containers.runtime.version} .`)
   process.chdir(containers.bots.path)
   run(`docker build -t ${containers.bots.name}:${containers.bots.version} .`)
 }
 
 function clean () {
   run(`docker rmi ${containers['terraform-deck'].name}:${containers['terraform-deck'].version}`)
-  run(`docker rmi ${containers.demo.name}:${containers.demo.version}`)
+  run(`docker rmi ${containers.runtime.name}:${containers.runtime.version}`)
+  run(`docker rmi ${containers.bots.name}:${containers.bots.version}`)
 }
 
 function doc () {
