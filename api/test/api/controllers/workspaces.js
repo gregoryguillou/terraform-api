@@ -4,6 +4,9 @@ const should = require('should')
 const request = require('supertest')
 const server = require('../../../app')
 const { feedWorkspace } = require('../../../api/models/couchbase')
+const YAML = require('yamljs')
+const apikey = YAML.load('config/settings.yaml').users[0].apikey
+
 let token = ''
 
 let i = 0
@@ -78,7 +81,7 @@ describe('controllers', function () {
       request(server)
         .get('/login')
         .set('Accept', 'application/json')
-        .set('Authorization', 'Key notsosecretadminkey')
+        .set('Authorization', `Key ${apikey}`)
         .expect('Content-Type', /json/)
         .expect(200)
         .end((err, res) => {
