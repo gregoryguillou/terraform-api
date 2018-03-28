@@ -6,9 +6,10 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get install -y nodejs
 
 EXPOSE 10010
+CMD [ "npm", "start" ]
 
-COPY . /app/
 WORKDIR /app
+COPY package.json /app/
 RUN npm install
 
-CMD [ "npm", "start" ]
+COPY . /app/
