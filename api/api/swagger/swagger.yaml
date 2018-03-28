@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  version: "0.1.5"
+  version: "0.1.6"
   title: Terraform-deck
 # during dev, should point to your local machine
 host: localhost:10010
