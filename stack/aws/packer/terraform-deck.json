@@ -5,7 +5,7 @@
     "vpc": "",
     "subnet": "",
     "region": "eu-west-1",
-    "version": "v0.1.5"
+    "version": "v0.1.6"
   },
   "builders": [{
     "type": "amazon-ebs",

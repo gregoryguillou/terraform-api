@@ -2,7 +2,7 @@ version: '3.2'
 
 services:
   deck:
-    image: "gregoryguillou/terraform-deck:${VERSION:-v0.1.5}"
+    image: "gregoryguillou/terraform-deck:${VERSION:-v0.1.6}"
     ports:
       - 10010:10010
     volumes:
@@ -14,7 +14,7 @@ services:
     restart: "always"
 
   bots:
-    image: "gregoryguillou/terraform-deck:${VERSION:-v0.1.5}-bots"
+    image: "gregoryguillou/terraform-deck:${VERSION:-v0.1.6}-bots"
     ports:
       - 8080:8080
     volumes:
@@ -25,7 +25,7 @@ services:
     restart: "always"
 
   runtime:
-    image: "gregoryguillou/terraform-deck:${VERSION:-v0.1.5}-runtime"
+    image: "gregoryguillou/terraform-deck:${VERSION:-v0.1.6}-runtime"
     depends_on:
       - consul
     environment:
