@@ -8,8 +8,15 @@ echo "machine github.com" >~/.netrc
 echo "login ${GITHUB_USERNAME}" >>~/.netrc
 echo "password ${GITHUB_PASSWORD}" >>~/.netrc
 chmod 600 ~/.netrc
-cd /github/repository
-git pull
+
+if [[ -d "/github/repository" ]]; then
+  cd /github/repository
+  git pull
+else
+  git clone ${GITHUB_REPOSITORY} /github/repository
+  cd /github/repository
+fi
+
 git fetch --all --tags --prune
 
 if [[ -n "$TAG" ]]; then

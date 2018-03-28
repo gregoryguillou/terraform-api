@@ -30,6 +30,43 @@ const authenticate = (props, callback) => {
   })
 }
 
+function queryWorkspace (i, props, callback) {
+  setTimeout(function () {
+    const options = {
+      url: `${props.apiurl}/projects/${props.project}/workspaces/${props.workspace}`,
+      headers: {Authorization: `Bearer ${props.token}`}
+    }
+    const j = i + 1
+    request.get(options, (err, data) => {
+      const payload = JSON.parse(data.body)
+      if (err) {
+        message(props, `Error connecting to the API:\n${err.text}`)
+        if (callback) { return callback(err, null) }
+        return
+      }
+      if (payload.request) {
+        if (j < 100) {
+          return queryWorkspace(j, props, callback)
+        }
+        message(props, `The change is still not over. the state is **${JSON.stringify(payload)}**\n`)
+        if (callback) { return callback(err, null) }
+        return
+      }
+      message(
+        props,
+        'The change has been done. the state is now:\n'
+          .concat(`\`\`\``)
+          .concat(`project:   ${payload.project}\n`)
+          .concat(`workspace: ${payload.workspace}\n`)
+          .concat(`ref:       ${payload.ref}\n`)
+          .concat(`state:     ${payload.state}\n`)
+          .concat(`\`\`\``)
+      )
+      if (callback) { return callback(err, null) }
+    })
+  }, 1000)
+}
+
 const get = (props, url, callback) => {
   authenticate(props, (err, data) => {
     if (err) { throw err }
@@ -56,11 +93,19 @@ const post = (props, url, payload, callback) => {
       headers: {Authorization: `Bearer ${data.token}`},
       json: payload
     }
+    let identifiedProps = props
+    identifiedProps.token = data.token
     request.post(options, (err, response, data) => {
       if (err) {
         message(props, `Error connecting to the API:\n${err.text}`)
         if (callback) { callback(err, null, null) }
       } else {
+        queryWorkspace(0, props, () => {
+          logger.info(`Query to ${JSON.stringify(payload)} is over`)
+          quickcheck(props, () => {
+            logger.info(`Checking current status again`)
+          })
+        })
         if (callback) { callback(null, response, null) }
       }
     })
@@ -177,6 +222,50 @@ const apply = (props, callback) => {
   })
 }
 
+const check = (props, callback) => {
+  post(props, `/projects/${props.project}/workspaces/${props.workspace}`, {action: 'check'}, (err, response, data) => {
+    if (err) {
+      message(
+        props,
+        'Error detected:\n'
+          .concat(err.text)
+      )
+      return
+    }
+    let respMessage = 'request succeeded :heart_eyes:'
+    if (response.statusCode === 209) {
+      respMessage = 'change pending, please wait :sweat_smile:'
+    } else if (response.statusCode !== 201) {
+      respMessage = 'ough, it has failed :skull_and_crossbones:'
+    }
+    message(
+      props,
+      `I've submitted your request and I got: ${respMessage}\n`)
+  })
+}
+
+const clean = (props, callback) => {
+  post(props, `/projects/${props.project}/workspaces/${props.workspace}`, {action: 'clean'}, (err, response, data) => {
+    if (err) {
+      message(
+        props,
+        'Error detected:\n'
+          .concat(err.text)
+      )
+      return
+    }
+    let respMessage = 'request succeeded :heart_eyes:'
+    if (response.statusCode === 209) {
+      respMessage = 'change pending, please wait :sweat_smile:'
+    } else if (response.statusCode !== 201) {
+      respMessage = 'ough, it has failed :skull_and_crossbones:'
+    }
+    message(
+      props,
+      `I've submitted your request and I got: ${respMessage}\n`)
+  })
+}
+
 const destroy = (props, callback) => {
   post(props, `/projects/${props.project}/workspaces/${props.workspace}`, {action: 'destroy'}, (err, response, data) => {
     if (err) {
@@ -202,6 +291,10 @@ const destroy = (props, callback) => {
 const helpList = [
   { key: 'apply',
     description: 'creates or updates the current project/workspace' },
+  { key: 'check',
+    description: 'checks the full status of the current project/workspace' },
+  { key: 'clean',
+    description: 'cleans the status of the when needed project/workspace' },
   { key: 'destroy',
     description: 'destroys the current project/workspace' },
   { key: 'branches',
@@ -259,6 +352,14 @@ const response = (props, msg) => {
 
   if (verb === 'apply') {
     return apply(props, null)
+  }
+
+  if (verb === 'check') {
+    return check(props, null)
+  }
+
+  if (verb === 'clean') {
+    return clean(props, null)
   }
 
   if (verb === 'destroy') {

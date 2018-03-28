@@ -1,5 +1,5 @@
 !.terraform/terraform.tfstate
 !.terraform/plugins/linux_amd64/*
 .terraform
-Dokerfile
+Dockerfile
 .gitignore

@@ -17,13 +17,17 @@ projects:
   - type: terraform
     name: demonstration
     description: A demonstration project that relies on Terraform/Consul
-    docker-image: "gregoryguillou/terraform-deck:latest-demo"
+    docker-image: "gregoryguillou/terraform-deck:latest-runtime"
     git:
-      repository: github.com/gregoryguillou/terraform-deck.git
+      # the repository must be an https repository and it should not be
+      # prefixed down here, i.e. use github.com/...
+      repository: github.com/gregoryguillou/terraform-deck-stacks.git
       branch: master
       username: username
       password: "password"
-      directory: /demo/terraform/starter
+      # the directory must be relative, i.e. not star with / and be '.'
+      # if that's the root directory of the project
+      directory: demo
     workspaces:
       - staging
       - qa
