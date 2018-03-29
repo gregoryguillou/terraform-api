@@ -9,6 +9,25 @@ echo "login ${GITHUB_USERNAME}" >>~/.netrc
 echo "password ${GITHUB_PASSWORD}" >>~/.netrc
 chmod 600 ~/.netrc
 
+# Optimisation...
+# We should try to implement the 2 ideas below to speed up the
+# sync process. The best would be to perform the 2 alltogether:
+#  - Sync only a directory in the repository
+#     git init <repo>
+#     cd <repo>
+#     git remote add -f origin ${GITHUB_REPOSITORY}
+#     git config core.sparseCheckout true
+#     echo "${GITHUB_DIRECTORY}" >> .git/info/sparse-checkout
+#
+#     - to follow you can do that:
+#     git pull origin master
+#     - you might even be able to do:
+#     git fetch -unf origin v0.1.6:refs/tags/v0.1.6
+#     git checkout v0.1.6
+#
+# - Another way would be to do what Travis CI does
+# git clone --depth=10 --branch=v0.1.6 ${GITHUB_REPOSITORY} <repo>
+
 if [[ -d "/github/repository" ]]; then
   cd /github/repository
   git pull
