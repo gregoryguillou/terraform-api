@@ -49,26 +49,31 @@ function updateAll (callback) {
 
 function getTags (project, callback) {
   const localProject = '/tmp/' + project.name
-  require('simple-git')(localProject).tags((err, tags) => {
+  require('simple-git')(localProject).listRemote(['--tags'], (err, tags) => {
     if (!err) {
-      callback(tags.all)
+      let output = []
+      tags.split('\n').forEach(p => {
+        if (p && p.split('\t')[1].match(/^refs\/tags\//)) {
+          output.push(p.split('\t')[1].replace(/^refs\/tags\//, ''))
+        }
+      })
+      callback(output)
     }
   })
 }
 
 function getBranches (project, callback) {
   const localProject = '/tmp/' + project.name
-  require('simple-git')(localProject).branch((err, branches) => {
-    if (err) {
-      return // TODO have a callback?
+  require('simple-git')(localProject).listRemote(['--heads'], (err, heads) => {
+    if (!err) {
+      let output = []
+      heads.split('\n').forEach(p => {
+        if (p && p.split('\t')[1].match(/^refs\/heads\//)) {
+          output.push(p.split('\t')[1].replace(/^refs\/heads\//, ''))
+        }
+      })
+      callback(output)
     }
-    const re = /remotes\/origin\//
-    callback(branches.all.reduce((list, e) => {
-      if (e.match(re)) {
-        list.push(e.replace(/remotes\/origin\/(.*)/, '$1'))
-      }
-      return list
-    }, []))
   })
 }
 
