@@ -359,6 +359,14 @@ function feedWorkspace (workspace, result, callback) {
           payload[key].lastChecked = lastChecked((result.status === 'error'))
         }
         break
+      case 'changed':
+        if (request.action === 'reference') {
+          payload[key].lastChecked = lastChecked('changed')
+        } else {
+          logger.error(`${workspace.project}:${workspace.workspace} should not differ with action = ${request.action}`)
+          payload[key].lastChecked = lastChecked((result.status === 'error'))
+        }
+        break
       case 'succeed':
         switch (request.action) {
           case 'apply':
