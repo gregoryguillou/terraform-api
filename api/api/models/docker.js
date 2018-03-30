@@ -89,6 +89,15 @@ function apply (config, callback) {
   })
 }
 
+function reference (config, callback) {
+  callback(null, {
+    ref: config.ref,
+    project: config.project,
+    statusCode: 0,
+    workspace: config.workspace
+  })
+}
+
 function destroy (config, callback) {
   getenv('destroy', config, (err, data) => {
     callback(err, data)
@@ -105,5 +114,6 @@ module.exports = {
   apply,
   check,
   destroy,
+  reference,
   version
 }

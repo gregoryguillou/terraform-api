@@ -8,7 +8,7 @@ const {
   feedWorkspace,
   showWorkspace
 } = require('../models/couchbase')
-const { apply, check, destroy } = require('../models/docker')
+const { apply, check, destroy, reference } = require('../models/docker')
 const logger = require('../models/logger')
 const { exec } = require('child_process')
 
@@ -133,6 +133,23 @@ function action (req, res) {
           feedWorkspace({project: workspace.project, workspace: workspace.workspace}, {status: status}, (err, data) => {
             if (err) {
               logger.error(`${workspace.project}/${workspace.workspace} failed store check ${status}`)
+            }
+          })
+        })
+        res.status(201).json({event: data[key].request.event})
+      } else if (actionValue.action === 'reference') {
+        let request = {
+          project: workspace.project,
+          workspace: workspace.workspace,
+          ref: (actionValue.ref ? actionValue.ref : (data[key].ref ? data[key].ref : 'branch:master')),
+          event: data[key].request.event
+        }
+        reference(request, (err, data) => {
+          if (err) { throw err }
+          let status = 'changed'
+          feedWorkspace({project: workspace.project, workspace: workspace.workspace}, {status: status}, (err, data) => {
+            if (err) {
+              logger.error(`${workspace.project}/${workspace.workspace} error referencing ${request.ref}`)
             }
           })
         })
