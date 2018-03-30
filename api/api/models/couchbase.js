@@ -341,7 +341,7 @@ function feedWorkspace (workspace, result, callback) {
     if (payload[key].request) {
       request = {
         action: payload[key].request.action,
-        ref: (payload[key].request.ref ? payload[key].request.ref : (payload[key].ref ? payload[key].ref : 'unknown')),
+        ref: (payload[key].request.ref ? payload[key].request.ref : (payload[key].ref ? payload[key].ref : undefined)),
         event: payload[key].request.event
       }
       delete payload[key].request
@@ -362,6 +362,9 @@ function feedWorkspace (workspace, result, callback) {
       case 'changed':
         if (request.action === 'reference') {
           payload[key].lastChecked = lastChecked('changed')
+          if (request.ref) {
+            payload[key].ref = request.ref
+          }
         } else {
           logger.error(`${workspace.project}:${workspace.workspace} should not differ with action = ${request.action}`)
           payload[key].lastChecked = lastChecked((result.status === 'error'))
@@ -372,6 +375,9 @@ function feedWorkspace (workspace, result, callback) {
           case 'apply':
             payload[key].lastChecked = lastChecked('applied')
             payload[key].state = 'applied'
+            if (request.ref) {
+              payload[key].ref = request.ref
+            }
             break
           case 'destroy':
             payload[key].lastChecked = lastChecked('destroyed')
@@ -379,6 +385,9 @@ function feedWorkspace (workspace, result, callback) {
             break
           case 'check':
             payload[key].lastChecked = lastChecked('checked')
+            if (request.ref) {
+              payload[key].ref = request.ref
+            }
             break
           default:
             logger.error(`${workspace.project}:${workspace.workspace} error with (${request.action}->${result.status})`)
@@ -390,6 +399,9 @@ function feedWorkspace (workspace, result, callback) {
           case 'apply':
             payload[key].lastChecked = lastChecked('failed')
             payload[key].state = 'apply - failed'
+            if (request.ref) {
+              payload[key].ref = request.ref
+            }
             logger.info(`${workspace.project}:${workspace.workspace}, action = ${request.action} failed'`)
             break
           case 'destroy':
@@ -400,6 +412,9 @@ function feedWorkspace (workspace, result, callback) {
           case 'check':
             payload[key].lastChecked = lastChecked('failed')
             logger.info(`${workspace.project}:${workspace.workspace}, action = ${request.action} checked'`)
+            if (request.ref) {
+              payload[key].ref = request.ref
+            }
             break
           default:
             logger.info(`${workspace.project}:${workspace.workspace}, action = ${request.action} should not be managed'`)

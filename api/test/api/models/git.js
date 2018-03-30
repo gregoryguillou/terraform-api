@@ -11,8 +11,7 @@ describe('models', function () {
       var stats = fs.statSync('/tmp/demonstration')
       should(stats.isDirectory()).be.eql(true)
       done()
-    }
-  )
+    })
 
     it('Check tags exists and can be accessed', (done) => {
       getTags(

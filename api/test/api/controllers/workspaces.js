@@ -321,6 +321,86 @@ describe('controllers', function () {
       })
     })
 
+    describe('POST /projects/{project}/workspaces/{workspace} with {action: "reference", ref: "tag:v0.0.1"} and different tags', () => {
+      it('should succeed HTTP-201 when project/workspace exists, action is apply with tag v0.0.1', (done) => {
+        request(server)
+          .post('/projects/demonstration/workspaces/staging')
+          .send({'action': 'reference', 'ref': 'tag:v0.0.1'})
+          .set('Accept', 'application/json')
+          .set('Authorization', token)
+          .expect(201)
+          .end((err, res) => {
+            should.not.exist(err)
+            should.exist(res.body.event)
+            done()
+          })
+      })
+
+      it('Wait up to 30s before the creation is considered failed', (done) => {
+        i = 0
+        queryWorkspace(() => {
+          done()
+        })
+      })
+
+      it('should describe the detail of a given workspace', (done) => {
+        request(server)
+          .get('/projects/demonstration/workspaces/staging')
+          .set('Accept', 'application/json')
+          .set('Authorization', token)
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end((err, res) => {
+            should.not.exist(err)
+            res.body.should.containEql({
+              project: 'demonstration',
+              workspace: 'staging',
+              ref: 'tag:v0.0.1'
+            })
+            done()
+          })
+      })
+
+      it('should succeed HTTP-201 when project/workspace exists, action is apply with branch master', (done) => {
+        request(server)
+          .post('/projects/demonstration/workspaces/staging')
+          .send({'action': 'reference', 'ref': 'branch:master'})
+          .set('Accept', 'application/json')
+          .set('Authorization', token)
+          .expect(201)
+          .end((err, res) => {
+            should.not.exist(err)
+            should.exist(res.body.event)
+            done()
+          })
+      })
+
+      it('Wait up to 30s before the creation is considered failed', (done) => {
+        i = 0
+        queryWorkspace(() => {
+          done()
+        })
+      })
+
+      it('should describe the detail of a given workspace', (done) => {
+        request(server)
+          .get('/projects/demonstration/workspaces/staging')
+          .set('Accept', 'application/json')
+          .set('Authorization', token)
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end((err, res) => {
+            should.not.exist(err)
+            res.body.should.containEql({
+              project: 'demonstration',
+              workspace: 'staging',
+              ref: 'branch:master'
+            })
+            done()
+          })
+      })
+    })
+
     describe('POST /projects/{project}/workspaces/{workspace} with {action: "destroy"}', () => {
       it('should succeed HTTP-201 when project/workspace exists, action in [apply, destroy] and no pending action', (done) => {
         request(server)
