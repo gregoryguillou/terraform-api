@@ -17,7 +17,7 @@ ami:
 
 list:
 	@aws ec2 describe-images \
-	   --filters "Name=tag-key,Values=Templace" "Name=tag-value,Values=terraform-deck" \
+	   --filters "Name=tag-key,Values=Template" "Name=tag-value,Values=terraform-deck" \
 	   --query='Images[*].{Name: Name,ImageId: ImageId}' --output=json \
 	   | jq -r ' map("\(.Name)(\(.ImageId))") | .[]'
 
