@@ -27,6 +27,7 @@ data "template_file" "deck-template" {
     configfile   = "${var.configfile}"
     botsfile     = "${var.botsfile}"
     device       = "/dev/xvdh"
+    images       = "${var.images}"
   }
 }
 
