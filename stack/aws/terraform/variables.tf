@@ -50,6 +50,12 @@ variable "hostname" {
   description = "The FQDN of the hostname that serves the API"
 }
 
+variable "images" {
+  type        = "string"
+  description = "A list separated by spaces of docker images to pull at startup"
+  default     = ""
+}
+
 variable "keypair" {
   type        = "string"
   description = "The name of the key used to provision the instance"
