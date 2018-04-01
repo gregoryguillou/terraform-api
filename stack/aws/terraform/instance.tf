@@ -20,7 +20,7 @@ resource "aws_instance" "terraformapi" {
 data "template_file" "terraformapi-template" {
   count = "${(var.deploy == "true" ? 1 : 0)}"
 
-  template = "${file("${path.module}/terraformapi.tpl")}"
+  template = "${file("${path.module}/terraform-api.tpl")}"
 
   vars {
     configbucket = "${var.configbucket}"
