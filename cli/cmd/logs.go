@@ -11,9 +11,9 @@ var textOutput bool
 
 var logsCmd = &cobra.Command{
 	Use:   "logs",
-	Short: "Queries deck logs",
+	Short: "Queries terraform-api logs",
 	Long: `
-	Queries deck logs associated with events and previously executed
+	Queries terraform-api logs associated with events and previously executed
 	commands.
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {

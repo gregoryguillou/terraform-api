@@ -23,7 +23,7 @@ function getenv (state, workspace, callback) {
   let populatedEnv = { }
   let envs = [ ]
   exec(
-    project.lifecycle.getenv[0].replace(/{{deck\.WORKSPACE}}/, workspace.workspace),
+    project.lifecycle.getenv[0].replace(/{{terraform-api\.WORKSPACE}}/, workspace.workspace),
     {cwd: project.lifecycle.cwd},
     (err, stdout, stderr) => {
       if (err) {

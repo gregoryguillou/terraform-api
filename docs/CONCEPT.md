@@ -2,26 +2,26 @@
 
 ## Architecture overview
 
-Terraform-deck is able to create/update and destroy several set of 
+Terraform API is able to create/update and destroy several set of 
 resources in parallel. It can run the `terraform` commands in the same
 `directory` of the same project but with different `workspace` and at
 different `commit`. It also supports running different version of
-`terraform`. To perform these tasks, Terraform-deck relies on a pool
+`terraform`. To perform these tasks, Terraform API relies on a pool
 of containers running `terraform`, `git` and connected to your
 repository as show in the schema below:
 
-![Architecture](https://github.com/gregoryguillou/terraform-deck/blob/master/docs/img/architecture.png)
+![Architecture](https://github.com/gregoryguillou/terraform-api/blob/master/docs/img/architecture.png)
 
-Terraform-deck main components are:
+Terraform API main components are:
 
 - The `API`, that is a NodeJS/OpenAPI project which manage a pool of containers
-- A `container pool`, each of which are docker images runing `debian`, `terraform` and `git`
+- `containers`, each of which are docker images runing `debian`, `terraform` and `git`
 - The `API` and `containers` all interact with a code repository
 - The `API` runs `terraform` via `containers` and interact with the outer world managed by `terraform providers`
 
 ## Supported operations
 
-Terraform-deck supports the following set of operations:
+Terraform API supports the following set of operations:
 
 - An authentication model based on an API Key that grant a JWT token to manage
 - The ability to list the environments and workspaces that can be provisionned

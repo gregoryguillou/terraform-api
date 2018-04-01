@@ -1,6 +1,6 @@
 {
-  "name": "deck-docker",
-  "description": "Build docker artefact for the deck service",
+  "name": "terraform-api-docker",
+  "description": "Build docker artefact for the terraform-api service",
   "version": "0.0.1",
   "main": "",
   "scripts": {

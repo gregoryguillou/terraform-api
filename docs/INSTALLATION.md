@@ -1,6 +1,6 @@
 # Installation Guides
 
-Terraform deck can be deployed in many configurations. It is up to you to
+Terraform API can be deployed in many configurations. It is up to you to
 decide what best fit your needs. You'll find below 3 installations procedure:
 
 - A [`docker-compose` deployment](INSTALL/COMPOSE.md) that relies on the

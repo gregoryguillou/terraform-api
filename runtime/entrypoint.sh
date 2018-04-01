@@ -8,7 +8,7 @@ function usage() {
 }
 
 function version() {
-  echo "terraform-deck version 0.0.1"
+  echo "terraform-api version 0.1.6"
   exit 0
 }
 
@@ -18,7 +18,7 @@ REF=branch:master
 HELP=false
 VERSION=false
 
-TEMP=$(getopt -o c:w:r:t:b:hv --long command:,workspace:,reference:,tag:,branch:,help,version -n 'deck' -- "$@")
+TEMP=$(getopt -o c:w:r:t:b:hv --long command:,workspace:,reference:,tag:,branch:,help,version -n 'terraform-api' -- "$@")
 eval set -- "$TEMP"
 
 while true ; do

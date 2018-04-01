@@ -13,11 +13,11 @@ var cfgFile string
 var version = "undefined"
 
 var rootCmd = &cobra.Command{
-	Use:   "deck",
-	Short: "Terraform deck command line interface",
+	Use:   "cli",
+	Short: "Terraform terraform-api command line interface",
 	Long: `
-Terraform-deck command line interface provides a simple way to interact with
-the Terraform-deck API and manage terraform infrastructures.`,
+Terraform-api command line interface provides a simple way to interact with
+the Terraform API and manage terraform infrastructures.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	//	Run: func(cmd *cobra.Command, args []string) { },

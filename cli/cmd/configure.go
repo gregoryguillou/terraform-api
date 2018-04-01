@@ -22,7 +22,7 @@ type config struct {
 func readConfiguration() config {
 
 	endpoint := ""
-	fmt.Print("Terraform deck Endpoint (default: http://localhost:10010): ")
+	fmt.Print("Terraform API Endpoint (default: http://localhost:10010): ")
 	fmt.Scanln(&endpoint)
 	if endpoint == "" {
 		endpoint = "http://localhost:10010"
@@ -32,7 +32,7 @@ func readConfiguration() config {
 		endpoint = endpoint[:len(endpoint)-1]
 	}
 
-	fmt.Print("Terraform deck API Key: ")
+	fmt.Print("Terraform API Key: ")
 	apikey := ""
 	fmt.Scanln(&apikey)
 	cfg := config{endpoint: endpoint, apikey: apikey}
@@ -47,13 +47,13 @@ func saveConfiguration(cfg config) error {
 		home = os.Getenv("HOMEPATH")
 	}
 
-	if _, err := os.Stat(path.Join(home, ".deck")); os.IsNotExist(err) {
-		os.Mkdir(path.Join(home, ".deck"), 0700)
+	if _, err := os.Stat(path.Join(home, ".terraform-api")); os.IsNotExist(err) {
+		os.Mkdir(path.Join(home, ".terraform-api"), 0700)
 	}
 
 	d1 := []byte("endpoint=\"" + cfg.endpoint + "\"\napikey=\"" + cfg.apikey + "\"\n")
 	err := ioutil.WriteFile(
-		path.Join(home, ".deck", "credentials"), d1, 0600)
+		path.Join(home, ".terraform-api", "credentials"), d1, 0600)
 	return err
 }
 
@@ -73,7 +73,7 @@ func loadConfiguration() (config, error) {
 		home = os.Getenv("HOMEPATH")
 	}
 
-	filename := path.Join(home, ".deck", "credentials")
+	filename := path.Join(home, ".terraform-api", "credentials")
 	cfg := config{endpoint: "", apikey: ""}
 
 	if len(filename) == 0 {
@@ -192,9 +192,9 @@ func connectAPI(cfg config) (string, error) {
 
 var configureCmd = &cobra.Command{
 	Use:   "configure",
-	Short: "Configures deck",
+	Short: "Configures Terraform API",
 	Long: `
-	Configures deck with an API token and endpoint.
+	Configures Terraform API with a token and an endpoint.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 

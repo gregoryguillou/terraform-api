@@ -8,9 +8,9 @@ import (
 
 var versionCmd = &cobra.Command{
 	Use:   "version",
-	Short: "Displays deck versions",
+	Short: "Displays Terraform API versions",
 	Long: `
-	Displays deck versions on the client and on the server.
+	Displays Terraform API versions on the client and on the server.
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		data := get("/version", false)

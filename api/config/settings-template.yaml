@@ -17,11 +17,11 @@ projects:
   - type: terraform
     name: demonstration
     description: A demonstration project that relies on Terraform/Consul
-    docker-image: "gregoryguillou/terraform-deck:latest-runtime"
+    docker-image: "gregoryguillou/terraform-api:latest-runtime"
     git:
       # the repository must be an https repository and it should not be
       # prefixed down here, i.e. use github.com/...
-      repository: github.com/gregoryguillou/terraform-deck-stacks.git
+      repository: github.com/gregoryguillou/terraform-stacks.git
       branch: master
       username: username
       password: "password"
@@ -36,11 +36,11 @@ projects:
     lifecycle:
       cwd: projects/demonstration
       getenv:
-        - ./getenv.sh {{deck.WORKSPACE}}
+        - ./getenv.sh {{terraform-api.WORKSPACE}}
       setenv:
         - CONSUL_IP={{env.CONSUL}}
       status:
-        - ./status.sh -w {{deck.WORKSPACE}}
+        - ./status.sh -w {{terraform-api.WORKSPACE}}
 users:
   - username: 'gregory'
     apikey: 'notsosecretadminkey'

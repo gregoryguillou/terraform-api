@@ -1,10 +1,10 @@
 # Building and working with docker-compose
 
-> **Note**: Future releases of Terraform--deck might support docker
+> **Note**: Future releases of Terraform-api might support docker
   orchestration platforms, like Kubernetes. However, for now, you can
   only run on a single server with docker-compose
 
-## Cloning or forking `terraform-deck`
+## Cloning or forking `Terraform API`
 
 Clone or fork and clone the project to install it on your laptop?
 

@@ -9,9 +9,9 @@ import (
 
 var workspacesCmd = &cobra.Command{
 	Use:   "workspaces",
-	Short: "Manages deck workspaces",
+	Short: "Manages Terraform API workspaces",
 	Long: `
-	Lists, shows details deck workspaces. This command also set the
+	Lists, shows details Terraform API workspaces. This command also set the
 	default workspace.
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {

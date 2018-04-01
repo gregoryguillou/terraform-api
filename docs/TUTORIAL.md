@@ -1,31 +1,31 @@
-# Terraform-deck step-by-step with Consul
+# Terraform-api step-by-step with Consul
 
 HashiCorp Consul is easy to run on a laptop with docker. In dev mode, it consumes
 only few resources. It is a perfect match for terraform as it can both be used to
 store its state and as a target environment. This tutorial will guide you through
-the steps to configuring and using `deck` on a laptop:
+the steps to configuring and using `Terraform API` on a laptop:
 
 1. make sure your laptop matches the system pre-requisites
 2. start consul for demonstration purpose
 3. create your terraform project to provide environments to your users
 4. build and test a container with terraform and your project
-5. start and configure `deck` to run locally
-6. demonstrate how to use `deck` to create/destroy project environments
-7. package `deck` in a container to run it on a server
-8. develop `deck` from our laptop
+5. start and configure `Terraform API` to run locally
+6. demonstrate how to use `Terraform API` to create/destroy project environments
+7. package `Terraform API` in a container to run it on a server
+8. develop `Terraform API` from our laptop
 
-> **Important**: `deck` is a tool for developers who want to get access to
+> **Important**: `Terraform API` is a tool for developers who want to get access to
   resources from a simple command. It does not support to run tests, neither
   it does integrate a CI/CD pipeline.
 
 This tutorial has several goals:
 
 - It helps you building a working environment to exercice and demonstrate 
-  `deck`
+  `Terraform API`
 - It digs into the various components so that you can understand how pieces
   work together
 - It describes a simple terraform project that can easily be integrated with
-  deck
+  terraform-api
 - It provides an environment you can use to update the project code
 
 ---
@@ -51,8 +51,8 @@ installed:
 To start with this tutorial, you will clone the git repository as shown below:
 
 ```shell
-git clone https://github.com/gregoryguillou/terraform-deck.git
-cd terraform-deck
+git clone https://github.com/gregoryguillou/terraform-api.git
+cd terraform-api
 ```
 
 In the remaining sections of this tutorial we will assume the base directory of our
@@ -62,7 +62,7 @@ work is the project home.
 # 2. Using Consul as a stack example
 
 The `stack` directory of the project contains a `docker-compose.yml` file that
-references all the artefacts needed to run and test `deck`. Consul is part of
+references all the artefacts needed to run and test `Terraform API`. Consul is part of
 it. You should just run that container from there with the command below:
 
 ```shell
@@ -75,7 +75,7 @@ command like below:
 
 ```shell
 docker-compose ps consul
-docker ps -f "label=deck.role=consul" -f status=running --format "{{.ID}}"
+docker ps -f "label=terraform-api.role=consul" -f status=running --format "{{.ID}}"
 ```
 
 Once you've made sure it was up and running, you could query the HTTP api with
@@ -87,7 +87,7 @@ curl --silent 0.0.0.0:8500/v1/catalog/nodes | jq -r '.[0].Node'
 
 > **Note:** Lets assume the CONSUL_DOCKER variable includes Consul Docker
   Identifier. Run this command to set the variable:
-  `export CONSUL_DOCKER=$(docker ps -f "label=deck.role=consul" -f status=running --format "{{.ID}}")`.
+  `export CONSUL_DOCKER=$(docker ps -f "label=terraform-api.role=consul" -f status=running --format "{{.ID}}")`.
 
 Before we move on, we will discover the network GATEWAY that should be used to access
 Consul container. In order to do that :
@@ -99,7 +99,7 @@ Consul container. In order to do that :
 The script below execute those 3 steps:
 
 ```shell
-export CONSUL_DOCKER=$(docker ps -f "label=deck.role=consul" \
+export CONSUL_DOCKER=$(docker ps -f "label=terraform-api.role=consul" \
                               -f status=running --format "{{.ID}}")
 export CONSUL_BRIDGE=$(docker inspect ${CONSUL_DOCKER} | \
     jq -r ".[0].NetworkSettings.Networks | to_entries | .[0].key")
@@ -205,7 +205,7 @@ terraform workspace select default
 
 A full description of how the container that embed the feature of 
 `terraform` is out of the scope of this tutorial. You should review the scripts
-and the [Development Guidelines](https://github.com/gregoryguillou/terraform-deck/blob/master/docs/GUIDELINES.md). 
+and the [Development Guidelines](https://github.com/gregoryguillou/terraform-api/blob/master/docs/GUIDELINES.md). 
 For more details. However, in order to build the container, you will need to
 add your github repository, username and token to an `.env` file in `stack`.
 You can use `.env.template` as a template for this `.env` file. Once done, you
@@ -214,21 +214,21 @@ should be able to build the container with the script below:
 ```shell
 cd stack
 npm install
-DECK_CONTAINER=deck-terraform npx run build
+CONTAINER=terraform-api npx run build
 ```
 
 Again, you should be able to see the how the container is working to manage those terraform
 stacks. 
 
 ```shell
-docker run -it --rm -e CONSUL_IP=${CONSUL_IP} --env-file .env deck-terraform -c apply -w qa
-docker run -it --rm -e CONSUL_IP=${CONSUL_IP} --env-file .env deck-terraform -c list -w qa
-docker run -it --rm -e CONSUL_IP=${CONSUL_IP} --env-file .env deck-terraform -c destroy -w qa
-docker run -it --rm -e CONSUL_IP=${CONSUL_IP} --env-file .env deck-terraform -c check -w qa
+docker run -it --rm -e CONSUL_IP=${CONSUL_IP} --env-file .env terraform-stacks -c apply -w qa
+docker run -it --rm -e CONSUL_IP=${CONSUL_IP} --env-file .env terraform-stacks -c list -w qa
+docker run -it --rm -e CONSUL_IP=${CONSUL_IP} --env-file .env terraform-stacks -c destroy -w qa
+docker run -it --rm -e CONSUL_IP=${CONSUL_IP} --env-file .env terraform-stacks -c check -w qa
 ```
 
 ---
-# 5. Running the `deck` service locally
+# 5. Running the `Terraform API` service locally
 
 ## Create a configuration
 
@@ -253,7 +253,7 @@ You should then change the following:
 
 ## Testing the API
 
-`deck` is a Node API based on Swagger/Express. It stores it data in a `couchbase`
+`Terraform API` is a Node API based on Swagger/Express. It stores it data in a `couchbase`
 for now. It also assumes it has 2 buckets, one for the data and one for the logs.
 the command below should start a couchbase and configure it with the buckets:
 
@@ -270,10 +270,10 @@ cd stack
 docker-compose up -d consul
 ```
 
-We also need the `deck-terraform:latest` image built:
+We also need the `terraform-api:latest` image built:
 ```shell
 cd stack
-docker images deck-terraform:latest
+docker images gregoryguillou/terraform-api:latest
 ```
 
 Assuming you've create a configuration with the default credentials, the test should
@@ -299,12 +299,12 @@ npm start
    or put it behind a SSL enabled webserver/loadbalancer.
 
 ---
-# 6. Using `deck`
+# 6. Using `Terraform API`
 
-There are many ways to use `deck`. We will explore the CLI and REST API below.
-## Accessing deck with the CLI
+There are many ways to use `Terraform API`. We will explore the CLI and REST API below.
+## Accessing terraform-api with the CLI
 
-The easiest way to use deck should be from the CLI. You can build it like
+The easiest way to use terraform-api should be from the CLI. You can build it like
 below:
 
 ```
@@ -313,28 +313,28 @@ dep ensure
 make build
 ```
 
-We will assume you've renamed the CLI to `deck` and it is in your PATH. 
-To setup the CLI, run `deck configure`. It will ask for the endpoint and
+We will assume you've renamed the CLI to `cli` and it is in your PATH. 
+To setup the CLI, run `cli configure`. It will ask for the endpoint and
 an API key as configured in the `settings.yaml` file. This creates a file
-in the `${HOME}/.deck` directory. You should then be able to run the API: 
+in the `${HOME}/.terraform-api` directory. You should then be able to run the API: 
 
 ```shell
-deck help
-deck version
-deck projects
-deck workspaces -p demonstration
-deck show -p demonstration -w qa
-deck apply -p demonstration -w qa
-EVENT=$(deck show -p demonstration -w staging | jq -r '.lastEvents[0]')
-deck events -e ${EVENT}
-deck logs -t -e ${EVENT}
-deck destroy -p demonstration -w qa
+cli help
+cli version
+cli projects
+cli workspaces -p demonstration
+cli show -p demonstration -w qa
+cli apply -p demonstration -w qa
+EVENT=$(cli show -p demonstration -w staging | jq -r '.lastEvents[0]')
+cli events -e ${EVENT}
+cli logs -t -e ${EVENT}
+cli destroy -p demonstration -w qa
 ```
 
-## Accessing deck using the REST API
+## Accessing terraform-api using the REST API
 
 The REST API is an OPEN API implemented with Swagger. For details about how
-to use it, see the [Reference Guide](https://github.com/gregoryguillou/terraform-deck/blob/master/docs/REFERENCE.adoc).
+to use it, see the [Reference Guide](https://github.com/gregoryguillou/terraform-api/blob/master/docs/REFERENCE.adoc).
 This section details how to connect. Assuming you rely on the default APIKEY,
 this is a simple set of commands that connects, applies and destroys the `qa`
 workspace.
@@ -388,24 +388,24 @@ curl --silent -H "Authorization: Bearer ${JWT_TOKEN}" \
   `Unauthorized`, renew it from the APIKEY.
 
 ---
-# 7. Packaging the `deck` API in a container
+# 7. Packaging the `Terraform API` API in a container
 
-You can run the `deck` API from docker, in order to proceed, run the
+You can run the `Terraform API` API from docker, in order to proceed, run the
 following command:
 
 ```shell
 cd stack
-DECK_CONTAINER=deck-api npx run build
+CONTAINER=terraform-api npx run build
 docker-compose up -d
 ```
 
 You should then be able to work with the CLI and the REST API from
-anywhere. Note that this is the prefered way to install `deck`. It also
+anywhere. Note that this is the prefered way to install `Terraform API`. It also
 suppose you change all the passwords/keys and you configure the
 `api/config/settings.yaml` file as you should.
 
 ---
-# 8. Developing `deck` from your environment
+# 8. Developing `Terraform API` from your environment
 
 If you want to contribute to the code, fork the project:
 
