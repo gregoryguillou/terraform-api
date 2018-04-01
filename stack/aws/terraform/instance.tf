@@ -121,6 +121,20 @@ resource "aws_iam_policy" "ec2_policy" {
     {
       "Effect": "Allow",
       "Action": [
+        "ecr:GetAuthorizationToken",
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:GetRepositoryPolicy",
+        "ecr:DescribeRepositories",
+        "ecr:ListImages",
+        "ecr:DescribeImages",
+        "ecr:BatchGetImage"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
         "s3:GetObject"
       ],
       "Resource": "arn:aws:s3:::${var.configbucket}/*"
