@@ -10,21 +10,21 @@ DEVICE_FS=$(blkid -o value -s TYPE ${device})
 
 if [ "$(echo -n "$DEVICE_FS")" == "" ] ; then
         pvcreate ${device}
-        vgcreate deck ${device}
-        lvcreate --name deckvol -l 100%FREE deck
-        mkfs.ext4 /dev/deck/deckvol
+        vgcreate terraformapi ${device}
+        lvcreate --name terraformapivol -l 100%FREE terraformapi
+        mkfs.ext4 /dev/terraformapi/terraformapivol
 fi
 mkdir -p /mnt/couchbase/data
 sed -i '/couchbase/d' /etc/fstab
-echo "/dev/deck/deckvol /mnt/couchbase/data ext4 defaults 0 0" >> /etc/fstab
+echo "/dev/terraformapi/terraformapivol /mnt/couchbase/data ext4 defaults 0 0" >> /etc/fstab
 mount /mnt/couchbase/data
 sysctl -w vm.max_map_count=262144
 
-cd /opt/terraform-deck
-rm -f /opt/terraform-deck/api/settings.yaml
-rm -f /opt/terraform-deck/bots/settings.yaml
-aws s3 cp s3://${configbucket}${configfile} /opt/terraform-deck/api/settings.yaml
-aws s3 cp s3://${configbucket}${botsfile} /opt/terraform-deck/bots/settings.yaml
+cd /opt/terraform-api
+rm -f /opt/terraform-api/api/settings.yaml
+rm -f /opt/terraform-api/bots/settings.yaml
+aws s3 cp s3://${configbucket}${configfile} /opt/terraform-api/api/settings.yaml
+aws s3 cp s3://${configbucket}${botsfile} /opt/terraform-api/bots/settings.yaml
 
 AWS_DEFAULT_REGION=$(curl --silent 169.254.169.254/latest/meta-data/placement/availability-zone \
                        | sed 's/.$//')
@@ -37,3 +37,4 @@ for image in ${images}; do
 done
 
 docker-compose up -d
+

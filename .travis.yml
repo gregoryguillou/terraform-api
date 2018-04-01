@@ -1,6 +1,6 @@
 language: 
-- go
-- node_js
+  - go
+  - node_js
 
 go:
 - 1.10.x
@@ -28,10 +28,10 @@ deploy:
     secure: tldhFCxZg7nyrXJwQQBtY1FFZlyPvzAG3FDQ9RjIoQOj5Xz/iJDkyjxjlai1a+ZUyHHY6NYA9vXl7je8/a/IYiu8gz9XGKK7/lbGtBGIXOWXhsD6w3TgrSzzZv3XlX+PLVRddCP0r7FxrVRSsmTgGnnJHoluDzgFSpLdrg2ASkbeC6JQb+5Cl0wGpsn6Bv+R8I3DI72L4K25PROmlRfMRfj+lRyoSrAPiAcwX1rHhyVamVQ7rumwH570liUZf5wqIph7cfauEdoXxwovOC0Z3i0wGtAqqHv7IjKHsuyWdTk2f9IwU0mwujwG61A1SRPz7pU4wE+0skg1su43xT9Mbp/PJApLcFsvcS4kn7tN+kts4VKltLp9a/zuZpIPcq+yDqkw+ScievU2wRYM9uNOu7Sd5JoLQh39QxEP+TlgJ5xtnzUt7hMyKI6oIei4Ch/q3rcXlgY3/GLsXLSUWIXMFmvKs3AaTyNyFsbM1RkSeyJYGVBNbnDiHYKEOMXr1qo62hPpKQCr5i71I85SofaUCESiwoNWvx/Y/T56ZzZf7C2Xl8UTz9ehDAwhBa6pS0FNah5nUA7HzrekLUFcLBjmTP20V+O3TkimCnyKtz3tOTnA3xwlJT26VoPmRqROIyISruWazsanzqNLME23b6U2V6z1yqSYYWIopRyrdEAgMFs=
   skip_cleanup: true
   file: 
-    - cli/build/deck-linux-amd64
-    - cli/build/deck-darwin-amd64
-    - cli/build/deck-windows-amd64.exe
+    - cli/build/cli-linux-amd64
+    - cli/build/cli-darwin-amd64
+    - cli/build/cli-windows-amd64.exe
   on:
-    repo: gregoryguillou/terraform-deck
+    repo: gregoryguillou/terraform-api
     branch: master
     tags: true

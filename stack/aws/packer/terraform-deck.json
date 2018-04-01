@@ -1,6 +1,6 @@
 {
   "variables": {
-    "name": "terraform-deck",
+    "name": "terraform-api",
     "ami": "ami-db1688a2",
     "vpc": "",
     "subnet": "",
@@ -22,7 +22,7 @@
     "ssh_pty": true,
     "tags": {
       "OS_Version": "Amazon Linux 2",
-      "Template": "terraform-deck",
+      "Template": "terraform-api",
       "Version": "{{user `version`}}"
     }
   }],

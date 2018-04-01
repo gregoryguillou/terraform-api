@@ -31,7 +31,7 @@ cp -f ${PROJECT_DIR}/api/config/settings-template.yaml ${PROJECT_DIR}/api/config
 cp -f ${PROJECT_DIR}/bots/config/settings-template.yaml ${PROJECT_DIR}/bots/config/settings.yaml 
 
 printf "\nStarting tests...\n"
-docker-compose run deck npm test
+docker-compose run terraform-api npm test
 
 printf "Test succeeded, cleaning docker-compose stack...\n"
 

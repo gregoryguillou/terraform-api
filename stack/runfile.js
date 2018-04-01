@@ -6,18 +6,18 @@ const request = require('request-promise')
 const unzip = require('unzip')
 
 const containers = {
-  'terraform-deck': {
-    name: 'gregoryguillou/terraform-deck',
+  'terraform-api': {
+    name: 'gregoryguillou/terraform-api',
     version: 'latest',
     path: '../api'
   },
   runtime: {
-    name: 'gregoryguillou/terraform-deck',
+    name: 'gregoryguillou/terraform-api',
     version: 'latest-runtime',
     path: '../runtime'
   },
   bots: {
-    name: 'gregoryguillou/terraform-deck',
+    name: 'gregoryguillou/terraform-api',
     version: 'latest-bots',
     path: '../bots'
   }
@@ -28,8 +28,8 @@ const packerVersion = '1.2.1'
 
 function build () {
   dotenv.config()
-  process.chdir(containers['terraform-deck'].path)
-  run(`docker build -t ${containers['terraform-deck'].name}:${containers['terraform-deck'].version} .`)
+  process.chdir(containers['terraform-api'].path)
+  run(`docker build -t ${containers['terraform-api'].name}:${containers['terraform-api'].version} .`)
   process.chdir(containers.runtime.path)
   run(`docker build -t ${containers.runtime.name}:${containers.runtime.version} .`)
   process.chdir(containers.bots.path)
@@ -37,7 +37,7 @@ function build () {
 }
 
 function clean () {
-  run(`docker rmi ${containers['terraform-deck'].name}:${containers['terraform-deck'].version}`)
+  run(`docker rmi ${containers['terraform-api'].name}:${containers['terraform-api'].version}`)
   run(`docker rmi ${containers.runtime.name}:${containers.runtime.version}`)
   run(`docker rmi ${containers.bots.name}:${containers.bots.version}`)
 }

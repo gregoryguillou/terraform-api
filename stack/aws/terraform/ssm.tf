@@ -1,7 +1,7 @@
-resource "aws_ssm_document" "terraformdeck" {
+resource "aws_ssm_document" "terraformapi" {
   count = "${(var.deploy == "true" ? 1 : 0)}"
 
-  name          = "TerraformDeckSshAccessGrant"
+  name          = "TerraformAPISshAccessGrant"
   document_type = "Command"
 
   content = <<DOC

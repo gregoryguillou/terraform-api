@@ -2,7 +2,7 @@ bots:
   - name: donatello
     type: slack
     prefix: staging
-    apiurl: http://deck:10010
+    apiurl: http://terraform-api:10010
     apikey: notsosecretadminkey
     project: demonstration
     workspace: staging

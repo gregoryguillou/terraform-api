@@ -51,7 +51,7 @@ function quickcheck (req, res) {
       cwd = projects[i].lifecycle.cwd || 'projects/demonstration'
       for (var j = 0, wsize = projects[i].lifecycle.status.length; j < wsize; j++) {
         command.push(
-          projects[i].lifecycle.status[j].replace(/{{deck\.WORKSPACE}}/,
+          projects[i].lifecycle.status[j].replace(/{{terraform-api\.WORKSPACE}}/,
             workspace.workspace
           )
         )

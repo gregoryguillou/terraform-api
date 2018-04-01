@@ -38,7 +38,7 @@ app.get('/status', function (req, res, next) {
 })
 
 const server = app.listen(8080, '0.0.0.0', function () {
-  console.log('Started Deck Bots on port 8080...')
+  console.log('Started terraform-api Bots on port 8080...')
 })
 
 module.exports = server

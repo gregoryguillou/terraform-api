@@ -3,7 +3,7 @@
 `Bots` is the service to integrate messaging platforms. For now only Slack is
 supported but if you are interested with another platform you can easily add it
 here. Bots can downloaded from 
-[the Docker Hub](https://hub.docker.com/r/gregoryguillou/terraform-deck/tags/).
+[the Docker Hub](https://hub.docker.com/r/gregoryguillou/terraform-api/tags/).
 It is the container suffixed with vX.Y.Z-bots. In order to deploy and configure
 bots, you need to:
 
@@ -52,7 +52,7 @@ list a set of bots like below:
 bots:
   - name: donatello
     type: slack
-    apiurl: https://deck:10010
+    apiurl: https://terraform-api:10010
     apikey: notsosecretadminkey
     project: demonstration
     workspace: staging
@@ -70,9 +70,9 @@ The file parameters are the following:
   `https://bots.example.org/slack/donatello`
 - `type` should be set to `slack` as it is the only supported messaging
   system so far.
-- `apiurl` and `apikey` should contain a Terraform deck API Url and Key
+- `apiurl` and `apikey` should contain a Terraform API Url and Key
 - `project` and `workspace` should point to a valid project and workspace
-  managed by the terraform-deck API. For now each bot can only interact
+  managed by the terraform API. For now each bot can only interact
   with a single project/workspace
 - `app_token` should be set to the `application token` as collected on
   Slack

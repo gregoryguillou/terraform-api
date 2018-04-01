@@ -1,16 +1,16 @@
-# Installing Terraform-deck on AWS
+# Installing Terraform API on AWS
 
-This stack is deployment model for `terraform-deck` on AWS. It consists in:
+This stack is deployment model for `Terraform API` on AWS. It consists in:
 
 - A packer template that creates an AMI with the project preinstalled on it
-- A terraform module that can be used with the AMI to deploy `terraform-deck`
+- A terraform module that can be used with the AMI to deploy `Terraform API`
 
 The sections below detail how to build the AMI, configure the application, 
-deploy the terraform module and test terraform-deck.
+deploy the terraform module and test terraform-api.
 
-## Building a terraform-deck AMI
+## Building a terraform-api AMI
 
-The project provides a packer template to build an AMI with terraform-deck. In
+The project provides a packer template to build an AMI with terraform-api. In
 order to make it work, you should setup an AWS access/secret keys pair in the
 default profile or set the `AWS_DEFAULT_PROFILE` variable. You should also 
 create a file with the VPC and a public subnet so that it can be used to build
@@ -55,7 +55,7 @@ aws s3 cp api/config/settings.yaml s3://${configbucket}${configfile}
 aws s3 cp api/config/settings.yaml s3://${configbucket}${botsfile}
 ```
 
-## Deploy terraform-deck for AWS
+## Deploy terraform-api for AWS
 
 Once we have built the AMI, you should be able to deploy it. We will assume a
 few things:
@@ -63,9 +63,9 @@ few things:
 - There is a pre-existing application loadbalancer (ALB) in the VPC that will
   be able to forward API calls to the EC2 instance. We shall be able to use 
   a forward rule base on a hostname
-- There is a network alias that references the ALB listener for `terraform-deck`
+- There is a network alias that references the ALB listener for `Terraform API`
   specific use.
-- There is a bucket with `terraform-deck` configuration file. The instance will
+- There is a bucket with `Terraform API` configuration file. The instance will
   be able to pull from it at startup.
 
 
@@ -73,8 +73,8 @@ To use the project, you can simply add a module like the one below in your
 project:
 
 ```hcl
-module "terraform-deck" {
-  source = "github.com/gregoryguillou/terraform-deck//stack/aws/terraform"
+module "terraform-api" {
+  source = "github.com/gregoryguillou/terraform-api//stack/aws/terraform"
 
   deploy           = "true"
   ami              = "<the AMI you've built>"
@@ -95,7 +95,7 @@ The parameters are the following:
 
 - `deploy` contains the "true" or "false" string and defines if the API is
   deployed. It is useful because you cannot add `count` in a module
-- `ami` The AMI that contains terraform Deck. For now it is not a published
+- `ami` The AMI that contains Terraform API. For now it is not a published
   AMI so you must create the AMI and reference it.
 - `availabilityzone` defines the Availability that will store the API data
 - `configbucket` is the bucket that will be used to store the API configuration
@@ -112,25 +112,25 @@ The parameters are the following:
 - `subnet` the subnet that will host the EC2 instance
 - `vpc` the VPC that will host the EC2 instance and the listener
 
-## Test terraform-deck on AWS
+## Test terraform-api on AWS
 
-This simplest way to test terraform-deck is by downloading the client from
-the [release page](https://github.com/gregoryguillou/terraform-deck/releases) 
+This simplest way to test terraform-api is by downloading the client from
+the [release page](https://github.com/gregoryguillou/terraform-api/releases) 
 and configuring it. Below is an example of such a configuration.
 
 ```shell
-export RELEASES=https://github.com/gregoryguillou/terraform-deck/releases
+export RELEASES=https://github.com/gregoryguillou/terraform-api/releases
 export VERSION=v0.1.6
 export OS=linux
-curl -L ${RELEASES}/download/${VERSION}/deck-${OS}-amd64 -o deck
+curl -L ${RELEASES}/download/${VERSION}/terraforn-cli-${OS}-amd64 -o terraforn-cli
 
-chmod +x deck
-./deck configure
-Terraform deck Endpoint (default: http://localhost:10010): [Enter the URL]
-Terraform deck API Key: [Enter and API Key]
+chmod +x terraforn-cli
+./terraforn-cli configure
+Terraform API Endpoint (default: http://localhost:10010): [Enter the URL]
+Terraform API API Key: [Enter and API Key]
 SUCCESS: You are connected as gregory...
 
-./deck version
+./terraforn-cli version
 client: v0.1.6
 server: v0.1.6
 ```

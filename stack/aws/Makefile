@@ -2,7 +2,7 @@ SHELL = /bin/bash
 MAKEFLAGS = "-s"
 
 PACKER_VERSION = 1.2.1
-TEMPLATE = terraform-deck
+TEMPLATE = terraform-api
 
 TOOLS_DIR = $(abspath ../tools)
 
@@ -17,7 +17,7 @@ ami:
 
 list:
 	@aws ec2 describe-images \
-	   --filters "Name=tag-key,Values=Template" "Name=tag-value,Values=terraform-deck" \
+	   --filters "Name=tag-key,Values=Template" "Name=tag-value,Values=terraform-api" \
 	   --query='Images[*].{Name: Name,ImageId: ImageId}' --output=json \
 	   | jq -r ' map("\(.Name)(\(.ImageId))") | .[]'
 

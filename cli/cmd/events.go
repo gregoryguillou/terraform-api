@@ -11,9 +11,9 @@ var event string
 
 var eventsCmd = &cobra.Command{
 	Use:   "events",
-	Short: "Lists and details deck events",
+	Short: "Lists and details Terraform API events",
 	Long: `
-	Lists and details deck events.
+	Lists and details Terraform API events.
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if event == "" {
