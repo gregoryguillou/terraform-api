@@ -118,7 +118,7 @@ func testConfiguration(cfg config) (string, error) {
 	client := &http.Client{
 		CheckRedirect: nil,
 	}
-	req, err := http.NewRequest("GET", "http://localhost:10010/user", nil)
+	req, err := http.NewRequest("GET", cfg.endpoint + "/user", nil)
 	if err != nil {
 		return "", err
 	}
