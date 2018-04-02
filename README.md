@@ -6,7 +6,6 @@
 Cloud. Access them securely from a command line or via a REST API. You should be
 able to use Terraform from anywhere and:
 
-- Build front-end applications and chatbots
 - Create and destroy development, training or demonstration environments 
   on-demand.
 - Update environments on-demand from a git branch/tag
