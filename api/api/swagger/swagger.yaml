@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  version: "0.1.6"
+  version: "0.1.7"
   title: Terraform-api
 # during dev, should point to your local machine
 host: localhost:10010
