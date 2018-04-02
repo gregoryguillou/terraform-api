@@ -15,11 +15,6 @@ const containers = {
     name: 'gregoryguillou/terraform-api',
     version: 'latest-runtime',
     path: '../runtime'
-  },
-  bots: {
-    name: 'gregoryguillou/terraform-api',
-    version: 'latest-bots',
-    path: '../bots'
   }
 }
 
@@ -32,14 +27,11 @@ function build () {
   run(`docker build -t ${containers['terraform-api'].name}:${containers['terraform-api'].version} .`)
   process.chdir(containers.runtime.path)
   run(`docker build -t ${containers.runtime.name}:${containers.runtime.version} .`)
-  process.chdir(containers.bots.path)
-  run(`docker build -t ${containers.bots.name}:${containers.bots.version} .`)
 }
 
 function clean () {
   run(`docker rmi ${containers['terraform-api'].name}:${containers['terraform-api'].version}`)
   run(`docker rmi ${containers.runtime.name}:${containers.runtime.version}`)
-  run(`docker rmi ${containers.bots.name}:${containers.bots.version}`)
 }
 
 function doc () {

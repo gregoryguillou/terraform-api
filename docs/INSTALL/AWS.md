@@ -52,7 +52,6 @@ command below:
 
 ```shell
 aws s3 cp api/config/settings.yaml s3://${configbucket}${configfile}
-aws s3 cp api/config/settings.yaml s3://${configbucket}${botsfile}
 ```
 
 ## Deploy terraform-api for AWS
@@ -81,12 +80,12 @@ module "terraform-api" {
   availabilityzone = "<Availability Zone>"
   configbucket     = "<Bucket>"
   configfile       = "<Config File>"
-  botsfile         = "<Bots File>"
   environment      = "<Environment>"
   hostname         = "<FQDN>"
   keypair          = "<SSH Key Pair Name>"
   listener         = "<Listener ARN>"
   subnet           = "<Subnet>"
+  images           = "<Docker Image List>"
   vpc              = "<VPC>"
 }
 ```
@@ -101,7 +100,6 @@ The parameters are the following:
 - `configbucket` is the bucket that will be used to store the API configuration
   data
 - `configfile` is the configuration file path and name in the bucket
-- `botsfile` is the configuration file path and name, for the bots API, in the bucket
 - `environment` is used to prefix resource name and avoid naming conflicts
 - `hostname` is the fully qualified name with the domain that will forward to
   the API. Note that the declaration of that name in the DNS is not provided
@@ -110,6 +108,8 @@ The parameters are the following:
    startup
 - `listener` the ARN of the listener that is used as a loadbalancer
 - `subnet` the subnet that will host the EC2 instance
+- `images` Is a list of docker container images that should be downloaded with
+  the AMI
 - `vpc` the VPC that will host the EC2 instance and the listener
 
 ## Test terraform-api on AWS

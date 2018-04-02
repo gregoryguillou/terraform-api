@@ -7,7 +7,6 @@ decide what best fit your needs. You'll find below 3 installations procedure:
   github repository can be used both for a demonstration and to develop
 - An [`AWS` deployment](INSTALL/AWS.md). This deployment provides a packer
   template and a terraform module to quickly deploy the project.
-- The [installation and configuration of Bots with Slack](INSTALL/BOTS.md)
 
 ## Configuration
 
