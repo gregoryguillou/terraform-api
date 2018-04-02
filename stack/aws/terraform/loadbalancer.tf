@@ -11,8 +11,8 @@ resource "aws_alb_target_group" "terraformapi_target_group" {
     unhealthy_threshold = 2
     timeout             = 5
     interval            = 30
-    path                = "/version"
-    matcher             = "401"
+    path                = "/status"
+    matcher             = "200"
   }
 }
 
