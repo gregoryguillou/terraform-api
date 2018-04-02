@@ -16,23 +16,18 @@ curl -L https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/d
 chmod +x /usr/local/bin/docker-compose
 mkdir -p /mnt/couchbase/data
 mkdir -p /opt/terraform-api/api
-mkdir -p /opt/terraform-api/bots
 
 
-docker pull gregoryguillou/terraform-api:v0.1.6
-docker pull gregoryguillou/terraform-api:v0.1.6-runtime
-docker pull gregoryguillou/terraform-api:v0.1.6-bots
+docker pull gregoryguillou/terraform-api:v0.1.7
+docker pull gregoryguillou/terraform-api:v0.1.7-runtime
 docker pull consul:1.0.6
 docker pull couchbase:community-5.0.1
 
 curl -LO $REPOSITORY/master/stack/docker/couchbase-setup.sh
 curl -LO $REPOSITORY/master/stack/docker/docker-compose.yml
 curl -L $REPOSITORY/master/api/config/settings-template.yaml -o api/settings.yaml
-curl -L $REPOSITORY/master/bots/config/settings-template.yaml -o bots/settings.yaml
 chmod +x couchbase-setup.sh
 
 sed -i 's/\$PWD.*api.*settings\.yaml\:/\/opt\/terraform-api\/api\/settings.yaml:/' docker-compose.yml
-sed -i 's/\$PWD.*bots.*settings\.yaml\:/\/opt\/terraform-api\/bots\/settings.yaml:/' docker-compose.yml
 sed -i '/couchbase-server\"/a\ \ \ \ volumes:\n\ \ \ \ \ \ - \"\/mnt\/couchbase\/data:\/opt\/couchbase\/var\/lib\/couchbase\/data\"' \
   docker-compose.yml
-

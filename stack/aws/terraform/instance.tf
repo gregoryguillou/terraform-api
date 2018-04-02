@@ -25,7 +25,6 @@ data "template_file" "terraformapi-template" {
   vars {
     configbucket = "${var.configbucket}"
     configfile   = "${var.configfile}"
-    botsfile     = "${var.botsfile}"
     device       = "/dev/xvdh"
     images       = "${var.images}"
   }

@@ -22,9 +22,7 @@ sysctl -w vm.max_map_count=262144
 
 cd /opt/terraform-api
 rm -f /opt/terraform-api/api/settings.yaml
-rm -f /opt/terraform-api/bots/settings.yaml
 aws s3 cp s3://${configbucket}${configfile} /opt/terraform-api/api/settings.yaml
-aws s3 cp s3://${configbucket}${botsfile} /opt/terraform-api/bots/settings.yaml
 
 AWS_DEFAULT_REGION=$(curl --silent 169.254.169.254/latest/meta-data/placement/availability-zone \
                        | sed 's/.$//')
