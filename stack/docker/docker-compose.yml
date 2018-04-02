@@ -13,17 +13,6 @@ services:
       - couchbase
     restart: "always"
 
-  bots:
-    image: "gregoryguillou/terraform-api:${VERSION:-v0.1.6}-bots"
-    ports:
-      - 8080:8080
-    volumes:
-     - $PWD/../../bots/config/settings.yaml:/app/config/settings.yaml
-    depends_on:
-      - terraform-api
-      - couchbase
-    restart: "always"
-
   runtime:
     image: "gregoryguillou/terraform-api:${VERSION:-v0.1.6}-runtime"
     depends_on:
