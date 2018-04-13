@@ -1,4 +1,4 @@
-box: wercker-labs/docker
+box: oraclelinux:7.4
 build:
   steps:
     - script:
