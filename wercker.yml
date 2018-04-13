@@ -2,6 +2,6 @@ box: oraclelinux:7.4
 build:
   steps:
     - script:
-        name: docker version
+        name: kernel version
         code: |
-          sudo docker version
+          uname -a
