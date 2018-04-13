@@ -516,7 +516,7 @@ definitions:
     required:
       - sessions
     properties:
-      projects:
+      sessions:
         type: array
         items:
           type: object
