@@ -311,7 +311,8 @@ function showWorkspace (workspace, callback) {
         ref: 'branch:master',
         state: 'new',
         creation: eventDate,
-        lastEvents: []
+        lastEvents: [],
+        session: '00000000-0000-0000-0000-000000000000'
       }
     }
 

@@ -313,6 +313,44 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /sessions:
+    x-swagger-router-controller: sessions
+    get:
+      tags:
+        - main
+      description: Return a the list of sessions currently in use
+      operationId: sessions_list
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Sessions"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /sessions/{session}:
+    x-swagger-router-controller: sessions
+    get:
+      tags:
+        - main
+      description: Returns the project/workspace associated with a given sessions
+      operationId: session_describe
+      parameters:
+        - in: path
+          name: session
+          type: string
+          required: true
+          description: Session to get.
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/SessionDescription"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
   /user:
     x-swagger-router-controller: login
     get:
@@ -474,6 +512,31 @@ definitions:
               type: string
             status:
               type: string
+  Sessions:
+    required:
+      - sessions
+    properties:
+      projects:
+        type: array
+        items:
+          type: object
+          required:
+            - id
+          properties:
+            id:
+              type: string
+  SessionDescription:
+    required:
+      - id
+      - project
+      - workspace
+    properties:
+      id:
+        type: string
+      project:
+        type: string
+      workspace:
+        type: string
   StatusResponse:
     required:
       - quickCheck
@@ -555,6 +618,8 @@ definitions:
             type: string
           event:
             type: string
+      session:
+        type: string
       state:
         type: string
       type:
