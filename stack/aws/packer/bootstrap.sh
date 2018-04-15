@@ -18,8 +18,8 @@ mkdir -p /mnt/couchbase/data
 mkdir -p /opt/terraform-api/api
 
 
-docker pull gregoryguillou/terraform-api:v0.1.7
-docker pull gregoryguillou/terraform-api:v0.1.7-runtime
+docker pull gregoryguillou/terraform-api:v0.1.8
+docker pull gregoryguillou/terraform-api:v0.1.8-runtime
 docker pull consul:1.0.6
 docker pull couchbase:community-5.0.1
 

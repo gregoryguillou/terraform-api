@@ -2,7 +2,7 @@ version: '3.2'
 
 services:
   terraform-api:
-    image: "gregoryguillou/terraform-api:${VERSION:-v0.1.7}"
+    image: "gregoryguillou/terraform-api:${VERSION:-v0.1.8}"
     ports:
       - 10010:10010
     volumes:
@@ -14,7 +14,7 @@ services:
     restart: "always"
 
   runtime:
-    image: "gregoryguillou/terraform-api:${VERSION:-v0.1.7}-runtime"
+    image: "gregoryguillou/terraform-api:${VERSION:-v0.1.8}-runtime"
     depends_on:
       - consul
     environment:
