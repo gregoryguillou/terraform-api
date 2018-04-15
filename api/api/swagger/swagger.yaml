@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  version: "0.1.7"
+  version: "0.1.8"
   title: Terraform-api
 # during dev, should point to your local machine
 host: localhost:10010
@@ -313,6 +313,37 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /projects/{project}/workspaces/{workspace}/version:
+    x-swagger-router-controller: workspaces
+    get:
+      tags:
+        - main
+      description: Returns the current version of a given project/workspace
+      operationId: workspace_version
+      parameters:
+        - in: path
+          name: project
+          type: string
+          required: true
+          description: Project to get the workspace from.
+        - in: path
+          name: workspace
+          type: string
+          required: true
+          description: Workspace to get
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/VersionResponse"
+        "404":
+          description: Success
+          schema:
+            $ref: "#/definitions/VersionResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
   /sessions:
     x-swagger-router-controller: sessions
     get:
@@ -582,6 +613,26 @@ definitions:
     properties:
       version:
         type: string
+  VersionResponse:
+    required:
+      - appVersion
+      - state
+    properties:
+      appVersion:
+        type: string
+      ref:
+        type: string
+      state:
+        type: string
+      lastChecked:
+        type: object
+        properties:
+          date:
+            type: integer
+          state:
+            type: string
+          ref:
+            type: string
   Workspace:
     required:
       - project

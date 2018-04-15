@@ -2,7 +2,7 @@
 
 WORKSPACE=default
 
-TEMP=`getopt -o w: --long workspace: -n 'status' -- "$@"`
+TEMP=$(getopt -o w: --long workspace: -n 'status' -- "$@")
 eval set -- "$TEMP"
 
 while true ; do
@@ -13,12 +13,12 @@ while true ; do
   esac
 done
 
-OUTPUT=$(curl --silent consul:8500/v1/kv/environment/${WORKSPACE}/alive?raw=true 2>/dev/null || true)
+OUTPUT=$(curl --silent "consul:8500/v1/kv/environment/${WORKSPACE}/version?raw=true" 2>/dev/null || true)
 
-if [[ "${OUTPUT}" == "yes" ]]; then
-  printf "Environnement ${WORKSPACE} is running..."
+if [[ -n "${OUTPUT}" ]]; then
+  printf "Environnement %s is running..." "${WORKSPACE}"
   exit 0
 else
-  printf "Environnement ${WORKSPACE} is stopped..."
+  printf "Environnement %s is stopped..." "${WORKSPACE}"
   exit 1
 fi

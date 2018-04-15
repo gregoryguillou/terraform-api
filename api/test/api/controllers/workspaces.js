@@ -249,6 +249,19 @@ describe('controllers', function () {
         })
       })
 
+      it('Should display the v0.0.2 with the version.sh script', (done) => {
+        request(server)
+          .get('/projects/demonstration/workspaces/staging/version')
+          .set('Accept', 'application/json')
+          .set('Authorization', token)
+          .expect(200)
+          .end((err, res) => {
+            res.body.should.containEql({ appVersion: 'v0.0.2', state: 'applied' })
+            should.not.exist(err)
+            done()
+          })
+      })
+
       it('Wait up to 5s to let people verify the stack status', (done) => {
         setTimeout(() => {
           done()
@@ -276,6 +289,19 @@ describe('controllers', function () {
         queryWorkspace(() => {
           done()
         })
+      })
+
+      it('Should display the v0.0.3 with the version.sh script', (done) => {
+        request(server)
+          .get('/projects/demonstration/workspaces/staging/version')
+          .set('Accept', 'application/json')
+          .set('Authorization', token)
+          .expect(200)
+          .end((err, res) => {
+            res.body.should.containEql({ appVersion: 'v0.0.3', state: 'applied' })
+            should.not.exist(err)
+            done()
+          })
       })
 
       it('should succeed HTTP-201 when project/workspace exists, action is apply with branch master', (done) => {
@@ -421,6 +447,19 @@ describe('controllers', function () {
         queryWorkspace(() => {
           done()
         })
+      })
+
+      it('Should display undefined with the version.sh script', (done) => {
+        request(server)
+          .get('/projects/demonstration/workspaces/staging/version')
+          .set('Accept', 'application/json')
+          .set('Authorization', token)
+          .expect(404)
+          .end((err, res) => {
+            res.body.should.containEql({ appVersion: 'undefined', state: 'destroyed' })
+            should.not.exist(err)
+            done()
+          })
       })
 
       it('should succeed HTTP-201 when project/workspace exists, action in [apply, destroy] and no pending action', (done) => {

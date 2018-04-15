@@ -17,7 +17,7 @@ function sh (cmd, options, callback) {
     if (err) {
       return callback(err)
     }
-    callback(null, 'OK')
+    callback(null, stdout)
   })
 }
 
@@ -79,6 +79,56 @@ function quickcheck (req, res) {
       }
       res.status(404).json({
         quickCheck: 'failure',
+        lastChecked: wk[key].lastChecked,
+        ref: wk[key].ref,
+        state: wk[key].state
+      })
+    })
+  })
+}
+
+function version (req, res) {
+  const workspace = {
+    project: req.swagger.params.project.value,
+    workspace: req.swagger.params.workspace.value
+  }
+  const key = `ws:${workspace.project}:${workspace.workspace}`
+  const project = workspace.project
+  let cwd = ''
+  let command = [ ]
+  for (var i = 0, size = projects.length; i < size; i++) {
+    if (projects[i].name === project) {
+      cwd = projects[i].lifecycle.cwd || 'projects/demonstration'
+      for (var j = 0, wsize = projects[i].lifecycle.version.length; j < wsize; j++) {
+        command.push(
+          projects[i].lifecycle.version[j].replace(/{{terraform-api\.WORKSPACE}}/,
+            workspace.workspace
+          )
+        )
+      }
+    }
+  }
+  showWorkspace(workspace, (err, wk) => {
+    if (err) {
+      return res.status(500).json({message: 'Unexpected error'})
+    }
+    if (!wk) {
+      return res.status(404).json({message: `${workspace.project}:${workspace.workspace} Not Found`})
+    }
+    sh(command[0], {cwd: cwd}, (err, data) => {
+      if (!err) {
+        return res.json({
+          appVersion: data,
+          lastChecked: wk[key].lastChecked,
+          ref: wk[key].ref,
+          state: wk[key].state
+        })
+      }
+      if (err.code !== 1 || err.killed) {
+        res.status(500).json({message: 'Fatal Error'})
+      }
+      res.status(404).json({
+        appVersion: 'undefined',
         lastChecked: wk[key].lastChecked,
         ref: wk[key].ref,
         state: wk[key].state
@@ -230,5 +280,6 @@ module.exports = {
   workspace_action: action,
   workspace_describe: describe,
   workspace_events: events,
-  workspace_status: quickcheck
+  workspace_status: quickcheck,
+  workspace_version: version
 }

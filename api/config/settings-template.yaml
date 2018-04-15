@@ -41,6 +41,8 @@ projects:
         - CONSUL_IP={{env.CONSUL}}
       status:
         - ./status.sh -w {{terraform-api.WORKSPACE}}
+      version:
+        - ./version.sh -w {{terraform-api.WORKSPACE}}
 users:
   - username: 'gregory'
     apikey: 'notsosecretadminkey'

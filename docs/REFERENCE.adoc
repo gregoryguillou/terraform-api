@@ -6,7 +6,7 @@
 
 === Version information
 [%hardbreaks]
-__Version__ : 0.1.7
+__Version__ : 0.1.8
 
 
 === URI scheme
@@ -339,7 +339,7 @@ __required__|The action to execute|<<_workspace_action_action,action>>
 |===
 |Name|Schema
 |**action** +
-__required__|enum (apply, check, clean, destroy)
+__required__|enum (apply, check, clean, destroy, reference)
 |**ref** +
 __optional__|string
 |===
@@ -420,6 +420,95 @@ __required__|Workspace to get|string
 |HTTP Code|Description|Schema
 |**200**|Success|<<_statusresponse,StatusResponse>>
 |**404**|Success|<<_statusresponse,StatusResponse>>
+|**default**|Error|<<_errorresponse,ErrorResponse>>
+|===
+
+
+==== Tags
+
+* main
+
+
+[[_workspace_version]]
+=== GET /projects/{project}/workspaces/{workspace}/version
+
+==== Description
+Returns the current version of a given project/workspace
+
+
+==== Parameters
+
+[options="header", cols=".^2,.^3,.^9,.^4"]
+|===
+|Type|Name|Description|Schema
+|**Path**|**project** +
+__required__|Project to get the workspace from.|string
+|**Path**|**workspace** +
+__required__|Workspace to get|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2,.^14,.^4"]
+|===
+|HTTP Code|Description|Schema
+|**200**|Success|<<_versionresponse,VersionResponse>>
+|**404**|Success|<<_versionresponse,VersionResponse>>
+|**default**|Error|<<_errorresponse,ErrorResponse>>
+|===
+
+
+==== Tags
+
+* main
+
+
+[[_sessions_list]]
+=== GET /sessions
+
+==== Description
+Return a the list of sessions currently in use
+
+
+==== Responses
+
+[options="header", cols=".^2,.^14,.^4"]
+|===
+|HTTP Code|Description|Schema
+|**200**|Success|<<_sessions,Sessions>>
+|**default**|Error|<<_errorresponse,ErrorResponse>>
+|===
+
+
+==== Tags
+
+* main
+
+
+[[_session_describe]]
+=== GET /sessions/{session}
+
+==== Description
+Returns the project/workspace associated with a given sessions
+
+
+==== Parameters
+
+[options="header", cols=".^2,.^3,.^9,.^4"]
+|===
+|Type|Name|Description|Schema
+|**Path**|**session** +
+__required__|Session to get.|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2,.^14,.^4"]
+|===
+|HTTP Code|Description|Schema
+|**200**|Success|<<_sessiondescription,SessionDescription>>
 |**default**|Error|<<_errorresponse,ErrorResponse>>
 |===
 
@@ -656,6 +745,42 @@ __required__|string
 |===
 
 
+[[_sessiondescription]]
+=== SessionDescription
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**id** +
+__required__|string
+|**project** +
+__required__|string
+|**workspace** +
+__required__|string
+|===
+
+
+[[_sessions]]
+=== Sessions
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**sessions** +
+__required__|< <<_sessions_sessions,sessions>> > array
+|===
+
+[[_sessions_sessions]]
+**sessions**
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**id** +
+__required__|string
+|===
+
+
 [[_statusresponse]]
 === StatusResponse
 
@@ -730,6 +855,37 @@ __required__|string
 |===
 
 
+[[_versionresponse]]
+=== VersionResponse
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**appVersion** +
+__required__|string
+|**lastChecked** +
+__optional__|<<_versionresponse_lastchecked,lastChecked>>
+|**ref** +
+__optional__|string
+|**state** +
+__required__|string
+|===
+
+[[_versionresponse_lastchecked]]
+**lastChecked**
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**date** +
+__optional__|integer
+|**ref** +
+__optional__|string
+|**state** +
+__optional__|string
+|===
+
+
 [[_workspace]]
 === Workspace
 
@@ -748,6 +904,8 @@ __required__|string
 __optional__|string
 |**request** +
 __optional__|<<_workspace_request,request>>
+|**session** +
+__optional__|string
 |**state** +
 __required__|string
 |**type** +
