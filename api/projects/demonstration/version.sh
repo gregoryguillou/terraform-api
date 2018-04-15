@@ -1,24 +1,24 @@
 #!/usr/bin/env bash
 
-WORKSPACE=${WORKSPACE:-staging}
+WORKSPACE=default
 
-RED='\033[0;31m'
-GREEN='\033[1;32m'
-NC='\033[0m'
-i=0
-while true; do
-  VERSION=$(curl --silent http://consul:8500/v1/kv/environment/${WORKSPACE}/version\?raw\=true 2>/dev/null)
-  if [[ -z "$VERSION" ]]; then
-    printf "${RED}.${NC}"
-  elif [[ "$VERSION" == "v0.0.2" ]]; then
-    printf "${RED}${VERSION}...${NC}"
-  else
-    printf "${GREEN}${VERSION}...${NC}"
-  fi
-  sleep 1
-  if [[ "$i" -gt 256 ]]; then
-    i=0
-    printf "\n"
-  fi
-  i=$(($i + 1))
+TEMP=$(getopt -o w: --long workspace: -n 'status' -- "$@")
+eval set -- "$TEMP"
+
+while true ; do
+  case "$1" in
+    -w|--workspace) WORKSPACE=$2 ; shift 2 ;;
+    --) shift ; break ;;
+    *) echo usage ; exit 1 ;;
+  esac
 done
+
+OUTPUT=$(curl --silent "consul:8500/v1/kv/environment/${WORKSPACE}/version?raw=true" 2>/dev/null || true)
+
+if [[ -n "${OUTPUT}" ]]; then
+  printf "%s" "${OUTPUT}"
+  exit 0
+else
+  printf "undefined"
+  exit 1
+fi
