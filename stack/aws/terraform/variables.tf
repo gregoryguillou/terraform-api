@@ -65,3 +65,14 @@ variable "vpc" {
   type        = "string"
   description = "The VPC in which the EC2 instance will be deployed"
 }
+
+variable "webapp_ruleno" {
+  type        = "string"
+  default     = 88
+  description = "The rule number as seen by the ALB listener"
+}
+
+variable "webapp" {
+  type        = "string"
+  description = "The FQDN of the hostname that checks the vestion in consul"
+}

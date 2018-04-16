@@ -34,6 +34,14 @@ services:
       - "terraform-api.role=consul"
     restart: "always"
 
+  webapp:
+    image: gregoryguillou/terraform-stacks:v0.1.2-app
+    ports:
+      - 8000:8000
+    restart: "always"
+    depends_on:
+      - consul
+
   couchbase:
     image: couchbase:community-5.0.1
     ports:
