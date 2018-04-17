@@ -6,7 +6,7 @@
 
 === Version information
 [%hardbreaks]
-__Version__ : 0.1.8
+__Version__ : 0.1.9
 
 
 === URI scheme
