@@ -1,6 +1,5 @@
 variable "ami" {
   type        = "string"
-  default     = "ami-5562432c"
   description = "The AZ the storage will be kept in"
 }
 
