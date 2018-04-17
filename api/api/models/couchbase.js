@@ -34,7 +34,7 @@ function testConnection (i, callback) {
               logger.fatal('Cannot open couchbase bucket for data')
               process.exit(1)
             }
-            logs = couchnode.wrap(cluster.openBucket(couchparam['data_bucket'], couchparam['bucket-password'], (err) => {
+            logs = couchnode.wrap(cluster.openBucket(couchparam['log_bucket'], couchparam['bucket-password'], (err) => {
               if (err) {
                 logger.fatal('Cannot open couchbase bucket for data')
                 process.exit(1)
