@@ -22,11 +22,11 @@ chmod 600 ~/.netrc
 #     - to follow you can do that:
 #     git pull origin master
 #     - you might even be able to do:
-#     git fetch -unf origin v0.1.8:refs/tags/v0.1.8
-#     git checkout v0.1.8
+#     git fetch -unf origin v0.1.9:refs/tags/v0.1.9
+#     git checkout v0.1.9
 #
 # - Another way would be to do what Travis CI does
-# git clone --depth=10 --branch=v0.1.8 ${GITHUB_REPOSITORY} <repo>
+# git clone --depth=10 --branch=v0.1.9 ${GITHUB_REPOSITORY} <repo>
 
 if [[ -d "/github/repository" ]]; then
   cd /github/repository
