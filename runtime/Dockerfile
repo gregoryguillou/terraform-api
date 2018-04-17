@@ -1,6 +1,6 @@
 FROM debian:stretch
 
-ARG TERRAFORM_VERSION=0.11.5
+ARG TERRAFORM_VERSION=0.11.7
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get install -y curl unzip git && \ 
