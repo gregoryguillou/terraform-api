@@ -14,7 +14,7 @@ let i = 0
 function queryWorkspace (callback) {
   setTimeout(function () {
     i++
-    if (i < 30) {
+    if (i < 60) {
       request(server)
         .get('/projects/demonstration/workspaces/staging')
         .set('Accept', 'application/json')
@@ -27,7 +27,7 @@ function queryWorkspace (callback) {
             queryWorkspace(callback)
           } else {
             callback()
-            i = 30
+            i = 60
           }
         })
     } else {
@@ -75,7 +75,7 @@ describe('controllers', function () {
 })
 
 describe('controllers', function () {
-  this.timeout(60000)
+  this.timeout(90000)
   describe('workspace', () => {
     before((done) => {
       request(server)
@@ -93,6 +93,21 @@ describe('controllers', function () {
     })
 
     describe('GET /projects/{project}/workspaces/{workspace}', () => {
+      before((done) => {
+        request(server)
+          .get('/login')
+          .set('Accept', 'application/json')
+          .set('Authorization', `Key ${apikey}`)
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end((err, res) => {
+            should.not.exist(err)
+            token = 'Bearer ' + res.body['token']
+            res.body.should.containEql({message: 'Authenticated'})
+            done()
+          })
+      })
+
       it('should describe the detail of a given workspace', (done) => {
         request(server)
           .get('/projects/demonstration/workspaces/staging')
@@ -136,6 +151,21 @@ describe('controllers', function () {
     })
 
     describe('POST /projects/{project}/workspaces/{workspace} with {status: "clean"}', () => {
+      before((done) => {
+        request(server)
+          .get('/login')
+          .set('Accept', 'application/json')
+          .set('Authorization', `Key ${apikey}`)
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end((err, res) => {
+            should.not.exist(err)
+            token = 'Bearer ' + res.body['token']
+            res.body.should.containEql({message: 'Authenticated'})
+            done()
+          })
+      })
+
       it('Remove pending action on demonstration/staging', (done) => {
         feedWorkspace({project: 'demonstration', workspace: 'staging'}, {status: 'clean'}, (err, data) => {
           should.not.exist(err)
@@ -158,7 +188,7 @@ describe('controllers', function () {
           })
       })
 
-      it('Wait up to 30s before the creation is considered failed', (done) => {
+      it('Wait up to 60s before the creation is considered failed', (done) => {
         i = 0
         queryWorkspace(() => {
           done()
@@ -192,7 +222,7 @@ describe('controllers', function () {
           })
       })
 
-      it('Wait up to 30s before the creation is considered failed', (done) => {
+      it('Wait up to 60s before the creation is considered failed', (done) => {
         i = 0
         queryWorkspace(() => {
           done()
@@ -228,6 +258,21 @@ describe('controllers', function () {
     })
 
     describe('POST /projects/{project}/workspaces/{workspace} with {action: "apply"} and different tags', () => {
+      before((done) => {
+        request(server)
+          .get('/login')
+          .set('Accept', 'application/json')
+          .set('Authorization', `Key ${apikey}`)
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end((err, res) => {
+            should.not.exist(err)
+            token = 'Bearer ' + res.body['token']
+            res.body.should.containEql({message: 'Authenticated'})
+            done()
+          })
+      })
+
       it('should succeed HTTP-201 when project/workspace exists, action is apply with tag v0.0.2', (done) => {
         request(server)
           .post('/projects/demonstration/workspaces/staging')
@@ -242,7 +287,7 @@ describe('controllers', function () {
           })
       })
 
-      it('Wait up to 30s before the creation is considered failed', (done) => {
+      it('Wait up to 60s before the creation is considered failed', (done) => {
         i = 0
         queryWorkspace(() => {
           done()
@@ -284,7 +329,7 @@ describe('controllers', function () {
           })
       })
 
-      it('Wait up to 30s before the creation is considered failed', (done) => {
+      it('Wait up to 60s before the creation is considered failed', (done) => {
         i = 0
         queryWorkspace(() => {
           done()
@@ -318,7 +363,7 @@ describe('controllers', function () {
           })
       })
 
-      it('Wait up to 30s before the creation is considered failed', (done) => {
+      it('Wait up to 60s before the creation is considered failed', (done) => {
         i = 0
         queryWorkspace(() => {
           done()
@@ -339,7 +384,7 @@ describe('controllers', function () {
           })
       })
 
-      it('Wait up to 30s before the creation is considered failed', (done) => {
+      it('Wait up to 60s before the creation is considered failed', (done) => {
         i = 0
         queryWorkspace(() => {
           done()
@@ -348,6 +393,21 @@ describe('controllers', function () {
     })
 
     describe('POST /projects/{project}/workspaces/{workspace} with {action: "reference", ref: "tag:v0.0.1"} and different tags', () => {
+      before((done) => {
+        request(server)
+          .get('/login')
+          .set('Accept', 'application/json')
+          .set('Authorization', `Key ${apikey}`)
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end((err, res) => {
+            should.not.exist(err)
+            token = 'Bearer ' + res.body['token']
+            res.body.should.containEql({message: 'Authenticated'})
+            done()
+          })
+      })
+
       it('should succeed HTTP-201 when project/workspace exists, action is apply with tag v0.0.1', (done) => {
         request(server)
           .post('/projects/demonstration/workspaces/staging')
@@ -362,7 +422,7 @@ describe('controllers', function () {
           })
       })
 
-      it('Wait up to 30s before the creation is considered failed', (done) => {
+      it('Wait up to 60s before the creation is considered failed', (done) => {
         i = 0
         queryWorkspace(() => {
           done()
@@ -401,7 +461,7 @@ describe('controllers', function () {
           })
       })
 
-      it('Wait up to 30s before the creation is considered failed', (done) => {
+      it('Wait up to 60s before the creation is considered failed', (done) => {
         i = 0
         queryWorkspace(() => {
           done()
@@ -428,6 +488,21 @@ describe('controllers', function () {
     })
 
     describe('POST /projects/{project}/workspaces/{workspace} with {action: "destroy"}', () => {
+      before((done) => {
+        request(server)
+          .get('/login')
+          .set('Accept', 'application/json')
+          .set('Authorization', `Key ${apikey}`)
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end((err, res) => {
+            should.not.exist(err)
+            token = 'Bearer ' + res.body['token']
+            res.body.should.containEql({message: 'Authenticated'})
+            done()
+          })
+      })
+
       it('should succeed HTTP-201 when project/workspace exists, action in [apply, destroy] and no pending action', (done) => {
         request(server)
           .post('/projects/demonstration/workspaces/staging')
@@ -442,7 +517,7 @@ describe('controllers', function () {
           })
       })
 
-      it('Wait up to 30s before the destruction is considered failed', (done) => {
+      it('Wait up to 60s before the destruction is considered failed', (done) => {
         i = 0
         queryWorkspace(() => {
           done()
@@ -489,7 +564,7 @@ describe('controllers', function () {
           })
       })
 
-      it('Wait up to 30s before the destruction is considered failed', (done) => {
+      it('Wait up to 60s before the destruction is considered failed', (done) => {
         i = 0
         queryWorkspace(() => {
           done()
@@ -498,6 +573,21 @@ describe('controllers', function () {
     })
 
     describe('GET /projects/{project}/workspaces/{workspace}/status', () => {
+      before((done) => {
+        request(server)
+          .get('/login')
+          .set('Accept', 'application/json')
+          .set('Authorization', `Key ${apikey}`)
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end((err, res) => {
+            should.not.exist(err)
+            token = 'Bearer ' + res.body['token']
+            res.body.should.containEql({message: 'Authenticated'})
+            done()
+          })
+      })
+
       it('should succeed HTTP-404 when project/workspace exists and is not running', (done) => {
         request(server)
           .get('/projects/demonstration/workspaces/staging/status')
@@ -524,7 +614,7 @@ describe('controllers', function () {
           })
       })
 
-      it('Wait up to 30s before the creation is considered failed', (done) => {
+      it('Wait up to 60s before the creation is considered failed', (done) => {
         i = 0
         queryWorkspace(() => {
           done()
