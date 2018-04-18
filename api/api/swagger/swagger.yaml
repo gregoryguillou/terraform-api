@@ -18,6 +18,44 @@ consumes:
 produces:
   - application/json
 paths:
+  /channels:
+    x-swagger-router-controller: channels
+    get:
+      tags:
+        - main
+      description: Return a the list of channels for the current user
+      operationId: channels_list
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Channels"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /channels/{channel}:
+    x-swagger-router-controller: channels
+    get:
+      tags:
+        - main
+      description: Returns some details about how a channel is used
+      operationId: channel_describe
+      parameters:
+        - in: path
+          name: channel
+          type: string
+          required: true
+          description: Channel to get.
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/ChannelDescription"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
   /events/{event}:
     x-swagger-router-controller: events
     get:
@@ -344,44 +382,6 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-  /sessions:
-    x-swagger-router-controller: sessions
-    get:
-      tags:
-        - main
-      description: Return a the list of sessions currently in use
-      operationId: sessions_list
-      responses:
-        "200":
-          description: Success
-          schema:
-            $ref: "#/definitions/Sessions"
-        default:
-          description: Error
-          schema:
-            $ref: "#/definitions/ErrorResponse"
-  /sessions/{session}:
-    x-swagger-router-controller: sessions
-    get:
-      tags:
-        - main
-      description: Returns the project/workspace associated with a given sessions
-      operationId: session_describe
-      parameters:
-        - in: path
-          name: session
-          type: string
-          required: true
-          description: Session to get.
-      responses:
-        "200":
-          description: Success
-          schema:
-            $ref: "#/definitions/SessionDescription"
-        default:
-          description: Error
-          schema:
-            $ref: "#/definitions/ErrorResponse"
   /user:
     x-swagger-router-controller: login
     get:
@@ -447,6 +447,29 @@ definitions:
           properties:
             name:
               type: string
+  Channels:
+    required:
+      - channels
+    properties:
+      channels:
+        type: array
+        items:
+          type: object
+          required:
+            - name
+          properties:
+            name:
+              type: string
+  ChannelDescription:
+    required:
+      - name
+    properties:
+      name:
+        type: string
+      project:
+        type: string
+      workspace:
+        type: string
   ErrorResponse:
     required:
       - message
@@ -543,31 +566,6 @@ definitions:
               type: string
             status:
               type: string
-  Sessions:
-    required:
-      - sessions
-    properties:
-      sessions:
-        type: array
-        items:
-          type: object
-          required:
-            - id
-          properties:
-            id:
-              type: string
-  SessionDescription:
-    required:
-      - id
-      - project
-      - workspace
-    properties:
-      id:
-        type: string
-      project:
-        type: string
-      workspace:
-        type: string
   StatusResponse:
     required:
       - quickCheck

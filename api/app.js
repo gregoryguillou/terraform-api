@@ -47,7 +47,7 @@ app.use('/login', passport.authenticate('headerapikey', { session: false }), goN
 app.use('/user', jwtAuth(), goNext)
 app.use('/events', jwtAuth(), goNext)
 app.use('/projects', jwtAuth(), goNext)
-app.use('/sessions', jwtAuth(), goNext)
+app.use('/channels', jwtAuth(), goNext)
 app.use('/version', jwtAuth(), goNext)
 
 updateAll(() => {
