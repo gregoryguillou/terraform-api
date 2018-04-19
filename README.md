@@ -15,6 +15,13 @@ able to use Terraform from anywhere and:
 - Publish SaaS applications to your customers
 - Integrate other tools and be creative...
 
+## Short demo
+
+The Youtube video below shows an example of what can be done with this API. It
+relies on Slack and Hubot to apply/destroy a Terraform project:
+
+[![Terraform from Slack](docs/img/demo-video.png)](https://www.youtube.com/watch?v=y8Uug5-08Bw)
+
 ## Try it
 
 Try `Terraform API` now. Read and comment the documents below:
