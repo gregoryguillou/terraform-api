@@ -32,8 +32,7 @@ read the [Code of Conduct](https://github.com/gregoryguillou/terraform-api/blob/
 
 ## Short demo
 
-The video below shows an example of what can be done with the API. It uses
-[gregoryguillou/hubot-terraform](https://github.com/gregoryguillou/hubot-terraform)
-to manage Terraform projects from your Messaging Systems, like Slack:
+The Youtube video below shows an example of what can be done with this API. It
+relies on Slack and Hubot to apply/destroy a Terraform project:
 
 [![Terraform from Slack](docs/img/demo-video.png)](https://www.youtube.com/watch?v=y8Uug5-08Bw)
