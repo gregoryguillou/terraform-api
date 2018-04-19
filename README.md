@@ -29,3 +29,9 @@ Try `Terraform API` now. Read and comment the documents below:
 If you have any question, open an issue or create a PR on Github. Get involved,
 read the [Code of Conduct](https://github.com/gregoryguillou/terraform-api/blob/master/docs/CODE_OF_CONDUCT.md) and the
 [Contribution Guide](https://github.com/gregoryguillou/terraform-api/blob/master/docs/CONTRIBUTING.md).
+
+## Short demo
+
+The video below shows an example of what can be done from the API. It uses [gregoryguillou/hubot-terraform](https://github.com/gregoryguillou/hubot-terraform) to cal it from Slack:
+
+[![Terraform from Slack](https://img.youtube.com/vi/y8Uug5-08Bw/0.jpg)](https://www.youtube.com/watch?v=y8Uug5-08Bw)
