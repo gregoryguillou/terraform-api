@@ -77,7 +77,7 @@ class EchoStream extends stream.Writable {
     let lines = chunk.toString().split('\n')
     for (var i = 0, size = lines.length; i < size; i++) {
       this.line++
-      this.log[this.key].logs.push({line: this.line, text: lines[i]})
+      this.log[this.key].logs.push({line: this.line, date: Date.now(), text: lines[i]})
     }
     this.logs.upsert(this.log, function (err, result) {
       if (err) throw err
