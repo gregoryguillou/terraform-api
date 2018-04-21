@@ -1,6 +1,7 @@
 'use strict'
 
 const {findIdByUsername} = require('../models/user')
+const {channelStore} = require('../models/couchbase')
 
 function describe (req, res) {
   const channel = req.swagger.params.channel.value
@@ -27,10 +28,15 @@ function create (req, res) {
     if (err) {
       return res.status(500).json(content)
     }
-    if (content) {
-      return res.status(201).json(content)
-    }
-    return res.status(201).json({})
+    channelStore(`${userid}/${channel}`, content, (err, data) => {
+      if (err) {
+        return res.status(500).json(content)
+      }
+      if (data) {
+        return res.status(201).json(data)
+      }
+      return res.status(201).json({})
+    })
   })
 }
 

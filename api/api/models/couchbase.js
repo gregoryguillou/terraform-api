@@ -97,6 +97,17 @@ class ActionError extends Error {
   }
 }
 
+function channelStore (channel, content, callback) {
+  let message = {}
+  message[`channel:${channel}`] = content
+  bucket.upsert(message, (err, result) => {
+    if (err) {
+      throw err
+    }
+    callback(null, result)
+  })
+}
+
 function checkConnectivity (callback) {
   bucket.upsert({'tst:1': { status: 'OK' }}, function (err, result) {
     if (err) {
@@ -488,6 +499,7 @@ function getUsers (callback) {
 module.exports = {
   ActionError,
   actionWorkspace,
+  channelStore,
   checkConnectivity,
   checkEventLogs,
   deleteWorkspace,
