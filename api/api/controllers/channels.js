@@ -1,5 +1,7 @@
 'use strict'
 
+const {findIdByUsername} = require('../models/user')
+
 function describe (req, res) {
   const channel = req.swagger.params.channel.value
   if (channel === 'default') {
@@ -20,11 +22,16 @@ function list (req, res) {
 function create (req, res) {
   const channel = req.swagger.params.channel.value
   const content = req.swagger.params.content.value
-  console.log(channel)
-  if (content) {
-    return res.status(201).json(content)
-  }
-  return res.status(201).json({})
+  findIdByUsername(req.user.username, (err, userid) => {
+    console.log(`userid is: ${userid} on ${channel}`)
+    if (err) {
+      return res.status(500).json(content)
+    }
+    if (content) {
+      return res.status(201).json(content)
+    }
+    return res.status(201).json({})
+  })
 }
 
 function remove (req, res) {

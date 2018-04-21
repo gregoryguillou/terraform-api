@@ -5,6 +5,7 @@ const stream = require('stream')
 const YAML = require('yamljs')
 const couchparam = YAML.load('config/settings.yaml').couchbase
 const projects = YAML.load('config/settings.yaml').projects
+const users = YAML.load('config/settings.yaml').users
 const uuidv4 = require('uuid/v4')
 const logger = require('./logger')
 
@@ -453,6 +454,37 @@ function feedWorkspace (workspace, result, callback) {
   })
 }
 
+function getUsers (callback) {
+  const key = 'users'
+  bucket.get(key, (err, data) => {
+    if (err) {
+      return callback(err, null)
+    }
+    if (!data || !data[key]) {
+      logger.error(`Users are currently undefined. Create them from the settings.xml file`)
+      let allusers = []
+      let i = 0
+      users.forEach((element) => {
+        i++
+        allusers.push({
+          userid: i,
+          username: element.username,
+          apikey: element.apikey,
+          role: element.role
+        })
+      })
+      bucket.upsert({users: allusers}, function (err, result) {
+        if (err) {
+          throw err
+        }
+        return callback(null, {users: allusers})
+      })
+    } else {
+      return callback(null, data)
+    }
+  })
+}
+
 module.exports = {
   ActionError,
   actionWorkspace,
@@ -461,6 +493,7 @@ module.exports = {
   deleteWorkspace,
   EchoStream,
   feedWorkspace,
+  getUsers,
   showEvent,
   showLogs,
   showWorkspace,
