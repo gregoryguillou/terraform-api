@@ -11,6 +11,19 @@ services:
     depends_on:
       - consul
       - couchbase
+      - redis
+    restart: "always"
+
+  terraform-scheduler:
+    image: "gregoryguillou/terraform-api:${VERSION:-v0.1.9}"
+    command: ["npm", "run", "scheduler"]
+    volumes:
+     - /var/run/docker.sock:/var/run/docker.sock
+     - $PWD/../../api/config/settings.yaml:/app/config/settings.yaml
+    depends_on:
+      - consul
+      - couchbase
+      - redis
     restart: "always"
 
   runtime:
