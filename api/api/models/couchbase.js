@@ -463,7 +463,7 @@ function feedWorkspace (workspace, result, callback) {
         }
         break
       case 'changed':
-        if (request.action === 'reference') {
+        if (request.action === 'update' && request.ref) {
           payload[key].lastChecked = lastChecked('changed')
           if (request.ref) {
             payload[key].ref = request.ref

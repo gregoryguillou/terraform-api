@@ -339,7 +339,7 @@ __required__|The action to execute|<<_workspace_action_action,action>>
 |===
 |Name|Schema
 |**action** +
-__required__|enum (apply, check, clean, destroy, reference)
+__required__|enum (apply, check, clean, destroy, update)
 |**ref** +
 __optional__|string
 |===

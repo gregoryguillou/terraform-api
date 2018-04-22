@@ -396,7 +396,7 @@ describe('controllers', function () {
       })
     })
 
-    describe('POST /projects/{project}/workspaces/{workspace} with {action: "reference", ref: "tag:v0.0.1"} and different tags', () => {
+    describe('POST /projects/{project}/workspaces/{workspace} with {action: "update", ref: "tag:v0.0.1"} and different tags', () => {
       before((done) => {
         request(server)
           .get('/login')
@@ -415,7 +415,7 @@ describe('controllers', function () {
       it('should succeed HTTP-201 when project/workspace exists, action is apply with tag v0.0.1', (done) => {
         request(server)
           .post('/projects/demonstration/workspaces/staging')
-          .send({'action': 'reference', 'ref': 'tag:v0.0.1'})
+          .send({'action': 'update', 'ref': 'tag:v0.0.1'})
           .set('Accept', 'application/json')
           .set('Authorization', token)
           .expect(201)
@@ -454,7 +454,7 @@ describe('controllers', function () {
       it('should succeed HTTP-201 when project/workspace exists, action is apply with branch master', (done) => {
         request(server)
           .post('/projects/demonstration/workspaces/staging')
-          .send({'action': 'reference', 'ref': 'branch:master'})
+          .send({'action': 'update', 'ref': 'branch:master'})
           .set('Accept', 'application/json')
           .set('Authorization', token)
           .expect(201)

@@ -187,7 +187,7 @@ function action (req, res) {
           })
         })
         res.status(201).json({event: data[key].request.event})
-      } else if (actionValue.action === 'reference') {
+      } else if (actionValue.action === 'update' && actionValue.ref) {
         let request = {
           project: workspace.project,
           workspace: workspace.workspace,
