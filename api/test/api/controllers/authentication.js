@@ -3,6 +3,7 @@
 const should = require('should')
 const request = require('supertest')
 const server = require('../../../app')
+const scheduler = require('../../../api/models/scheduler')
 const YAML = require('yamljs')
 const apikey = YAML.load('config/settings.yaml').users[0].apikey
 let token = ''
@@ -11,6 +12,8 @@ describe('authentication', function () {
   this.timeout(60000)
 
   before((done) => {
+    scheduler.manageMessage()
+    scheduler.subscribeDelayedMessage()
     server.on('apiStarted', () => {
       request(server)
         .get('/login')

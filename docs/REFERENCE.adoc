@@ -31,6 +31,124 @@ __Schemes__ : HTTP, HTTPS
 [[_paths]]
 == Paths
 
+[[_channels_list]]
+=== GET /channels
+
+==== Description
+Return a the list of channels for the current user
+
+
+==== Responses
+
+[options="header", cols=".^2,.^14,.^4"]
+|===
+|HTTP Code|Description|Schema
+|**200**|Success|<<_channels,Channels>>
+|**default**|Error|<<_errorresponse,ErrorResponse>>
+|===
+
+
+==== Tags
+
+* main
+
+
+[[_channel_describe]]
+=== GET /channels/{channel}
+
+==== Description
+Returns some details about how a channel is used
+
+
+==== Parameters
+
+[options="header", cols=".^2,.^3,.^9,.^4"]
+|===
+|Type|Name|Description|Schema
+|**Path**|**channel** +
+__required__|Channel to get.|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2,.^14,.^4"]
+|===
+|HTTP Code|Description|Schema
+|**200**|Success|<<_channeldescription,ChannelDescription>>
+|**default**|Error|<<_errorresponse,ErrorResponse>>
+|===
+
+
+==== Tags
+
+* main
+
+
+[[_channel_create]]
+=== PUT /channels/{channel}
+
+==== Description
+Creates a new Channel
+
+
+==== Parameters
+
+[options="header", cols=".^2,.^3,.^9,.^4"]
+|===
+|Type|Name|Description|Schema
+|**Path**|**channel** +
+__required__|Channel to create or update.|string
+|**Body**|**content** +
+__optional__|Channel properties|<<_channeldescription,ChannelDescription>>
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2,.^14,.^4"]
+|===
+|HTTP Code|Description|Schema
+|**201**|Success|<<_channeldescription,ChannelDescription>>
+|===
+
+
+==== Tags
+
+* main
+
+
+[[_channel_delete]]
+=== DELETE /channels/{channel}
+
+==== Description
+Deletes a Channel
+
+
+==== Parameters
+
+[options="header", cols=".^2,.^3,.^9,.^4"]
+|===
+|Type|Name|Description|Schema
+|**Path**|**channel** +
+__required__|Channel to delete|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2,.^14,.^4"]
+|===
+|HTTP Code|Description|Schema
+|**204**|Success|No Content
+|===
+
+
+==== Tags
+
+* main
+
+
 [[_event_describe]]
 === GET /events/{event}
 
@@ -339,7 +457,7 @@ __required__|The action to execute|<<_workspace_action_action,action>>
 |===
 |Name|Schema
 |**action** +
-__required__|enum (apply, check, clean, destroy, reference)
+__required__|enum (apply, check, clean, destroy, update)
 |**ref** +
 __optional__|string
 |===
@@ -464,60 +582,6 @@ __required__|Workspace to get|string
 * main
 
 
-[[_sessions_list]]
-=== GET /sessions
-
-==== Description
-Return a the list of sessions currently in use
-
-
-==== Responses
-
-[options="header", cols=".^2,.^14,.^4"]
-|===
-|HTTP Code|Description|Schema
-|**200**|Success|<<_sessions,Sessions>>
-|**default**|Error|<<_errorresponse,ErrorResponse>>
-|===
-
-
-==== Tags
-
-* main
-
-
-[[_session_describe]]
-=== GET /sessions/{session}
-
-==== Description
-Returns the project/workspace associated with a given sessions
-
-
-==== Parameters
-
-[options="header", cols=".^2,.^3,.^9,.^4"]
-|===
-|Type|Name|Description|Schema
-|**Path**|**session** +
-__required__|Session to get.|string
-|===
-
-
-==== Responses
-
-[options="header", cols=".^2,.^14,.^4"]
-|===
-|HTTP Code|Description|Schema
-|**200**|Success|<<_sessiondescription,SessionDescription>>
-|**default**|Error|<<_errorresponse,ErrorResponse>>
-|===
-
-
-==== Tags
-
-* main
-
-
 [[_status]]
 === GET /status
 
@@ -601,6 +665,40 @@ __required__|< <<_branches_branches,branches>> > array
 
 [[_branches_branches]]
 **branches**
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**name** +
+__required__|string
+|===
+
+
+[[_channeldescription]]
+=== ChannelDescription
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**project** +
+__optional__|string
+|**workspace** +
+__optional__|string
+|===
+
+
+[[_channels]]
+=== Channels
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**channels** +
+__required__|< <<_channels_channels,channels>> > array
+|===
+
+[[_channels_channels]]
+**channels**
 
 [options="header", cols=".^3,.^4"]
 |===
@@ -745,42 +843,6 @@ __required__|string
 |===
 
 
-[[_sessiondescription]]
-=== SessionDescription
-
-[options="header", cols=".^3,.^4"]
-|===
-|Name|Schema
-|**id** +
-__required__|string
-|**project** +
-__required__|string
-|**workspace** +
-__required__|string
-|===
-
-
-[[_sessions]]
-=== Sessions
-
-[options="header", cols=".^3,.^4"]
-|===
-|Name|Schema
-|**sessions** +
-__required__|< <<_sessions_sessions,sessions>> > array
-|===
-
-[[_sessions_sessions]]
-**sessions**
-
-[options="header", cols=".^3,.^4"]
-|===
-|Name|Schema
-|**id** +
-__required__|string
-|===
-
-
 [[_statusresponse]]
 === StatusResponse
 
@@ -892,6 +954,8 @@ __optional__|string
 [options="header", cols=".^3,.^4"]
 |===
 |Name|Schema
+|**channels** +
+__optional__|<<_workspace_channels,channels>>
 |**creation** +
 __optional__|integer
 |**lastChecked** +
@@ -904,13 +968,52 @@ __required__|string
 __optional__|string
 |**request** +
 __optional__|<<_workspace_request,request>>
-|**session** +
-__optional__|string
 |**state** +
 __required__|string
 |**type** +
 __optional__|string
 |**workspace** +
+__required__|string
+|===
+
+[[_workspace_channels]]
+**channels**
+
+[options="header", cols=".^3,.^11,.^4"]
+|===
+|Name|Description|Schema
+|**duration** +
+__optional__||enum (always, lease, request)
+|**leaders** +
+__optional__|List the channels that have been accepted as leaders for `always`
+or `lease` duration that require an `approval`.|< <<_workspace_leaders,leaders>> > array
+|**managementType** +
+__optional__||enum (approved, shared)
+|**requesters** +
+__optional__||< <<_workspace_requesters,requesters>> > array
+|===
+
+[[_workspace_leaders]]
+**leaders**
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**channel** +
+__required__|string
+|**user** +
+__required__|string
+|===
+
+[[_workspace_requesters]]
+**requesters**
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**channel** +
+__required__|string
+|**user** +
 __required__|string
 |===
 

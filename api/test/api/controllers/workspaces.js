@@ -119,7 +119,11 @@ describe('controllers', function () {
             should.not.exist(err)
             res.body.should.containEql({
               project: 'demonstration',
-              workspace: 'staging'
+              workspace: 'staging',
+              channels: {
+                duration: 'request',
+                managementType: 'shared'
+              }
             })
             done()
           })
@@ -392,7 +396,7 @@ describe('controllers', function () {
       })
     })
 
-    describe('POST /projects/{project}/workspaces/{workspace} with {action: "reference", ref: "tag:v0.0.1"} and different tags', () => {
+    describe('POST /projects/{project}/workspaces/{workspace} with {action: "update", ref: "tag:v0.0.1"} and different tags', () => {
       before((done) => {
         request(server)
           .get('/login')
@@ -411,7 +415,7 @@ describe('controllers', function () {
       it('should succeed HTTP-201 when project/workspace exists, action is apply with tag v0.0.1', (done) => {
         request(server)
           .post('/projects/demonstration/workspaces/staging')
-          .send({'action': 'reference', 'ref': 'tag:v0.0.1'})
+          .send({'action': 'update', 'ref': 'tag:v0.0.1'})
           .set('Accept', 'application/json')
           .set('Authorization', token)
           .expect(201)
@@ -450,7 +454,7 @@ describe('controllers', function () {
       it('should succeed HTTP-201 when project/workspace exists, action is apply with branch master', (done) => {
         request(server)
           .post('/projects/demonstration/workspaces/staging')
-          .send({'action': 'reference', 'ref': 'branch:master'})
+          .send({'action': 'update', 'ref': 'branch:master'})
           .set('Accept', 'application/json')
           .set('Authorization', token)
           .expect(201)
@@ -481,6 +485,107 @@ describe('controllers', function () {
               project: 'demonstration',
               workspace: 'staging',
               ref: 'branch:master'
+            })
+            done()
+          })
+      })
+    })
+
+    describe('POST to /projects/{project}/workspaces/{workspace} with {action: "update", channels: xxx}', () => {
+      before((done) => {
+        request(server)
+          .get('/login')
+          .set('Accept', 'application/json')
+          .set('Authorization', `Key ${apikey}`)
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end((err, res) => {
+            should.not.exist(err)
+            token = 'Bearer ' + res.body['token']
+            res.body.should.containEql({message: 'Authenticated'})
+            done()
+          })
+      })
+
+      it('should succeed HTTP-201 when project/workspace exists, and channel properties is changed', (done) => {
+        request(server)
+          .post('/projects/demonstration/workspaces/staging')
+          .send({action: 'update', channels: {duration: 'always', managementType: 'shared'}})
+          .set('Accept', 'application/json')
+          .set('Authorization', token)
+          .expect(201)
+          .end((err, res) => {
+            should.not.exist(err)
+            should.exist(res.body.event)
+            done()
+          })
+      })
+
+      it('Wait up to 60s before the creation is considered failed', (done) => {
+        i = 0
+        queryWorkspace(() => {
+          done()
+        })
+      })
+
+      it('should have the channel properties changed', (done) => {
+        request(server)
+          .get('/projects/demonstration/workspaces/staging')
+          .set('Accept', 'application/json')
+          .set('Authorization', token)
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end((err, res) => {
+            should.not.exist(err)
+            res.body.should.containEql({
+              project: 'demonstration',
+              workspace: 'staging',
+              channels: {
+                duration: 'always',
+                managementType: 'shared'
+              }
+            })
+            done()
+          })
+      })
+
+      it('should succeed HTTP-201 when project/workspace exists, and channel properties is changed', (done) => {
+        request(server)
+          .post('/projects/demonstration/workspaces/staging')
+          .send({action: 'update', channels: {duration: 'request', managementType: 'shared'}})
+          .set('Accept', 'application/json')
+          .set('Authorization', token)
+          .expect(201)
+          .end((err, res) => {
+            should.not.exist(err)
+            should.exist(res.body.event)
+            done()
+          })
+      })
+
+      it('Wait up to 60s before the creation is considered failed', (done) => {
+        i = 0
+        queryWorkspace(() => {
+          done()
+        })
+      })
+
+      it('should have the channel properties changed', (done) => {
+        request(server)
+          .get('/projects/demonstration/workspaces/staging')
+          .set('Accept', 'application/json')
+          .set('Authorization', token)
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end((err, res) => {
+            should.not.exist(err)
+            res.body.should.containEql({
+              project: 'demonstration',
+              workspace: 'staging',
+              channels: {
+                duration: 'request',
+                managementType: 'shared'
+              }
             })
             done()
           })

@@ -10,10 +10,19 @@ const user = require('./api/models/user')
 const logger = require('./api/models/logger')
 const { updateAll } = require('./api/models/git')
 const { testConnection } = require('./api/models/couchbase')
+const { manageMessage, subscribeDelayedMessage } = require('./api/models/scheduler')
 
 const config = {
   appRoot: __dirname
 }
+
+let scheduler = false
+
+process.argv.forEach((val, index) => {
+  if (val === '-scheduler' || val === '-scheduler') {
+    scheduler = true
+  }
+})
 
 const jwtAuth = () => passport.authenticate('jwt', { session: false })
 const goNext = (req, res, next) => next()
@@ -50,21 +59,26 @@ app.use('/projects', jwtAuth(), goNext)
 app.use('/channels', jwtAuth(), goNext)
 app.use('/version', jwtAuth(), goNext)
 
-updateAll(() => {
-  testConnection(60, () => {
-    SwaggerExpress.create(config, (err, swaggerExpress) => {
-      if (err) {
-        throw err
-      }
-      if (err) { throw err }
-      swaggerExpress.register(app)
-      const port = process.env.PORT || 10010
-      app.listen(port, '0.0.0.0', () => {
-        logger.info('Listening on http://0.0.0.0:%d', port)
-        app.emit('apiStarted')
+if (scheduler) {
+  manageMessage()
+  subscribeDelayedMessage()
+} else {
+  updateAll(() => {
+    testConnection(60, () => {
+      SwaggerExpress.create(config, (err, swaggerExpress) => {
+        if (err) {
+          throw err
+        }
+        if (err) { throw err }
+        swaggerExpress.register(app)
+        const port = process.env.PORT || 10010
+        app.listen(port, '0.0.0.0', () => {
+          logger.info('Listening on http://0.0.0.0:%d', port)
+          app.emit('apiStarted')
+        })
       })
     })
   })
-})
+}
 
 module.exports = app

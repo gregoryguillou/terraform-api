@@ -344,9 +344,23 @@ paths:
             properties:
               action:
                 type: string
-                enum: ["apply", "check", "clean", "destroy", "reference"]
+                enum: ["apply", "check", "clean", "destroy", "update"]
               ref:
                 type: string
+              channels:
+                type: object
+                properties:
+                  managementType:
+                    type: string
+                    enum:
+                      - approved
+                      - shared
+                  duration:
+                    type: string
+                    enum:
+                      - always
+                      - lease
+                      - request
       responses:
         "201":
           description: Created
