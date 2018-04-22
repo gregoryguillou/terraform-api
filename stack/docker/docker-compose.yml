@@ -14,7 +14,7 @@ services:
     restart: "always"
 
   runtime:
-    image: "gregoryguillou/terraform-api:${VERSION:-v0.1.9}-runtime"
+    image: "gregoryguillou/terraform-api:v0.1.9-runtime"
     depends_on:
       - consul
     environment:
@@ -59,3 +59,12 @@ services:
       - couchbase
     command: ['/script/couchbase-setup.sh']
     restart: "no"
+
+  redis:
+    image: redis:3.2
+    ports:
+      - 6379:6379
+    command: ['redis-server', '--appendonly', 'yes' ]
+    labels:
+      - "terraform-api.role=redis-server"
+    restart: "always"

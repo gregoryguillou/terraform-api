@@ -5,6 +5,7 @@ const stream = require('stream')
 const YAML = require('yamljs')
 const couchparam = YAML.load('config/settings.yaml').couchbase
 const projects = YAML.load('config/settings.yaml').projects
+const users = YAML.load('config/settings.yaml').users
 const uuidv4 = require('uuid/v4')
 const logger = require('./logger')
 
@@ -94,6 +95,96 @@ class ActionError extends Error {
     }
     this.code = code
   }
+}
+
+function channelDescribe (user, channel, callback) {
+  bucket.get(`channels:${user}/${channel}`, (err1, data1) => {
+    if (err1) {
+      throw err1
+    }
+    if (data1 && data1[`channels:${user}/${channel}`]) {
+      return callback(null, data1[`channels:${user}/${channel}`])
+    }
+    if (channel === 'default') {
+      return callback(null, {})
+    }
+    callback(null, null)
+  })
+}
+
+function channelList (user, callback) {
+  bucket.get(`channels:${user}`, (err1, data1) => {
+    if (err1) {
+      throw err1
+    }
+    let channels = []
+    if (data1 && data1[`channels:${user}`]) {
+      Object.keys(data1[`channels:${user}`]).forEach((key) => {
+        channels.push({name: key.slice(`channels:${user}`.length + 1)})
+      })
+      if (!data1[`channels:${user}`][`channels:${user}/default`]) {
+        channels.push({name: 'default'})
+      }
+    } else {
+      channels.push({name: 'default'})
+    }
+    callback(null, {channels})
+  })
+}
+
+function channelRemove (user, channel, callback) {
+  bucket.get(`channels:${user}`, (err1, data1) => {
+    if (err1) {
+      throw err1
+    }
+    let channels = {}
+    let channellist = {}
+    if (data1 && data1[`channels:${user}`]) {
+      channels = data1[`channels:${user}`]
+      delete channels[`channels:${user}/${channel}`]
+    }
+    channellist[`channels:${user}`] = channels
+    bucket.upsert(channellist, (err2, data2) => {
+      if (err2) {
+        throw err2
+      }
+      bucket.remove(`channels:${user}/${channel}`, (err3, cas, misses) => {
+        if (err3) {
+          throw err3
+        }
+        callback(null)
+      })
+    })
+  })
+}
+
+function channelStore (user, channel, content, callback) {
+  bucket.get(`channels:${user}`, (err1, data1) => {
+    if (err1) {
+      throw err1
+    }
+    let channels = {}
+    let channellist = {}
+    if (data1 && data1[`channels:${user}`]) {
+      channels = data1[`channels:${user}`]
+    }
+    channels[`channels:${user}/default`] = true
+    channels[`channels:${user}/${channel}`] = true
+    channellist[`channels:${user}`] = channels
+    bucket.upsert(channellist, (err2, data2) => {
+      if (err2) {
+        throw err2
+      }
+      let message = {}
+      message[`channels:${user}/${channel}`] = content
+      bucket.upsert(message, (err3, data3) => {
+        if (err3) {
+          throw err3
+        }
+        callback(null, data3)
+      })
+    })
+  })
 }
 
 function checkConnectivity (callback) {
@@ -453,14 +544,50 @@ function feedWorkspace (workspace, result, callback) {
   })
 }
 
+function getUsers (callback) {
+  const key = 'users'
+  bucket.get(key, (err, data) => {
+    if (err) {
+      return callback(err, null)
+    }
+    if (!data || !data[key]) {
+      logger.error(`Users are currently undefined. Create them from the settings.xml file`)
+      let allusers = []
+      let i = 0
+      users.forEach((element) => {
+        i++
+        allusers.push({
+          userid: i,
+          username: element.username,
+          apikey: element.apikey,
+          role: element.role
+        })
+      })
+      bucket.upsert({users: allusers}, function (err, result) {
+        if (err) {
+          throw err
+        }
+        return callback(null, {users: allusers})
+      })
+    } else {
+      return callback(null, data)
+    }
+  })
+}
+
 module.exports = {
   ActionError,
   actionWorkspace,
+  channelDescribe,
+  channelList,
+  channelRemove,
+  channelStore,
   checkConnectivity,
   checkEventLogs,
   deleteWorkspace,
   EchoStream,
   feedWorkspace,
+  getUsers,
   showEvent,
   showLogs,
   showWorkspace,

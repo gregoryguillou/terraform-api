@@ -56,6 +56,42 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+    put:
+      tags:
+        - main
+      description: Creates a new Channel 
+      operationId: channel_create
+      parameters:
+        - in: path
+          name: channel
+          type: string
+          required: true
+          description: Channel to create or update.
+        - in: body
+          name: content
+          description: Channel properties
+          required: false
+          schema:
+            $ref: "#/definitions/ChannelDescription"
+      responses:
+        "201":
+          description: Success
+          schema:
+            $ref: "#/definitions/ChannelDescription"
+    delete:
+      tags:
+        - main
+      description: Deletes a Channel 
+      operationId: channel_delete
+      parameters:
+        - in: path
+          name: channel
+          type: string
+          required: true
+          description: Channel to delete
+      responses:
+        "204":
+          description: Success
   /events/{event}:
     x-swagger-router-controller: events
     get:
@@ -432,7 +468,6 @@ paths:
             $ref: "#/definitions/ErrorResponse"
   /swagger:
     x-swagger-pipe: swagger_raw
-# complex objects have schema definitions
 definitions:
   Branches:
     required:
@@ -461,11 +496,7 @@ definitions:
             name:
               type: string
   ChannelDescription:
-    required:
-      - name
     properties:
-      name:
-        type: string
       project:
         type: string
       workspace:
@@ -667,8 +698,47 @@ definitions:
             type: string
           event:
             type: string
-      session:
-        type: string
+      channels:
+        type: object
+        properties:
+          managementType:
+            type: string
+            enum:
+              - approved
+              - shared
+          duration:
+            type: string
+            enum:
+              - always
+              - lease
+              - request
+          leaders:
+            description: |
+              List the channels that have been accepted as leaders for `always`
+              or `lease` duration that require an `approval`.
+            type: array
+            items:
+              type: object
+              required:
+                - user
+                - channel
+              properties:
+                user:
+                  type: string
+                channel:
+                  type: string
+          requesters:
+            type: array
+            items:
+              type: object
+              required:
+                - user
+                - channel
+              properties:
+                user:
+                  type: string
+                channel:
+                  type: string
       state:
         type: string
       type:
