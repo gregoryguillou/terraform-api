@@ -97,14 +97,93 @@ class ActionError extends Error {
   }
 }
 
-function channelStore (channel, content, callback) {
-  let message = {}
-  message[`channel:${channel}`] = content
-  bucket.upsert(message, (err, result) => {
-    if (err) {
-      throw err
+function channelDescribe (user, channel, callback) {
+  bucket.get(`channels:${user}/${channel}`, (err1, data1) => {
+    if (err1) {
+      throw err1
     }
-    callback(null, result)
+    if (data1 && data1[`channels:${user}/${channel}`]) {
+      return callback(null, data1[`channels:${user}/${channel}`])
+    }
+    if (channel === 'default') {
+      return callback(null, {})
+    }
+    callback(null, null)
+  })
+}
+
+function channelList (user, callback) {
+  bucket.get(`channels:${user}`, (err1, data1) => {
+    if (err1) {
+      throw err1
+    }
+    let channels = []
+    if (data1 && data1[`channels:${user}`]) {
+      Object.keys(data1[`channels:${user}`]).forEach((key) => {
+        channels.push({name: key.slice(`channels:${user}`.length + 1)})
+      })
+      if (!data1[`channels:${user}`][`channels:${user}/default`]) {
+        channels.push({name: 'default'})
+      }
+    } else {
+      channels.push({name: 'default'})
+    }
+    callback(null, {channels})
+  })
+}
+
+function channelRemove (user, channel, callback) {
+  bucket.get(`channels:${user}`, (err1, data1) => {
+    if (err1) {
+      throw err1
+    }
+    let channels = {}
+    let channellist = {}
+    if (data1 && data1[`channels:${user}`]) {
+      channels = data1[`channels:${user}`]
+      delete channels[`channels:${user}/${channel}`]
+    }
+    channellist[`channels:${user}`] = channels
+    bucket.upsert(channellist, (err2, data2) => {
+      if (err2) {
+        throw err2
+      }
+      bucket.remove(`channels:${user}/${channel}`, (err3, cas, misses) => {
+        if (err3) {
+          throw err3
+        }
+        callback(null)
+      })
+    })
+  })
+}
+
+function channelStore (user, channel, content, callback) {
+  bucket.get(`channels:${user}`, (err1, data1) => {
+    if (err1) {
+      throw err1
+    }
+    let channels = {}
+    let channellist = {}
+    if (data1 && data1[`channels:${user}`]) {
+      channels = data1[`channels:${user}`]
+    }
+    channels[`channels:${user}/default`] = true
+    channels[`channels:${user}/${channel}`] = true
+    channellist[`channels:${user}`] = channels
+    bucket.upsert(channellist, (err2, data2) => {
+      if (err2) {
+        throw err2
+      }
+      let message = {}
+      message[`channels:${user}/${channel}`] = content
+      bucket.upsert(message, (err3, data3) => {
+        if (err3) {
+          throw err3
+        }
+        callback(null, data3)
+      })
+    })
   })
 }
 
@@ -499,6 +578,9 @@ function getUsers (callback) {
 module.exports = {
   ActionError,
   actionWorkspace,
+  channelDescribe,
+  channelList,
+  channelRemove,
   channelStore,
   checkConnectivity,
   checkEventLogs,
