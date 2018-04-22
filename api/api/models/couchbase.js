@@ -601,6 +601,15 @@ function getUsers (callback) {
   })
 }
 
+function updateChannels (config, callback) {
+  callback(null, {
+    channels: config.channels,
+    project: config.project,
+    statusCode: 0,
+    workspace: config.workspace
+  })
+}
+
 module.exports = {
   ActionError,
   actionWorkspace,
@@ -617,5 +626,6 @@ module.exports = {
   showEvent,
   showLogs,
   showWorkspace,
-  testConnection
+  testConnection,
+  updateChannels
 }

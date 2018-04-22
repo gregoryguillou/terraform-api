@@ -6,9 +6,10 @@ const projects = YAML.load('config/settings.yaml').projects
 const {
   actionWorkspace,
   feedWorkspace,
-  showWorkspace
+  showWorkspace,
+  updateChannels
 } = require('../models/couchbase')
-const { apply, check, destroy, reference, updateChannels } = require('../models/docker')
+const { apply, check, destroy, reference } = require('../models/docker')
 const logger = require('../models/logger')
 const { exec } = require('child_process')
 
