@@ -392,6 +392,14 @@ function showWorkspace (workspace, callback) {
       return callback(err)
     }
     if (results && results[key]) {
+      if (!results[key]['channels']) {
+        let message = results[key]
+        message['channels'] = {
+          duration: 'request',
+          managementType: 'shared'
+        }
+        return callback(null, { [key]: message })
+      }
       return callback(null, results)
     }
     const payload = {
@@ -403,7 +411,10 @@ function showWorkspace (workspace, callback) {
         state: 'new',
         creation: eventDate,
         lastEvents: [],
-        session: '00000000-0000-0000-0000-000000000000'
+        channels: {
+          duration: 'request',
+          managementType: 'shared'
+        }
       }
     }
 

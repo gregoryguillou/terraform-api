@@ -119,7 +119,11 @@ describe('controllers', function () {
             should.not.exist(err)
             res.body.should.containEql({
               project: 'demonstration',
-              workspace: 'staging'
+              workspace: 'staging',
+              channels: {
+                duration: 'request',
+                managementType: 'shared'
+              }
             })
             done()
           })
