@@ -270,6 +270,10 @@ function actionWorkspace (workspace, request, callback) {
   if (request.ref) {
     eventPayload[eventKey].ref = request.ref
   }
+
+  if (request.channels) {
+    eventPayload[eventKey].channels = request.channels
+  }
   logger.info(`${workspace.project}:${workspace.workspace}[${event}] requests ${request.action}`)
 
   if (!verifyWorkspace(workspace)) {
@@ -301,6 +305,10 @@ function actionWorkspace (workspace, request, callback) {
         payload[key].request.ref = request.ref
       }
 
+      if (request.channels) {
+        payload[key].request.channels = request.channels
+      }
+
       bucket.insert(payload, (err, cas, existing) => {
         if (err) {
           return callback(err, null)
@@ -323,6 +331,9 @@ function actionWorkspace (workspace, request, callback) {
         date: eventDate
       }
       payload[key].request.ref = request.ref
+      if (request.channels) {
+        payload[key].request.channels = request.channels
+      }
       payload[key].lastEvents = data[key].lastEvents || []
       payload[key].lastEvents.unshift(event)
       payload[key].lastEvents = payload[key].lastEvents.slice(0, 20)
@@ -445,6 +456,7 @@ function feedWorkspace (workspace, result, callback) {
       request = {
         action: payload[key].request.action,
         ref: (payload[key].request.ref ? payload[key].request.ref : (payload[key].ref ? payload[key].ref : undefined)),
+        channels: (payload[key].request.channels ? payload[key].request.channels : undefined),
         event: payload[key].request.event
       }
       delete payload[key].request
@@ -463,11 +475,14 @@ function feedWorkspace (workspace, result, callback) {
         }
         break
       case 'changed':
-        if (request.action === 'update' && request.ref) {
+        if (request.action === 'update' && request.ref && !request.channels) {
           payload[key].lastChecked = lastChecked('changed')
           if (request.ref) {
             payload[key].ref = request.ref
           }
+        } else if (request.action === 'update' && request.channels) {
+          payload[key].lastChecked = lastChecked('changed')
+          payload[key].channels = request.channels
         } else {
           logger.error(`${workspace.project}:${workspace.workspace} should not differ with action = ${request.action}`)
           payload[key].lastChecked = lastChecked((result.status === 'error'))

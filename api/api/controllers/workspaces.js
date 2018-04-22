@@ -8,7 +8,7 @@ const {
   feedWorkspace,
   showWorkspace
 } = require('../models/couchbase')
-const { apply, check, destroy, reference } = require('../models/docker')
+const { apply, check, destroy, reference, updateChannels } = require('../models/docker')
 const logger = require('../models/logger')
 const { exec } = require('child_process')
 
@@ -153,7 +153,7 @@ function action (req, res) {
     return res.status(201).json({event: 'none'})
   }
 
-  actionWorkspace(workspace, {action: actionValue.action, ref: actionValue.ref}, (err, data) => {
+  actionWorkspace(workspace, {action: actionValue.action, ref: actionValue.ref, channels: actionValue.channels}, (err, data) => {
     const key = `ws:${workspace.project}:${workspace.workspace}`
     if (err) {
       if (err.code && (err.code === 409)) {
@@ -183,6 +183,23 @@ function action (req, res) {
           feedWorkspace({project: workspace.project, workspace: workspace.workspace}, {status: status}, (err, data) => {
             if (err) {
               logger.error(`${workspace.project}/${workspace.workspace} failed store check ${status}`)
+            }
+          })
+        })
+        res.status(201).json({event: data[key].request.event})
+      } else if (actionValue.action === 'update' && actionValue.channels) {
+        let request = {
+          project: workspace.project,
+          workspace: workspace.workspace,
+          channels: actionValue.channels,
+          event: data[key].request.event
+        }
+        updateChannels(request, (err, data) => {
+          if (err) { throw err }
+          let status = 'changed'
+          feedWorkspace({project: workspace.project, workspace: workspace.workspace}, {status: status}, (err, data) => {
+            if (err) {
+              logger.error(`${workspace.project}/${workspace.workspace} error changing channels to  ${JSON.stringify(request.channels)}`)
             }
           })
         })
