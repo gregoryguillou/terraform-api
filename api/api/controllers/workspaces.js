@@ -197,14 +197,18 @@ function action (req, res) {
         }
         updateChannels(request, (err, data) => {
           if (err) { throw err }
-          let status = 'changed'
-          feedWorkspace({project: workspace.project, workspace: workspace.workspace}, {status: status}, (err, data) => {
-            if (err) {
-              logger.error(`${workspace.project}/${workspace.workspace} error changing channels to  ${JSON.stringify(request.channels)}`)
-            }
-          })
+          if (data.StatusCode === 0) {
+            let status = 'changed'
+            feedWorkspace({project: workspace.project, workspace: workspace.workspace}, {status: status}, (err, data) => {
+              if (err) {
+                logger.error(`${workspace.project}/${workspace.workspace} error changing channels to  ${JSON.stringify(request.channels)}`)
+              }
+            })
+            res.status(201).json({event: data[key].request.event})
+          } else {
+            res.status(data.StatusCode).json({message: 'Cannot change management mode for workspace due to conflict'})
+          }
         })
-        res.status(201).json({event: data[key].request.event})
       } else if (actionValue.action === 'update' && actionValue.ref) {
         let request = {
           project: workspace.project,

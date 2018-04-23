@@ -602,11 +602,23 @@ function getUsers (callback) {
 }
 
 function updateChannels (config, callback) {
-  callback(null, {
-    channels: config.channels,
-    project: config.project,
-    statusCode: 0,
-    workspace: config.workspace
+  const key = `ws:${config.project}:${config.workspace}`
+  bucket.get(key, (err, data) => {
+    if (err) { throw err }
+    if (data.channels.leaders.length !== 0 && data.channels.duration !== config.channels.duration) {
+      return callback(null, {
+        channels: config.channels,
+        project: config.project,
+        statusCode: 409,
+        workspace: config.workspace
+      })
+    }
+    callback(null, {
+      channels: config.channels,
+      project: config.project,
+      statusCode: 0,
+      workspace: config.workspace
+    })
   })
 }
 
