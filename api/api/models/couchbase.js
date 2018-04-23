@@ -605,7 +605,7 @@ function updateChannels (config, callback) {
   const key = `ws:${config.project}:${config.workspace}`
   bucket.get(key, (err, data) => {
     if (err) { throw err }
-    if (data.channels.leaders.length !== 0 && data.channels.duration !== config.channels.duration) {
+    if (data.channels && data.channels.leaders && data.channels.duration && data.channels.leaders.length() !== 0 && data.channels.duration !== config.channels.duration) {
       return callback(null, {
         channels: config.channels,
         project: config.project,
