@@ -1,7 +1,7 @@
 'use strict'
 
 const {findIdByUsername} = require('../models/user')
-const {channelDescribe, channelList, channelStore, channelRemove} = require('../models/couchbase')
+const {channelDescribe, channelList, channelUpdate, channelDelete} = require('../models/couchbase')
 
 function describe (req, res) {
   const channel = req.swagger.params.channel.value
@@ -42,7 +42,7 @@ function create (req, res) {
     if (err) {
       return res.status(500).json(content)
     }
-    channelStore(`${userid}`, `${channel}`, content, (err, data) => {
+    channelUpdate(`${userid}`, `${channel}`, content, (err, data) => {
       if (err) {
         return res.status(500).json(content)
       }
@@ -60,7 +60,7 @@ function remove (req, res) {
     if (err) {
       return res.status(500).json({})
     }
-    channelRemove(`${userid}`, `${channel}`, (err, cas, misses) => {
+    channelDelete(`${userid}`, `${channel}`, (err, cas, misses) => {
       if (err) {
         return res.status(500).json({})
       }

@@ -97,6 +97,8 @@ class ActionError extends Error {
   }
 }
 
+// TODO: befroe you retrun the value, make sure it is consistent
+// with the project/workspace or clean it (case of channel.duration change)
 function channelDescribe (user, channel, callback) {
   bucket.get(`channels:${user}/${channel}`, (err1, data1) => {
     if (err1) {
@@ -110,6 +112,11 @@ function channelDescribe (user, channel, callback) {
     }
     callback(null, null)
   })
+}
+
+// TODO: manage route and logic for the channel promotion to leader
+function channelPromote (project, workspace, user, channel, callback) {
+
 }
 
 function channelList (user, callback) {
@@ -158,26 +165,60 @@ function channelRemove (user, channel, callback) {
   })
 }
 
+function channelDelete (user, channel, callback) {
+  bucket.get(`channels:${user}/${channel}`, (err1, data1) => {
+    if (err1) { throw err1 }
+    if (data1.project && data1.workspace) {
+      bucket.get(`ws:${data1.project}:${data1.workspace}`, (err2, data2) => {
+        let workspace = data2
+        if (data2.channels && (data2.channels.duration === 'lease' || data2.channels.duration === 'always')) {
+          const newleaders = workspace.channels.leaders.filter((element) => {
+            if (element.user !== user || element.channel !== channel) { return element }
+          })
+          workspace.channels.leaders = newleaders
+          const newrequesters = workspace.channels.requesters.filter((element) => {
+            if (element.user !== user || element.channel !== channel) { return element }
+          })
+          workspace.channels.requesters = newrequesters
+          bucket.upsert({[`ws:${data1.project}:${data1.workspace}`]: workspace}, (err3, data3) => {
+            if (err3) { throw err3 }
+            channelRemove(user, channel, (err4, data4) => {
+              if (err4) { throw err4 }
+              callback(null, null)
+            })
+          })
+        } else {
+          channelRemove(user, channel, (err4, data4) => {
+            if (err4) { throw err4 }
+            callback(null, null)
+          })
+        }
+      })
+    } else {
+      channelRemove(user, channel, (err4, data4) => {
+        if (err4) { throw err4 }
+        callback(null, null)
+      })
+    }
+  })
+}
+
 function channelStore (user, channel, content, callback) {
   bucket.get(`channels:${user}`, (err1, data1) => {
     if (err1) {
       throw err1
     }
     let channels = {}
-    let channellist = {}
     if (data1 && data1[`channels:${user}`]) {
       channels = data1[`channels:${user}`]
     }
     channels[`channels:${user}/default`] = true
     channels[`channels:${user}/${channel}`] = true
-    channellist[`channels:${user}`] = channels
-    bucket.upsert(channellist, (err2, data2) => {
+    bucket.upsert({[`channels:${user}`]: channels}, (err2, data2) => {
       if (err2) {
         throw err2
       }
-      let message = {}
-      message[`channels:${user}/${channel}`] = content
-      bucket.upsert(message, (err3, data3) => {
+      bucket.upsert({[`channels:${user}/${channel}`]: content}, (err3, data3) => {
         if (err3) {
           throw err3
         }
@@ -185,6 +226,48 @@ function channelStore (user, channel, content, callback) {
       })
     })
   })
+}
+
+function channelUpdate (user, channel, content, callback) {
+  if (content.project && content.workspace) {
+    bucket.get(`ws:${content.project}:${content.workspace}`, (err1, data1) => {
+      let workspace = data1
+      if (workspace.channels && (workspace.channels.duration === 'always' ||
+          workspace.channels.duration === 'lease')) {
+        const foundleader = workspace.channels.leaders.find((element) => {
+          if (element.user === user && element.channel === channel) { return element }
+        })
+        if (!foundleader && workspace.channels.managementType === 'shared') {
+          workspace.channels.leaders.push({user: `${user}`, channel: `${channel}`})
+          bucket.upsert({[`ws:${content.project}:${content.workspace}`]: workspace}, (err2, data2) => {
+            channelStore(user, channel, content, (err3, data3) => {
+              if (err3) { throw err3 }
+              callback(null, data3)
+            })
+          })
+        }
+        if (!foundleader && workspace.channels.managementType === 'approved') {
+          const foundrequester = workspace.channels.leaders.find((element) => {
+            if (element.user === user && element.channel === channel) { return element }
+          })
+          if (!foundrequester) {
+            workspace.channels.requesters.push({user: `${user}`, channel: `${channel}`})
+            bucket.upsert({[`ws:${content.project}:${content.workspace}`]: workspace}, (err2, data2) => {
+              channelStore(user, channel, content, (err3, data3) => {
+                if (err3) { throw err3 }
+                callback(null, data3)
+              })
+            })
+          }
+        }
+      }
+    })
+  } else {
+    channelStore(user, channel, content, (err3, data3) => {
+      if (err3) { throw err3 }
+      callback(null, data3)
+    })
+  }
 }
 
 function checkConnectivity (callback) {
@@ -627,8 +710,9 @@ module.exports = {
   actionWorkspace,
   channelDescribe,
   channelList,
-  channelRemove,
-  channelStore,
+  channelDelete,
+  channelPromote,
+  channelUpdate,
   checkConnectivity,
   checkEventLogs,
   deleteWorkspace,
