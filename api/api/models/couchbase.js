@@ -97,15 +97,41 @@ class ActionError extends Error {
   }
 }
 
-// TODO: befroe you retrun the value, make sure it is consistent
-// with the project/workspace or clean it (case of channel.duration change)
 function channelDescribe (user, channel, callback) {
   bucket.get(`channels:${user}/${channel}`, (err1, data1) => {
     if (err1) {
       throw err1
     }
     if (data1 && data1[`channels:${user}/${channel}`]) {
-      return callback(null, data1[`channels:${user}/${channel}`])
+      const c = data1[`channels:${user}/${channel}`]
+      if (c.workspace && c.project) {
+        bucket.get(`ws:${c.project}:${c.workspace}`, (err2, data2) => {
+          if (err2) { throw err2 }
+          if (data2.channels && data2.channels.leaders) {
+            const cleader = data2.channels.leaders.find((element) => {
+              if (element.user === user && element.channel === channel) { return element }
+            })
+            let crequester = {}
+            if (data2.channels.requesters) {
+              crequester = data2.channels.requesters.find((element) => {
+                if (element.user === user && element.channel === channel) { return element }
+              })
+            }
+            if (cleader || crequester) {
+              return callback(null, data1[`channels:${user}/${channel}`])
+            }
+          } else if ((data2.channels && data2.channels.duration === 'request') || !data2.channels) {
+            return callback(null, data1[`channels:${user}/${channel}`])
+          } else {
+            bucket.upsert({[`channels:${user}/${channel}`]: {}}, (err3, data3) => {
+              if (err3) { throw err3 }
+              return callback(null, {})
+            })
+          }
+        })
+      } else {
+        return callback(null, {})
+      }
     }
     if (channel === 'default') {
       return callback(null, {})
@@ -114,9 +140,29 @@ function channelDescribe (user, channel, callback) {
   })
 }
 
-// TODO: manage route and logic for the channel promotion to leader
 function channelPromote (project, workspace, user, channel, callback) {
-
+  bucket.get(`ws:${project}:${workspace}`, (err1, data1) => {
+    workspace = data1
+    if (data1.channels && data1.channels.requesters) {
+      const requester = data1.channels.requesters.find((element) => {
+        if (element.user === user && element.channel === channel) { return element }
+      })
+      if (requester) {
+        workspace.channel.requesters = data1.channels.requesters.filter((element) => {
+          if (element.user !== user || element.channel !== channel) { return element }
+        })
+        if (data1.channels.leaders) {
+          workspace.channel.leaders = data1.channels.leaders.push({user, channel})
+        } else {
+          workspace.channel.leaders = [{user, channel}]
+        }
+        bucket.upsert({[`ws:${project}:${workspace}`]: workspace}, (err2, data2) => {
+          if (err2) { throw err2 }
+          callback(null, data2)
+        })
+      }
+    }
+  })
 }
 
 function channelList (user, callback) {

@@ -344,7 +344,7 @@ paths:
             properties:
               action:
                 type: string
-                enum: ["apply", "check", "clean", "destroy", "update"]
+                enum: ["apply", "check", "clean", "destroy", "update", "promote"]
               ref:
                 type: string
               channels:
@@ -361,6 +361,18 @@ paths:
                       - always
                       - lease
                       - request
+                  requesters:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                        - user
+                        - channel
+                      properties:
+                        user:
+                          type: string
+                        channel:
+                          type: string
       responses:
         "201":
           description: Created
