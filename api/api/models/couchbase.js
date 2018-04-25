@@ -282,27 +282,37 @@ function channelStore (user, channel, content, callback) {
 function channelUpdate (user, channel, content, callback) {
   if (content.project && content.workspace) {
     bucket.get(`ws:${content.project}:${content.workspace}`, (err1, data1) => {
-      let workspace = data1
+      let workspace = data1[`ws:${content.project}:${content.workspace}`]
       if (workspace.channels && (workspace.channels.duration === 'always' ||
           workspace.channels.duration === 'lease')) {
-        const foundleader = workspace.channels.leaders.find((element) => {
-          if (element.user === user && element.channel === channel) { return element }
-        })
-        if (!foundleader && workspace.channels.managementType === 'shared') {
-          workspace.channels.leaders.push({user: `${user}`, channel: `${channel}`})
+        let foundleader = {}
+        if (workspace.channels.leaders) {
+          foundleader = workspace.channels.leaders.find((element) => {
+            if (element.user === user && element.channel === channel) { return element }
+          })
+        }
+        if ((!foundleader && workspace.channels.managementType === 'shared') || !workspace.channels.leaders) {
+          if (workspace.channels.leaders) {
+            workspace.channels.leaders.push({user: `${user}`, channel: `${channel}`})
+          } else {
+            workspace.channels.leaders = [{user: `${user}`, channel: `${channel}`}]
+          }
           bucket.upsert({[`ws:${content.project}:${content.workspace}`]: workspace}, (err2, data2) => {
             channelStore(user, channel, content, (err3, data3) => {
               if (err3) { throw err3 }
               callback(null, data3)
             })
           })
-        }
-        if (!foundleader && workspace.channels.managementType === 'approved') {
+        } else if (!foundleader && workspace.channels.managementType === 'approved') {
           const foundrequester = workspace.channels.leaders.find((element) => {
             if (element.user === user && element.channel === channel) { return element }
           })
           if (!foundrequester) {
-            workspace.channels.requesters.push({user: `${user}`, channel: `${channel}`})
+            if (workspace.channels.requesters) {
+              workspace.channels.requesters.push({user: `${user}`, channel: `${channel}`})
+            } else {
+              workspace.channels.requesters = [{user: `${user}`, channel: `${channel}`}]
+            }
             bucket.upsert({[`ws:${content.project}:${content.workspace}`]: workspace}, (err2, data2) => {
               channelStore(user, channel, content, (err3, data3) => {
                 if (err3) { throw err3 }
