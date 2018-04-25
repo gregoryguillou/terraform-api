@@ -106,22 +106,23 @@ function channelDescribe (user, channel, callback) {
       const c = data1[`channels:${user}/${channel}`]
       if (c.workspace && c.project) {
         bucket.get(`ws:${c.project}:${c.workspace}`, (err2, data2) => {
+          const w = data2[`ws:${c.project}:${c.workspace}`]
           if (err2) { throw err2 }
-          if (data2.channels && data2.channels.leaders) {
-            const cleader = data2.channels.leaders.find((element) => {
+          if (w.channels && w.channels.leaders) {
+            const cleader = w.channels.leaders.find((element) => {
               if (element.user === user && element.channel === channel) { return element }
             })
             let crequester = {}
-            if (data2.channels.requesters) {
-              crequester = data2.channels.requesters.find((element) => {
+            if (w.channels.requesters) {
+              crequester = w.channels.requesters.find((element) => {
                 if (element.user === user && element.channel === channel) { return element }
               })
             }
             if (cleader || crequester) {
               return callback(null, data1[`channels:${user}/${channel}`])
             }
-          } else if ((data2.channels && data2.channels.duration === 'request') || !data2.channels) {
-            return callback(null, data1[`channels:${user}/${channel}`])
+          } else if ((w.channels && w.channels.duration === 'request') || !w.channels) {
+            return callback(null, c)
           } else {
             bucket.upsert({[`channels:${user}/${channel}`]: {}}, (err3, data3) => {
               if (err3) { throw err3 }
@@ -132,11 +133,11 @@ function channelDescribe (user, channel, callback) {
       } else {
         return callback(null, {})
       }
-    }
-    if (channel === 'default') {
+    } else if (channel === 'default') {
       return callback(null, {})
+    } else {
+      return callback(null, null)
     }
-    callback(null, null)
   })
 }
 
@@ -158,9 +159,13 @@ function channelPromote (project, workspace, user, channel, callback) {
         }
         bucket.upsert({[`ws:${project}:${workspace}`]: workspace}, (err2, data2) => {
           if (err2) { throw err2 }
-          callback(null, data2)
+          return callback(null, {statusCode: 200})
         })
+      } else {
+        return callback(null, {statusCode: 404})
       }
+    } else {
+      return callback(null, {statusCode: 404})
     }
   })
 }
@@ -268,7 +273,7 @@ function channelStore (user, channel, content, callback) {
         if (err3) {
           throw err3
         }
-        callback(null, data3)
+        callback(null, content)
       })
     })
   })
@@ -306,12 +311,17 @@ function channelUpdate (user, channel, content, callback) {
             })
           }
         }
+      } else {
+        channelStore(user, channel, content, (err3, data3) => {
+          if (err3) { throw err3 }
+          callback(null, data3)
+        })
       }
     })
   } else {
-    channelStore(user, channel, content, (err3, data3) => {
-      if (err3) { throw err3 }
-      callback(null, data3)
+    channelStore(user, channel, content, (err4, data4) => {
+      if (err4) { throw err4 }
+      callback(null, data4)
     })
   }
 }

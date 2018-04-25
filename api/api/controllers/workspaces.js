@@ -6,6 +6,7 @@ const projects = YAML.load('config/settings.yaml').projects
 const {
   actionWorkspace,
   feedWorkspace,
+  channelPromote,
   showWorkspace,
   updateChannels
 } = require('../models/couchbase')
@@ -188,6 +189,17 @@ function action (req, res) {
           })
         })
         res.status(201).json({event: data[key].request.event})
+      } else if (actionValue.action === 'promote' && actionValue.channels && actionValue.channels.requester) {
+        channelPromote(
+          workspace.project,
+          workspace.workspace,
+          actionValue.channels.requester.user,
+          actionValue.channels.requester.channel,
+          (err, data) => {
+            if (err) { throw err }
+            res.status(data.statusCode).json({message: `HTTP-${data.statusCode} promote ${actionValue.channels.requester.user}/${actionValue.channels.requester.channel} for ${workspace.project}/${workspace.workspace}`})
+          }
+        )
       } else if (actionValue.action === 'update' && actionValue.channels) {
         let request = {
           project: workspace.project,
@@ -265,8 +277,7 @@ function action (req, res) {
         res.status(201).json({event: data[key].request.event})
       }
     }
-  }
-  )
+  })
 }
 
 function events (req, res) {

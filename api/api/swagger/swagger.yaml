@@ -281,6 +281,12 @@ paths:
           type: string
           required: true
           description: Project to get workspaces from.
+        - in: header
+          name: channel
+          type: string
+          default: default
+          required: false
+          description: The current channel used by the client
       responses:
         "200":
           description: Success
@@ -308,6 +314,12 @@ paths:
           type: string
           required: true
           description: Workspace to get
+        - in: header
+          name: channel
+          type: string
+          default: default
+          required: false
+          description: The current channel used by the client
       responses:
         "200":
           description: Success
@@ -333,6 +345,12 @@ paths:
           type: string
           required: true
           description: Workspace to get
+        - in: header
+          name: channel
+          type: string
+          default: default
+          required: false
+          description: The current channel used by the client
         - in: body
           name: action
           description: The action to execute
@@ -361,18 +379,16 @@ paths:
                       - always
                       - lease
                       - request
-                  requesters:
-                    type: array
-                    items:
-                      type: object
-                      required:
-                        - user
-                        - channel
-                      properties:
-                        user:
-                          type: string
-                        channel:
-                          type: string
+                  requester:
+                    type: object
+                    required:
+                      - user
+                      - channel
+                    properties:
+                      user:
+                        type: string
+                      channel:
+                        type: string
       responses:
         "201":
           description: Created
@@ -400,6 +416,12 @@ paths:
           type: string
           required: true
           description: Workspace to get
+        - in: header
+          name: channel
+          type: string
+          default: default
+          required: false
+          description: The current channel used by the client
       responses:
         "200":
           description: Success
@@ -431,6 +453,12 @@ paths:
           type: string
           required: true
           description: Workspace to get
+        - in: header
+          name: channel
+          type: string
+          default: default
+          required: false
+          description: The current channel used by the client
       responses:
         "200":
           description: Success
