@@ -103,12 +103,70 @@ function channelDescribe (user, channel, callback) {
       throw err1
     }
     if (data1 && data1[`channels:${user}/${channel}`]) {
-      return callback(null, data1[`channels:${user}/${channel}`])
-    }
-    if (channel === 'default') {
+      const c = data1[`channels:${user}/${channel}`]
+      if (c.workspace && c.project) {
+        bucket.get(`ws:${c.project}:${c.workspace}`, (err2, data2) => {
+          const w = data2[`ws:${c.project}:${c.workspace}`]
+          if (err2) { throw err2 }
+          if (w.channels && w.channels.leaders) {
+            const cleader = w.channels.leaders.find((element) => {
+              if (element.user === user && element.channel === channel) { return element }
+            })
+            let crequester = {}
+            if (w.channels.requesters) {
+              crequester = w.channels.requesters.find((element) => {
+                if (element.user === user && element.channel === channel) { return element }
+              })
+            }
+            if (cleader || crequester) {
+              return callback(null, data1[`channels:${user}/${channel}`])
+            }
+          } else if ((w.channels && w.channels.duration === 'request') || !w.channels) {
+            return callback(null, c)
+          } else {
+            bucket.upsert({[`channels:${user}/${channel}`]: {}}, (err3, data3) => {
+              if (err3) { throw err3 }
+              return callback(null, {})
+            })
+          }
+        })
+      } else {
+        return callback(null, {})
+      }
+    } else if (channel === 'default') {
       return callback(null, {})
+    } else {
+      return callback(null, null)
     }
-    callback(null, null)
+  })
+}
+
+function channelPromote (project, workspace, user, channel, callback) {
+  bucket.get(`ws:${project}:${workspace}`, (err1, data1) => {
+    workspace = data1
+    if (data1.channels && data1.channels.requesters) {
+      const requester = data1.channels.requesters.find((element) => {
+        if (element.user === user && element.channel === channel) { return element }
+      })
+      if (requester) {
+        workspace.channel.requesters = data1.channels.requesters.filter((element) => {
+          if (element.user !== user || element.channel !== channel) { return element }
+        })
+        if (data1.channels.leaders) {
+          workspace.channel.leaders = data1.channels.leaders.push({user, channel})
+        } else {
+          workspace.channel.leaders = [{user, channel}]
+        }
+        bucket.upsert({[`ws:${project}:${workspace}`]: workspace}, (err2, data2) => {
+          if (err2) { throw err2 }
+          return callback(null, {statusCode: 200})
+        })
+      } else {
+        return callback(null, {statusCode: 404})
+      }
+    } else {
+      return callback(null, {statusCode: 404})
+    }
   })
 }
 
@@ -158,33 +216,124 @@ function channelRemove (user, channel, callback) {
   })
 }
 
+function channelDelete (user, channel, callback) {
+  bucket.get(`channels:${user}/${channel}`, (err1, data1) => {
+    if (err1) { throw err1 }
+    if (data1.project && data1.workspace) {
+      bucket.get(`ws:${data1.project}:${data1.workspace}`, (err2, data2) => {
+        let workspace = data2
+        if (data2.channels && (data2.channels.duration === 'lease' || data2.channels.duration === 'always')) {
+          const newleaders = workspace.channels.leaders.filter((element) => {
+            if (element.user !== user || element.channel !== channel) { return element }
+          })
+          workspace.channels.leaders = newleaders
+          const newrequesters = workspace.channels.requesters.filter((element) => {
+            if (element.user !== user || element.channel !== channel) { return element }
+          })
+          workspace.channels.requesters = newrequesters
+          bucket.upsert({[`ws:${data1.project}:${data1.workspace}`]: workspace}, (err3, data3) => {
+            if (err3) { throw err3 }
+            channelRemove(user, channel, (err4, data4) => {
+              if (err4) { throw err4 }
+              callback(null, null)
+            })
+          })
+        } else {
+          channelRemove(user, channel, (err4, data4) => {
+            if (err4) { throw err4 }
+            callback(null, null)
+          })
+        }
+      })
+    } else {
+      channelRemove(user, channel, (err4, data4) => {
+        if (err4) { throw err4 }
+        callback(null, null)
+      })
+    }
+  })
+}
+
 function channelStore (user, channel, content, callback) {
   bucket.get(`channels:${user}`, (err1, data1) => {
     if (err1) {
       throw err1
     }
     let channels = {}
-    let channellist = {}
     if (data1 && data1[`channels:${user}`]) {
       channels = data1[`channels:${user}`]
     }
     channels[`channels:${user}/default`] = true
     channels[`channels:${user}/${channel}`] = true
-    channellist[`channels:${user}`] = channels
-    bucket.upsert(channellist, (err2, data2) => {
+    bucket.upsert({[`channels:${user}`]: channels}, (err2, data2) => {
       if (err2) {
         throw err2
       }
-      let message = {}
-      message[`channels:${user}/${channel}`] = content
-      bucket.upsert(message, (err3, data3) => {
+      bucket.upsert({[`channels:${user}/${channel}`]: content}, (err3, data3) => {
         if (err3) {
           throw err3
         }
-        callback(null, data3)
+        callback(null, content)
       })
     })
   })
+}
+
+function channelUpdate (user, channel, content, callback) {
+  if (content.project && content.workspace) {
+    showWorkspace(content, (err1, data1) => {
+      let workspace = data1[`ws:${content.project}:${content.workspace}`]
+      if (workspace.channels && (workspace.channels.duration === 'always' ||
+          workspace.channels.duration === 'lease')) {
+        let foundleader = {}
+        if (workspace.channels.leaders) {
+          foundleader = workspace.channels.leaders.find((element) => {
+            if (element.user === user && element.channel === channel) { return element }
+          })
+        }
+        if ((!foundleader && workspace.channels.managementType === 'shared') || !workspace.channels.leaders) {
+          if (workspace.channels.leaders) {
+            workspace.channels.leaders.push({user: `${user}`, channel: `${channel}`})
+          } else {
+            workspace.channels.leaders = [{user: `${user}`, channel: `${channel}`}]
+          }
+          bucket.upsert({[`ws:${content.project}:${content.workspace}`]: workspace}, (err2, data2) => {
+            channelStore(user, channel, content, (err3, data3) => {
+              if (err3) { throw err3 }
+              callback(null, data3)
+            })
+          })
+        } else if (!foundleader && workspace.channels.managementType === 'approved') {
+          const foundrequester = workspace.channels.leaders.find((element) => {
+            if (element.user === user && element.channel === channel) { return element }
+          })
+          if (!foundrequester) {
+            if (workspace.channels.requesters) {
+              workspace.channels.requesters.push({user: `${user}`, channel: `${channel}`})
+            } else {
+              workspace.channels.requesters = [{user: `${user}`, channel: `${channel}`}]
+            }
+            bucket.upsert({[`ws:${content.project}:${content.workspace}`]: workspace}, (err2, data2) => {
+              channelStore(user, channel, content, (err3, data3) => {
+                if (err3) { throw err3 }
+                callback(null, data3)
+              })
+            })
+          }
+        }
+      } else {
+        channelStore(user, channel, content, (err3, data3) => {
+          if (err3) { throw err3 }
+          callback(null, data3)
+        })
+      }
+    })
+  } else {
+    channelStore(user, channel, content, (err4, data4) => {
+      if (err4) { throw err4 }
+      callback(null, data4)
+    })
+  }
 }
 
 function checkConnectivity (callback) {
@@ -601,13 +750,35 @@ function getUsers (callback) {
   })
 }
 
+function updateChannels (config, callback) {
+  const key = `ws:${config.project}:${config.workspace}`
+  bucket.get(key, (err, data) => {
+    if (err) { throw err }
+    if (data.channels && data.channels.leaders && data.channels.duration && data.channels.leaders.length() !== 0 && data.channels.duration !== config.channels.duration) {
+      return callback(null, {
+        channels: config.channels,
+        project: config.project,
+        statusCode: 409,
+        workspace: config.workspace
+      })
+    }
+    callback(null, {
+      channels: config.channels,
+      project: config.project,
+      statusCode: 0,
+      workspace: config.workspace
+    })
+  })
+}
+
 module.exports = {
   ActionError,
   actionWorkspace,
   channelDescribe,
   channelList,
-  channelRemove,
-  channelStore,
+  channelDelete,
+  channelPromote,
+  channelUpdate,
   checkConnectivity,
   checkEventLogs,
   deleteWorkspace,
@@ -617,5 +788,6 @@ module.exports = {
   showEvent,
   showLogs,
   showWorkspace,
-  testConnection
+  testConnection,
+  updateChannels
 }

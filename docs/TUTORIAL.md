@@ -270,6 +270,13 @@ cd stack
 docker-compose up -d consul
 ```
 
+You must also make sure Redis is now part of the stack to manage messages::
+
+```
+cd stack
+docker-compose up -d redis
+```
+
 We also need the `terraform-api:latest` image built:
 ```shell
 cd stack

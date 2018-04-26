@@ -208,4 +208,186 @@ describe('channels', function () {
         done()
       })
   })
+
+  it('PUT /channels/{channel} to create a new channel with project/workspace', (done) => {
+    request(server)
+      .put('/channels/channel1')
+      .send({
+        project: 'demonstration',
+        workspace: 'staging'
+      })
+      .set('Accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .set('Authorization', token)
+      .expect(201)
+      .end((err, res) => {
+        should.not.exist(err)
+        res.body.should.containEql({})
+        done()
+      })
+  })
+
+  it('POST on /projects/{project}/workspaces/{workspaces} to change for lease', (done) => {
+    request(server)
+      .post('/projects/demonstration/workspaces/staging')
+      .send({
+        action: 'update',
+        channels: {
+          duration: 'lease',
+          managementType: 'shared'
+        }
+      })
+      .set('Accept', 'application/json')
+      .set('Authorization', token)
+      .expect('Content-Type', /json/)
+      .expect(201)
+      .end((err, res) => {
+        should.not.exist(err)
+        done()
+      })
+  })
+
+  it('GET on /projects/{project}/workspaces/{workspaces} to review workspace', (done) => {
+    request(server)
+      .get('/projects/demonstration/workspaces/staging')
+      .set('Accept', 'application/json')
+      .set('Authorization', token)
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err, res) => {
+        should.not.exist(err)
+        res.body.should.containEql({
+          project: 'demonstration',
+          workspace: 'staging',
+          channels: {
+            duration: 'lease',
+            managementType: 'shared'
+          }
+        })
+        done()
+      })
+  })
+
+  it('PUT /channels/{channel} to update the channel with project/workspace', (done) => {
+    request(server)
+      .put('/channels/channel1')
+      .send({
+        project: 'demonstration',
+        workspace: 'staging'
+      })
+      .set('Accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .set('Authorization', token)
+      .expect(201)
+      .end((err, res) => {
+        should.not.exist(err)
+        res.body.should.containEql({})
+        done()
+      })
+  })
+
+  it('GET on /projects/{project}/workspaces/{workspaces} to review workspace', (done) => {
+    request(server)
+      .get('/projects/demonstration/workspaces/staging')
+      .set('Accept', 'application/json')
+      .set('Authorization', token)
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err, res) => {
+        should.not.exist(err)
+        res.body.should.containEql({
+          project: 'demonstration',
+          workspace: 'staging',
+          channels: {
+            duration: 'lease',
+            managementType: 'shared',
+            leaders: [{user: '1', channel: 'channel1'}]
+          }
+        })
+        done()
+      })
+  })
+
+  it('POST on /projects/{project}/workspaces/{workspaces} to change for request', (done) => {
+    request(server)
+      .post('/projects/demonstration/workspaces/staging')
+      .send({
+        action: 'update',
+        channels: {
+          duration: 'request',
+          managementType: 'shared'
+        }
+      })
+      .set('Accept', 'application/json')
+      .set('Authorization', token)
+      .expect('Content-Type', /json/)
+      .expect(201)
+      .end((err, res) => {
+        should.not.exist(err)
+        done()
+      })
+  })
+
+  it('GET on /projects/{project}/workspaces/{workspaces} to review workspace', (done) => {
+    request(server)
+      .get('/projects/demonstration/workspaces/staging')
+      .set('Accept', 'application/json')
+      .set('Authorization', token)
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err, res) => {
+        should.not.exist(err)
+        res.body.should.containEql({
+          project: 'demonstration',
+          workspace: 'staging',
+          channels: {
+            duration: 'request',
+            managementType: 'shared'
+          }
+        })
+        done()
+      })
+  })
+
+  it('GET /channels/{channel} to describe a channel with a project/workspace', (done) => {
+    request(server)
+      .get('/channels/channel1')
+      .set('Accept', 'application/json')
+      .set('Authorization', token)
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err, res) => {
+        should.not.exist(err)
+        res.body.should.containEql({
+          project: 'demonstration',
+          workspace: 'staging'
+        })
+        done()
+      })
+  })
+
+  it('DELETE /channels/{channel} deletes the default channel', (done) => {
+    request(server)
+      .del('/channels/channel1')
+      .set('Content-Type', 'application/json')
+      .set('Authorization', token)
+      .expect(204)
+      .end((err, res) => {
+        should.not.exist(err)
+        done()
+      })
+  })
+
+  it('GET /channels/{channel} to describe a channel with a project/workspace', (done) => {
+    request(server)
+      .get('/channels/channel1')
+      .set('Accept', 'application/json')
+      .set('Authorization', token)
+      .expect('Content-Type', /json/)
+      .expect(404)
+      .end((err, res) => {
+        should.not.exist(err)
+        done()
+      })
+  })
 })

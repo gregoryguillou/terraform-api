@@ -16,7 +16,7 @@ cd "${PROJECT_DIR}/stack/docker"
 
 echo "VERSION=latest" >.env
 printf "Starting docker-compose stack...\\n"
-docker-compose up -d consul couchbase couchbase-setup
+docker-compose up -d consul couchbase couchbase-setup redis
 
 printf "Checking couchbase is available...\\n"
 for ((i=1;i<=60;i++));  do

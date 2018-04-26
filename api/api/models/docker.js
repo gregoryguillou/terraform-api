@@ -98,15 +98,6 @@ function reference (config, callback) {
   })
 }
 
-function updateChannels (config, callback) {
-  callback(null, {
-    channels: config.channels,
-    project: config.project,
-    statusCode: 0,
-    workspace: config.workspace
-  })
-}
-
 function destroy (config, callback) {
   getenv('destroy', config, (err, data) => {
     callback(err, data)
@@ -124,6 +115,5 @@ module.exports = {
   check,
   destroy,
   reference,
-  updateChannels,
   version
 }

@@ -6,9 +6,11 @@ const projects = YAML.load('config/settings.yaml').projects
 const {
   actionWorkspace,
   feedWorkspace,
-  showWorkspace
+  channelPromote,
+  showWorkspace,
+  updateChannels
 } = require('../models/couchbase')
-const { apply, check, destroy, reference, updateChannels } = require('../models/docker')
+const { apply, check, destroy, reference } = require('../models/docker')
 const logger = require('../models/logger')
 const { exec } = require('child_process')
 
@@ -187,6 +189,17 @@ function action (req, res) {
           })
         })
         res.status(201).json({event: data[key].request.event})
+      } else if (actionValue.action === 'promote' && actionValue.channels && actionValue.channels.requester) {
+        channelPromote(
+          workspace.project,
+          workspace.workspace,
+          actionValue.channels.requester.user,
+          actionValue.channels.requester.channel,
+          (err, data) => {
+            if (err) { throw err }
+            res.status(data.statusCode).json({message: `HTTP-${data.statusCode} promote ${actionValue.channels.requester.user}/${actionValue.channels.requester.channel} for ${workspace.project}/${workspace.workspace}`})
+          }
+        )
       } else if (actionValue.action === 'update' && actionValue.channels) {
         let request = {
           project: workspace.project,
@@ -194,16 +207,20 @@ function action (req, res) {
           channels: actionValue.channels,
           event: data[key].request.event
         }
-        updateChannels(request, (err, data) => {
+        updateChannels(request, (err, out) => {
           if (err) { throw err }
-          let status = 'changed'
-          feedWorkspace({project: workspace.project, workspace: workspace.workspace}, {status: status}, (err, data) => {
-            if (err) {
-              logger.error(`${workspace.project}/${workspace.workspace} error changing channels to  ${JSON.stringify(request.channels)}`)
-            }
-          })
+          if (out.statusCode === 0) {
+            let status = 'changed'
+            feedWorkspace({project: workspace.project, workspace: workspace.workspace}, {status: status}, (err, data) => {
+              if (err) {
+                logger.error(`${workspace.project}/${workspace.workspace} error changing channels to  ${JSON.stringify(request.channels)}`)
+              }
+            })
+            res.status(201).json({event: data[key].request.event})
+          } else {
+            res.status(out.statusCode).json({message: 'Cannot change management mode for workspace due to conflict'})
+          }
         })
-        res.status(201).json({event: data[key].request.event})
       } else if (actionValue.action === 'update' && actionValue.ref) {
         let request = {
           project: workspace.project,
@@ -260,8 +277,7 @@ function action (req, res) {
         res.status(201).json({event: data[key].request.event})
       }
     }
-  }
-  )
+  })
 }
 
 function events (req, res) {
