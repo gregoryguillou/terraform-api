@@ -281,7 +281,7 @@ function channelStore (user, channel, content, callback) {
 
 function channelUpdate (user, channel, content, callback) {
   if (content.project && content.workspace) {
-    bucket.get(`ws:${content.project}:${content.workspace}`, (err1, data1) => {
+    showWorkspace(content, (err1, data1) => {
       let workspace = data1[`ws:${content.project}:${content.workspace}`]
       if (workspace.channels && (workspace.channels.duration === 'always' ||
           workspace.channels.duration === 'lease')) {

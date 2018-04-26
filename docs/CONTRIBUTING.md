@@ -62,7 +62,7 @@ command and testing on it.
 
 ```shell
 cd stack/docker
-docker-compose up -d consul couchbase couchbase-setup
+docker-compose up -d consul couchbase couchbase-setup redis
 ```
 
 ```shell
