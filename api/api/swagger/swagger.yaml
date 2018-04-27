@@ -560,7 +560,7 @@ definitions:
         enum:
           - lease
       until:
-        type: dateTime
+        type: string
   ErrorResponse:
     required:
       - message
@@ -813,7 +813,7 @@ definitions:
       type:
         type: string
       until:
-        type: dateTime
+        type: string
       workspace:
         type: string
   Workspaces:
