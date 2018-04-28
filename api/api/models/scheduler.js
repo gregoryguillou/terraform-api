@@ -4,7 +4,8 @@ const client = redis.createClient('redis://redis:6379/')
 const cron = require('node-cron')
 const logger = require('./logger')
 const subscriber = redis.createClient('redis://redis:6379/')
-const { channelDelete } = require('./couchbase')
+const { channelDelete, channelDescribe } = require('./couchbase')
+const { destroy } = require('./docker')
 
 const execute = (name, args, delay = 0, callback) => {
   const uuid = uuid4()
@@ -40,8 +41,14 @@ const boot = () => {
     const m = JSON.parse(message)
     logger.info(`Message ${m.uuid}!`)
     if (m.name === 'channelDelete') {
-      channelDelete(m.args[0], m.args[1], (err, data) => {
-        if (err) { throw err }
+      channelDescribe(m.args[0], m.args[1], (err1, data1) => {
+        if (err1) { throw err1 }
+        destroy({project: data1.project, workspace: data1.workspace, event: m.uuid}, (err2, data2) => {
+          if (err2) { throw err2 }
+          channelDelete(m.args[0], m.args[1], (err3, data3) => {
+            if (err3) { throw err3 }
+          })
+        })
       })
     }
   })
