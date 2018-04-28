@@ -4,6 +4,7 @@ const client = redis.createClient('redis://redis:6379/')
 const cron = require('node-cron')
 const logger = require('./logger')
 const subscriber = redis.createClient('redis://redis:6379/')
+const { channelDelete } = require('./couchbase')
 
 const execute = (name, args, delay = 0, callback) => {
   const uuid = uuid4()
@@ -21,25 +22,12 @@ const execute = (name, args, delay = 0, callback) => {
   }
 }
 
-const executeAt = (name, args, epochMs, callback) => {
-  const uuid = uuid4()
-  if (epochMs) {
-    const mytime = (new Date()).getTime()
-    client.zadd('tf-zset', epochMs, JSON.stringify({uuid: uuid, name: name, args: args}), (err, data) => {
-      logger.info(`Manage in ${epochMs / 1000 - mytime}s ${uuid}!`)
-      if (err) { callback(err, null) }
-      callback(null, uuid)
-    })
-  }
-}
-
 const poll = (callback) => {
   client.zrange('tf-zset', 0, 0, 'withscores', (err, data) => {
     if (err) { callback(err, null) }
     if (data && data[1] <= (new Date()).getTime()) {
       client.publish('tf-list', data[0])
       client.zrem('tf-zset', data[0])
-      logger.info(`Managing ${JSON.parse(data[0]).uuid}!`)
       poll(callback)
     }
     callback(null, null)
@@ -49,7 +37,13 @@ const poll = (callback) => {
 const boot = () => {
   logger.info('Starting Subscriber...')
   subscriber.on('message', (channel, message) => {
-    logger.info(`Message ${JSON.parse(message).uuid}!`)
+    const m = JSON.parse(message)
+    logger.info(`Message ${m.uuid}!`)
+    if (m.name === 'channelDelete') {
+      channelDelete(m.args[0], m.args[1], (err, data) => {
+        if (err) { throw err }
+      })
+    }
   })
   subscriber.subscribe('tf-list')
 
@@ -63,6 +57,5 @@ const boot = () => {
 
 module.exports = {
   boot,
-  execute,
-  executeAt
+  execute
 }

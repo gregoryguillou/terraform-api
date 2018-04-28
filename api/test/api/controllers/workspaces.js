@@ -172,7 +172,7 @@ describe('controllers', function () {
       it('Remove pending action on demonstration/staging', (done) => {
         feedWorkspace({project: 'demonstration', workspace: 'staging'}, {status: 'clean'}, (err, data) => {
           should.not.exist(err)
-          should.not.exist(data['ws:demonstration:staging']['request'])
+          should.not.exist(data['ws:demonstration/staging']['request'])
           done()
         })
       })

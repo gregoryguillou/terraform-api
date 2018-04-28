@@ -8,6 +8,7 @@ const projects = YAML.load('config/settings.yaml').projects
 const users = YAML.load('config/settings.yaml').users
 const uuidv4 = require('uuid/v4')
 const logger = require('./logger')
+const { executeAt } = require('./message')
 
 const cluster = new couchbase.Cluster(couchparam['url'])
 cluster.authenticate(couchparam['username'], couchparam['password'])
@@ -105,8 +106,8 @@ function channelDescribe (user, channel, callback) {
     if (data1 && data1[`channels:${user}/${channel}`]) {
       const c = data1[`channels:${user}/${channel}`]
       if (c.workspace && c.project) {
-        bucket.get(`ws:${c.project}:${c.workspace}`, (err2, data2) => {
-          const w = data2[`ws:${c.project}:${c.workspace}`]
+        bucket.get(`ws:${c.project}/${c.workspace}`, (err2, data2) => {
+          const w = data2[`ws:${c.project}/${c.workspace}`]
           if (err2) { throw err2 }
           if (w.channels && w.channels.leaders) {
             const cleader = w.channels.leaders.find((element) => {
@@ -142,7 +143,7 @@ function channelDescribe (user, channel, callback) {
 }
 
 function channelPromote (project, workspace, user, channel, callback) {
-  bucket.get(`ws:${project}:${workspace}`, (err1, data1) => {
+  bucket.get(`ws:${project}/${workspace}`, (err1, data1) => {
     workspace = data1
     if (data1.channels && data1.channels.requesters) {
       const requester = data1.channels.requesters.find((element) => {
@@ -157,7 +158,7 @@ function channelPromote (project, workspace, user, channel, callback) {
         } else {
           workspace.channel.leaders = [{user, channel}]
         }
-        bucket.upsert({[`ws:${project}:${workspace}`]: workspace}, (err2, data2) => {
+        bucket.upsert({[`ws:${project}/${workspace}`]: workspace}, (err2, data2) => {
           if (err2) { throw err2 }
           return callback(null, {statusCode: 200})
         })
@@ -219,32 +220,40 @@ function channelRemove (user, channel, callback) {
 function channelDelete (user, channel, callback) {
   bucket.get(`channels:${user}/${channel}`, (err1, data1) => {
     if (err1) { throw err1 }
-    if (data1.project && data1.workspace) {
-      bucket.get(`ws:${data1.project}:${data1.workspace}`, (err2, data2) => {
-        let workspace = data2
-        if (data2.channels && (data2.channels.duration === 'lease' || data2.channels.duration === 'always')) {
-          const newleaders = workspace.channels.leaders.filter((element) => {
-            if (element.user !== user || element.channel !== channel) { return element }
-          })
-          workspace.channels.leaders = newleaders
-          const newrequesters = workspace.channels.requesters.filter((element) => {
-            if (element.user !== user || element.channel !== channel) { return element }
-          })
-          workspace.channels.requesters = newrequesters
-          bucket.upsert({[`ws:${data1.project}:${data1.workspace}`]: workspace}, (err3, data3) => {
-            if (err3) { throw err3 }
+    let queryChannel = {}
+    if (data1 && data1[`channels:${user}/${channel}`]) {
+      queryChannel = data1[`channels:${user}/${channel}`]
+      if (queryChannel.project && queryChannel.workspace) {
+        bucket.get(`ws:${queryChannel.project}/${queryChannel.workspace}`, (err2, data2) => {
+          let workspace = data2[`ws:${queryChannel.project}/${queryChannel.workspace}`]
+          if (workspace.channels && (workspace.channels.duration === 'lease' || workspace.channels.duration === 'always')) {
+            if (workspace.channels.leaders) {
+              const newleaders = workspace.channels.leaders.filter((element) => {
+                if (element.user !== user || element.channel !== channel) { return element }
+              })
+              workspace.channels.leaders = newleaders
+            }
+            if (workspace.channels.requesters) {
+              const newrequesters = workspace.channels.requesters.filter((element) => {
+                if (element.user !== user || element.channel !== channel) { return element }
+              })
+              workspace.channels.requesters = newrequesters
+            }
+            bucket.upsert({[`ws:${queryChannel.project}/${queryChannel.workspace}`]: workspace}, (err3, data3) => {
+              if (err3) { throw err3 }
+              channelRemove(user, channel, (err4, data4) => {
+                if (err4) { throw err4 }
+                callback(null, null)
+              })
+            })
+          } else {
             channelRemove(user, channel, (err4, data4) => {
               if (err4) { throw err4 }
               callback(null, null)
             })
-          })
-        } else {
-          channelRemove(user, channel, (err4, data4) => {
-            if (err4) { throw err4 }
-            callback(null, null)
-          })
-        }
-      })
+          }
+        })
+      }
     } else {
       channelRemove(user, channel, (err4, data4) => {
         if (err4) { throw err4 }
@@ -282,7 +291,7 @@ function channelStore (user, channel, content, callback) {
 function channelUpdate (user, channel, content, callback) {
   if (content.project && content.workspace) {
     showWorkspace(content, (err1, data1) => {
-      let workspace = data1[`ws:${content.project}:${content.workspace}`]
+      let workspace = data1[`ws:${content.project}/${content.workspace}`]
       if (workspace.channels && (workspace.channels.duration === 'always' ||
           workspace.channels.duration === 'lease')) {
         let foundleader = {}
@@ -294,9 +303,13 @@ function channelUpdate (user, channel, content, callback) {
         } else if (!workspace.channels.leaders) {
           workspace.channels.leaders = [{user: `${user}`, channel: `${channel}`}]
           if (content.appliedFor === 'lease' && content.until) {
+            executeAt('channelDelete', [user, channel], (new Date(content.until)).getTime(), (err, data) => {
+              if (err) { callback(err, null) }
+              return ''
+            })
             workspace.until = content.until
           }
-          bucket.upsert({[`ws:${content.project}:${content.workspace}`]: workspace}, (err2, data2) => {
+          bucket.upsert({[`ws:${content.project}/${content.workspace}`]: workspace}, (err2, data2) => {
             channelStore(user, channel, content, (err3, data3) => {
               if (err3) { throw err3 }
               callback(null, data3)
@@ -312,7 +325,7 @@ function channelUpdate (user, channel, content, callback) {
             } else {
               workspace.channels.requesters = [{user: `${user}`, channel: `${channel}`}]
             }
-            bucket.upsert({[`ws:${content.project}:${content.workspace}`]: workspace}, (err2, data2) => {
+            bucket.upsert({[`ws:${content.project}/${content.workspace}`]: workspace}, (err2, data2) => {
               channelStore(user, channel, content, (err3, data3) => {
                 if (err3) { throw err3 }
                 callback(null, data3)
@@ -401,7 +414,7 @@ function verifyWorkspace (workspace) {
 }
 
 function actionWorkspace (workspace, request, callback) {
-  const key = `ws:${workspace.project}:${workspace.workspace}`
+  const key = `ws:${workspace.project}/${workspace.workspace}`
   const event = uuidv4()
   const eventKey = `evt:${event}`
   const eventDate = Date.now()
@@ -507,7 +520,7 @@ function deleteWorkspace (workspace, callback) {
       null
     )
   }
-  const key = `ws:${workspace.project}:${workspace.workspace}`
+  const key = `ws:${workspace.project}/${workspace.workspace}`
   bucket.remove(key, (err, cas, misses) => {
     if (err) {
       return callback(err, null)
@@ -543,7 +556,7 @@ function showLogs (event, callback) {
 }
 
 function showWorkspace (workspace, callback) {
-  const key = `ws:${workspace.project}:${workspace.workspace}`
+  const key = `ws:${workspace.project}/${workspace.workspace}`
   const eventDate = Date.now()
 
   bucket.get(key, (err, results, cas, misses) => {
@@ -586,7 +599,7 @@ function showWorkspace (workspace, callback) {
 }
 
 function feedWorkspace (workspace, result, callback) {
-  const key = `ws:${workspace.project}:${workspace.workspace}`
+  const key = `ws:${workspace.project}/${workspace.workspace}`
   bucket.get(key, (err, data) => {
     if (err) {
       return callback(err, null)
@@ -748,7 +761,7 @@ function getUsers (callback) {
 }
 
 function updateChannels (config, callback) {
-  const key = `ws:${config.project}:${config.workspace}`
+  const key = `ws:${config.project}/${config.workspace}`
   bucket.get(key, (err, data) => {
     if (err) { throw err }
     if (data.channels && data.channels.leaders && data.channels.duration && data.channels.leaders.length() !== 0 && data.channels.duration !== config.channels.duration) {

@@ -8,7 +8,38 @@ const apikey = YAML.load('config/settings.yaml').users[0].apikey
 
 let token = ''
 
+let i = 0
+
+function queryWorkspace4DeletedChannel (callback) {
+  setTimeout(function () {
+    i++
+    if (i < 1) {
+      queryWorkspace4DeletedChannel(callback)
+    } else if (i < 60) {
+      request(server)
+        .get('/projects/demonstration/workspaces/staging')
+        .set('Accept', 'application/json')
+        .set('Authorization', token)
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .end((err, res) => {
+          should.not.exist(err)
+          if (res.body['channels'] && res.body['channels'].leaders && res.body['channels'].leaders.length > 0) {
+            queryWorkspace4DeletedChannel(callback)
+          } else {
+            i = 0
+            return callback()
+          }
+        })
+    } else {
+      should.fail('finish', 'channels')
+      callback()
+    }
+  }, 1000)
+}
+
 describe('channels', function () {
+  this.timeout(90000)
   before((done) => {
     request(server)
       .get('/login')
@@ -267,14 +298,14 @@ describe('channels', function () {
   })
 
   it('PUT /channels/{channel} to update the channel with project/workspace', (done) => {
-    const currentDate = new Date()
+    const currentDate = (new Date()).getTime()
     request(server)
       .put('/channels/channel1')
       .send({
         project: 'demonstration',
         workspace: 'staging',
         appliedFor: 'lease',
-        until: new Date(currentDate + 60000).toISOString()
+        until: (new Date(currentDate + 30000)).toISOString()
       })
       .set('Accept', 'application/json')
       .set('Content-Type', 'application/json')
@@ -285,6 +316,13 @@ describe('channels', function () {
         res.body.should.containEql({})
         done()
       })
+  })
+
+  it('Wait up to 60s before the automatic deletion to be considered as failed', (done) => {
+    i = 0
+    queryWorkspace4DeletedChannel(() => {
+      done()
+    })
   })
 
   it('GET on /projects/{project}/workspaces/{workspaces} to review workspace', (done) => {
@@ -301,7 +339,7 @@ describe('channels', function () {
           workspace: 'staging',
           channels: {
             duration: 'lease',
-            leaders: [{user: '1', channel: 'channel1'}]
+            leaders: []
           }
         })
         done()
