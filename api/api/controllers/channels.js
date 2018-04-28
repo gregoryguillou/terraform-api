@@ -1,7 +1,9 @@
 'use strict'
 
+const uuidv4 = require('uuid/v4')
 const {findIdByUsername} = require('../models/user')
 const {channelDescribe, channelList, channelUpdate, channelDelete} = require('../models/couchbase')
+const { apply } = require('../models/docker')
 
 function describe (req, res) {
   const channel = req.swagger.params.channel.value
@@ -47,9 +49,17 @@ function create (req, res) {
         return res.status(500).json(content)
       }
       if (data) {
-        return res.status(201).json(data)
+        if (content && content.workspace) {
+          apply({workspace: content.workspace, project: content.project, event: uuidv4()}, (err2, data2) => {
+            if (err2) { throw err2 }
+            return res.status(201).json(data)
+          })
+        } else {
+          return res.status(201).json(data)
+        }
+      } else {
+        return res.status(201).json({})
       }
-      return res.status(201).json({})
     })
   })
 }

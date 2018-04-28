@@ -292,10 +292,7 @@ function events (req, res) {
           event = {
             time: '1970-01-01 00:00:00',
             description: 'The environment has been registered',
-            reference: util.format('/projects/%s/workspace/%s',
-              pproject,
-              pworkspace
-            )
+            reference: `/projects/${pproject}/workspace/${pworkspace}`
           }
         }
       }
