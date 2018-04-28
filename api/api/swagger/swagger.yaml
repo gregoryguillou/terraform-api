@@ -368,11 +368,6 @@ paths:
               channels:
                 type: object
                 properties:
-                  managementType:
-                    type: string
-                    enum:
-                      - approved
-                      - shared
                   duration:
                     type: string
                     enum:
@@ -731,11 +726,6 @@ definitions:
       channels:
         type: object
         properties:
-          managementType:
-            type: string
-            enum:
-              - approved
-              - shared
           duration:
             type: string
             enum:

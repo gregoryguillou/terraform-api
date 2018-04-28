@@ -290,12 +290,11 @@ function channelUpdate (user, channel, content, callback) {
           foundleader = workspace.channels.leaders.find((element) => {
             if (element.user === user && element.channel === channel) { return element }
           })
-        }
-        if ((!foundleader && workspace.channels.managementType === 'shared') || !workspace.channels.leaders) {
-          if (workspace.channels.leaders) {
-            workspace.channels.leaders.push({user: `${user}`, channel: `${channel}`})
-          } else {
-            workspace.channels.leaders = [{user: `${user}`, channel: `${channel}`}]
+          if (foundleader) { callback(null, content) }
+        } else if (!workspace.channels.leaders) {
+          workspace.channels.leaders = [{user: `${user}`, channel: `${channel}`}]
+          if (content.appliedFor === 'lease' && content.until) {
+            workspace.until = content.until
           }
           bucket.upsert({[`ws:${content.project}:${content.workspace}`]: workspace}, (err2, data2) => {
             channelStore(user, channel, content, (err3, data3) => {
@@ -303,7 +302,7 @@ function channelUpdate (user, channel, content, callback) {
               callback(null, data3)
             })
           })
-        } else if (!foundleader && workspace.channels.managementType === 'approved') {
+        } else if (!foundleader) {
           const foundrequester = workspace.channels.leaders.find((element) => {
             if (element.user === user && element.channel === channel) { return element }
           })
@@ -555,8 +554,7 @@ function showWorkspace (workspace, callback) {
       if (!results[key]['channels']) {
         let message = results[key]
         message['channels'] = {
-          duration: 'request',
-          managementType: 'shared'
+          duration: 'request'
         }
         return callback(null, { [key]: message })
       }
@@ -572,8 +570,7 @@ function showWorkspace (workspace, callback) {
         creation: eventDate,
         lastEvents: [],
         channels: {
-          duration: 'request',
-          managementType: 'shared'
+          duration: 'request'
         }
       }
     }
