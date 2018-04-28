@@ -121,8 +121,7 @@ describe('controllers', function () {
               project: 'demonstration',
               workspace: 'staging',
               channels: {
-                duration: 'request',
-                managementType: 'shared'
+                duration: 'request'
               }
             })
             done()
@@ -173,7 +172,7 @@ describe('controllers', function () {
       it('Remove pending action on demonstration/staging', (done) => {
         feedWorkspace({project: 'demonstration', workspace: 'staging'}, {status: 'clean'}, (err, data) => {
           should.not.exist(err)
-          should.not.exist(data['ws:demonstration:staging']['request'])
+          should.not.exist(data['ws:demonstration/staging']['request'])
           done()
         })
       })
@@ -510,7 +509,7 @@ describe('controllers', function () {
       it('should succeed HTTP-201 when project/workspace exists, and channel properties is changed', (done) => {
         request(server)
           .post('/projects/demonstration/workspaces/staging')
-          .send({action: 'update', channels: {duration: 'always', managementType: 'shared'}})
+          .send({action: 'update', channels: {duration: 'always'}})
           .set('Accept', 'application/json')
           .set('Authorization', token)
           .expect(201)
@@ -541,8 +540,7 @@ describe('controllers', function () {
               project: 'demonstration',
               workspace: 'staging',
               channels: {
-                duration: 'always',
-                managementType: 'shared'
+                duration: 'always'
               }
             })
             done()
@@ -552,7 +550,7 @@ describe('controllers', function () {
       it('should succeed HTTP-201 when project/workspace exists, and channel properties is changed', (done) => {
         request(server)
           .post('/projects/demonstration/workspaces/staging')
-          .send({action: 'update', channels: {duration: 'request', managementType: 'shared'}})
+          .send({action: 'update', channels: {duration: 'request'}})
           .set('Accept', 'application/json')
           .set('Authorization', token)
           .expect(201)
@@ -583,8 +581,7 @@ describe('controllers', function () {
               project: 'demonstration',
               workspace: 'staging',
               channels: {
-                duration: 'request',
-                managementType: 'shared'
+                duration: 'request'
               }
             })
             done()

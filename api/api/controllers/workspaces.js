@@ -28,7 +28,7 @@ function describe (req, res) {
     project: req.swagger.params.project.value,
     workspace: req.swagger.params.workspace.value
   }
-  const key = `ws:${workspace.project}:${workspace.workspace}`
+  const key = `ws:${workspace.project}/${workspace.workspace}`
   showWorkspace(workspace, (err, data) => {
     if (err) {
       return res.status(404).json({
@@ -44,7 +44,7 @@ function quickcheck (req, res) {
     project: req.swagger.params.project.value,
     workspace: req.swagger.params.workspace.value
   }
-  const key = `ws:${workspace.project}:${workspace.workspace}`
+  const key = `ws:${workspace.project}/${workspace.workspace}`
   const project = workspace.project
   let cwd = ''
   let command = [ ]
@@ -94,7 +94,7 @@ function version (req, res) {
     project: req.swagger.params.project.value,
     workspace: req.swagger.params.workspace.value
   }
-  const key = `ws:${workspace.project}:${workspace.workspace}`
+  const key = `ws:${workspace.project}/${workspace.workspace}`
   const project = workspace.project
   let cwd = ''
   let command = [ ]
@@ -156,7 +156,7 @@ function action (req, res) {
   }
 
   actionWorkspace(workspace, {action: actionValue.action, ref: actionValue.ref, channels: actionValue.channels}, (err, data) => {
-    const key = `ws:${workspace.project}:${workspace.workspace}`
+    const key = `ws:${workspace.project}/${workspace.workspace}`
     if (err) {
       if (err.code && (err.code === 409)) {
         res.status(409).json({
@@ -292,10 +292,7 @@ function events (req, res) {
           event = {
             time: '1970-01-01 00:00:00',
             description: 'The environment has been registered',
-            reference: util.format('/projects/%s/workspace/%s',
-              pproject,
-              pworkspace
-            )
+            reference: `/projects/${pproject}/workspace/${pworkspace}`
           }
         }
       }

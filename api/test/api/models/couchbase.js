@@ -25,7 +25,7 @@ describe('models', () => {
     it('Update an empty workspace with an action', (done) => {
       actionWorkspace({project: 'demonstration', workspace: 'qa'}, {action: 'apply'}, (err, data) => {
         should.not.exist(err)
-        should(data['ws:demonstration:qa']['request']).containEql({ action: 'apply' })
+        should(data['ws:demonstration/qa']['request']).containEql({ action: 'apply' })
         done()
       })
     })
@@ -33,8 +33,8 @@ describe('models', () => {
     it('End current request on workspace', (done) => {
       feedWorkspace({project: 'demonstration', workspace: 'qa'}, {status: 'succeed'}, (err, data) => {
         should.not.exist(err)
-        should.not.exist(data['ws:demonstration:qa']['request'])
-        should(data['ws:demonstration:qa']['state']).containEql('applied')
+        should.not.exist(data['ws:demonstration/qa']['request'])
+        should(data['ws:demonstration/qa']['state']).containEql('applied')
         done()
       })
     })
@@ -42,7 +42,7 @@ describe('models', () => {
     it('Request an action to an existing workspace', (done) => {
       actionWorkspace({project: 'demonstration', workspace: 'qa'}, {action: 'apply'}, (err, data) => {
         should.not.exist(err)
-        should(data['ws:demonstration:qa']['request']).containEql({ action: 'apply' })
+        should(data['ws:demonstration/qa']['request']).containEql({ action: 'apply' })
         done()
       })
     })

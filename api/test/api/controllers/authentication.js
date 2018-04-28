@@ -12,8 +12,7 @@ describe('authentication', function () {
   this.timeout(60000)
 
   before((done) => {
-    scheduler.manageMessage()
-    scheduler.subscribeDelayedMessage()
+    scheduler.boot()
     server.on('apiStarted', () => {
       request(server)
         .get('/login')

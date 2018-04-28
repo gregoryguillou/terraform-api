@@ -1,64 +1,68 @@
 const redis = require('redis')
-const uuid = require('uuid/v4')
+const uuid4 = require('uuid/v4')
+const client = redis.createClient('redis://redis:6379/')
+const cron = require('node-cron')
 const logger = require('./logger')
+const subscriber = redis.createClient('redis://redis:6379/')
+const { channelDelete, channelDescribe } = require('./couchbase')
+const { destroy } = require('./docker')
 
-const manageMessage = () => {
-  const subClient = redis.createClient({url: 'redis://redis:6379'})
-  subClient.on('pmessage', function (pattern, channel, message) {
-    console.log(`message is actually: ${message}`)
-  })
-  subClient.psubscribe('tfapi-notify')
+const execute = (name, args, delay = 0, callback) => {
+  const uuid = uuid4()
+  if (delay > 0) {
+    const mytime = (new Date()).getTime()
+    client.zadd('tf-zset', mytime + 1000 * delay, JSON.stringify({uuid: uuid, name: name, args: args}), (err, data) => {
+      logger.info(`Managing in ${delay}s ${uuid}!`)
+      if (err) { callback(err, null) }
+      callback(null, uuid)
+    })
+  } else {
+    logger.info(`Managing ${uuid}!`)
+    client.publish('tf-list', JSON.stringify({uuid: uuid, name: name, args: args}))
+    callback(null, uuid)
+  }
 }
 
-const subscribeDelayedMessage = () => {
-  const delayingClient = redis.createClient({url: 'redis://redis:6379'})
+const poll = (callback) => {
+  client.zrange('tf-zset', 0, 0, 'withscores', (err, data) => {
+    if (err) { callback(err, null) }
+    if (data && data[1] <= (new Date()).getTime()) {
+      client.publish('tf-list', data[0])
+      client.zrem('tf-zset', data[0])
+      poll(callback)
+    }
+    callback(null, null)
+  })
+}
 
-  delayingClient.on('pmessage', function (pattern, channel, expiredKey) {
-    if (expiredKey.match(/^tfapi-timer:/)) {
-      const messageKey = expiredKey.replace(/^tfapi-timer:/, 'tfapi-message:')
-      const messageClient = redis.createClient({url: 'redis://redis:6379'})
-      messageClient.get(messageKey, (err1, res1) => {
+const boot = () => {
+  logger.info('Starting Subscriber...')
+  subscriber.on('message', (channel, message) => {
+    const m = JSON.parse(message)
+    logger.info(`Message ${m.uuid}!`)
+    if (m.name === 'channelDelete') {
+      channelDescribe(m.args[0], m.args[1], (err1, data1) => {
         if (err1) { throw err1 }
-        messageClient.publish('tfapi-notify', res1, (err2, res2) => {
+        destroy({project: data1.project, workspace: data1.workspace, event: m.uuid}, (err2, data2) => {
           if (err2) { throw err2 }
-          messageClient.del(messageKey, (err3, res3) => {
+          channelDelete(m.args[0], m.args[1], (err3, data3) => {
             if (err3) { throw err3 }
-            messageClient.quit()
           })
         })
       })
-    } else {
-      logger.warn(`${expiredKey} has expired... ignore`)
     }
   })
-  delayingClient.config('SET', 'notify-keyspace-events', 'Ex')
-  delayingClient.psubscribe('__keyevent@0__:expired')
-}
+  subscriber.subscribe('tf-list')
 
-const sendMessageWithDelay = (message, timeSecs) => {
-  const key = uuid()
-  const schedQueueClient = redis.createClient({url: 'redis://redis:6379'})
-  schedQueueClient.set(`tfapi-message:${key}`, JSON.stringify(message), (err1, res1) => {
-    if (err1) { throw err1 }
-    schedQueueClient.set(`tfapi-timer:${key}`, '', 'EX', timeSecs, (err2, res2) => {
-      if (err2) { throw err2 }
-      schedQueueClient.quit((err3, res3) => {
-        if (err3) { throw err3 }
-      })
+  logger.info('Starting Scheduler...')
+  cron.schedule('* * * * * *', () => {
+    poll(() => {
+      return ''
     })
   })
 }
 
-const sendMessageNoDelay = (message) => {
-  const messageClient = redis.createClient({url: 'redis://redis:6379'})
-  messageClient.publish('tfapi-notify', JSON.stringify(message), (err, res) => {
-    if (err) { throw err }
-  })
-}
-
 module.exports = {
-  manageMessage,
-  sendMessageNoDelay,
-  sendMessageWithDelay,
-  subscribeDelayedMessage
+  boot,
+  execute
 }

@@ -10,7 +10,7 @@ const user = require('./api/models/user')
 const logger = require('./api/models/logger')
 const { updateAll } = require('./api/models/git')
 const { testConnection } = require('./api/models/couchbase')
-const { manageMessage, subscribeDelayedMessage } = require('./api/models/scheduler')
+const { boot, execute } = require('./api/models/scheduler')
 
 const config = {
   appRoot: __dirname
@@ -60,8 +60,11 @@ app.use('/channels', jwtAuth(), goNext)
 app.use('/version', jwtAuth(), goNext)
 
 if (scheduler) {
-  manageMessage()
-  subscribeDelayedMessage()
+  execute('x', [], 30, (err, uuid) => {
+    if (err) { throw err }
+    return uuid
+  })
+  boot()
 } else {
   updateAll(() => {
     testConnection(60, () => {

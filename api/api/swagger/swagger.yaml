@@ -51,7 +51,7 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: "#/definitions/ChannelDescription"
+            $ref: "#/definitions/Channel"
         default:
           description: Error
           schema:
@@ -72,12 +72,12 @@ paths:
           description: Channel properties
           required: false
           schema:
-            $ref: "#/definitions/ChannelDescription"
+            $ref: "#/definitions/Channel"
       responses:
         "201":
           description: Success
           schema:
-            $ref: "#/definitions/ChannelDescription"
+            $ref: "#/definitions/Channel"
     delete:
       tags:
         - main
@@ -368,11 +368,6 @@ paths:
               channels:
                 type: object
                 properties:
-                  managementType:
-                    type: string
-                    enum:
-                      - approved
-                      - shared
                   duration:
                     type: string
                     enum:
@@ -549,11 +544,17 @@ definitions:
           properties:
             name:
               type: string
-  ChannelDescription:
+  Channel:
     properties:
       project:
         type: string
       workspace:
+        type: string
+      appliedFor:
+        type: string
+        enum:
+          - lease
+      until:
         type: string
   ErrorResponse:
     required:
@@ -722,44 +723,9 @@ definitions:
       - workspace
       - state
     properties:
-      creation:
-        type: integer
-      lastEvents:
-        type: array
-        items:
-          type: string
-      lastChecked:
-        type: object
-        properties:
-          date:
-            type: integer
-          state:
-            type: string
-          ref:
-            type: string
-      project:
-        type: string
-      ref:
-        type: string
-      request:
-        type: object
-        properties:
-          date:
-            type: integer
-          action:
-            type: string
-          ref:
-            type: string
-          event:
-            type: string
       channels:
         type: object
         properties:
-          managementType:
-            type: string
-            enum:
-              - approved
-              - shared
           duration:
             type: string
             enum:
@@ -793,9 +759,50 @@ definitions:
                   type: string
                 channel:
                   type: string
+      creation:
+        type: integer
+      lastEvents:
+        type: array
+        items:
+          type: string
+      lastChecked:
+        type: object
+        properties:
+          date:
+            type: integer
+          state:
+            type: string
+          ref:
+            type: string
+      project:
+        type: string
+      ref:
+        type: string
+      request:
+        type: object
+        properties:
+          date:
+            type: integer
+          action:
+            type: string
+          ref:
+            type: string
+          event:
+            type: string
+      schedules:
+        type: array
+        items:
+          type: object
+          properties:
+            frequency:
+              type: string
+            operation:
+              type: string
       state:
         type: string
       type:
+        type: string
+      until:
         type: string
       workspace:
         type: string

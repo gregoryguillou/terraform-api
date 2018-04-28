@@ -8,7 +8,38 @@ const apikey = YAML.load('config/settings.yaml').users[0].apikey
 
 let token = ''
 
+let i = 0
+
+function queryWorkspace4DeletedChannel (callback) {
+  setTimeout(function () {
+    i++
+    if (i < 1) {
+      queryWorkspace4DeletedChannel(callback)
+    } else if (i < 60) {
+      request(server)
+        .get('/projects/demonstration/workspaces/staging')
+        .set('Accept', 'application/json')
+        .set('Authorization', token)
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .end((err, res) => {
+          should.not.exist(err)
+          if (res.body['channels'] && res.body['channels'].leaders && res.body['channels'].leaders.length > 0) {
+            queryWorkspace4DeletedChannel(callback)
+          } else {
+            i = 0
+            return callback()
+          }
+        })
+    } else {
+      should.fail('finish', 'channels')
+      callback()
+    }
+  }, 1000)
+}
+
 describe('channels', function () {
+  this.timeout(90000)
   before((done) => {
     request(server)
       .get('/login')
@@ -233,8 +264,7 @@ describe('channels', function () {
       .send({
         action: 'update',
         channels: {
-          duration: 'lease',
-          managementType: 'shared'
+          duration: 'lease'
         }
       })
       .set('Accept', 'application/json')
@@ -260,8 +290,7 @@ describe('channels', function () {
           project: 'demonstration',
           workspace: 'staging',
           channels: {
-            duration: 'lease',
-            managementType: 'shared'
+            duration: 'lease'
           }
         })
         done()
@@ -269,11 +298,14 @@ describe('channels', function () {
   })
 
   it('PUT /channels/{channel} to update the channel with project/workspace', (done) => {
+    const currentDate = (new Date()).getTime()
     request(server)
       .put('/channels/channel1')
       .send({
         project: 'demonstration',
-        workspace: 'staging'
+        workspace: 'staging',
+        appliedFor: 'lease',
+        until: (new Date(currentDate + 30000)).toISOString()
       })
       .set('Accept', 'application/json')
       .set('Content-Type', 'application/json')
@@ -286,6 +318,13 @@ describe('channels', function () {
       })
   })
 
+  it('Wait up to 60s before the automatic deletion to be considered as failed', (done) => {
+    i = 0
+    queryWorkspace4DeletedChannel(() => {
+      done()
+    })
+  })
+
   it('GET on /projects/{project}/workspaces/{workspaces} to review workspace', (done) => {
     request(server)
       .get('/projects/demonstration/workspaces/staging')
@@ -300,10 +339,22 @@ describe('channels', function () {
           workspace: 'staging',
           channels: {
             duration: 'lease',
-            managementType: 'shared',
-            leaders: [{user: '1', channel: 'channel1'}]
+            leaders: []
           }
         })
+        done()
+      })
+  })
+
+  it('DELETE /channels/{channel} to delete the channel from project/workspace', (done) => {
+    request(server)
+      .del('/channels/channel1')
+      .set('Accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .set('Authorization', token)
+      .expect(204)
+      .end((err, res) => {
+        should.not.exist(err)
         done()
       })
   })
@@ -314,8 +365,7 @@ describe('channels', function () {
       .send({
         action: 'update',
         channels: {
-          duration: 'request',
-          managementType: 'shared'
+          duration: 'request'
         }
       })
       .set('Accept', 'application/json')
@@ -341,39 +391,9 @@ describe('channels', function () {
           project: 'demonstration',
           workspace: 'staging',
           channels: {
-            duration: 'request',
-            managementType: 'shared'
+            duration: 'request'
           }
         })
-        done()
-      })
-  })
-
-  it('GET /channels/{channel} to describe a channel with a project/workspace', (done) => {
-    request(server)
-      .get('/channels/channel1')
-      .set('Accept', 'application/json')
-      .set('Authorization', token)
-      .expect('Content-Type', /json/)
-      .expect(200)
-      .end((err, res) => {
-        should.not.exist(err)
-        res.body.should.containEql({
-          project: 'demonstration',
-          workspace: 'staging'
-        })
-        done()
-      })
-  })
-
-  it('DELETE /channels/{channel} deletes the default channel', (done) => {
-    request(server)
-      .del('/channels/channel1')
-      .set('Content-Type', 'application/json')
-      .set('Authorization', token)
-      .expect(204)
-      .end((err, res) => {
-        should.not.exist(err)
         done()
       })
   })
