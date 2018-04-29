@@ -6,6 +6,7 @@ const logger = require('./logger')
 const subscriber = redis.createClient('redis://redis:6379/')
 const { channelDelete, channelDescribe } = require('./couchbase')
 const { destroy } = require('./docker')
+const { backgroundAdd } = require('../controllers/messages')
 
 const execute = (name, args, delay = 0, callback) => {
   const uuid = uuid4()
@@ -47,6 +48,13 @@ const boot = () => {
           if (err2) { throw err2 }
           channelDelete(m.args[0], m.args[1], (err3, data3) => {
             if (err3) { throw err3 }
+            backgroundAdd(
+              `channels:${m.args[0]}/${m.args[1]}`,
+              `ws:${data1.project}/${data1.workspace} has been deleted as requested`,
+              (err4, data4) => {
+                if (err4) { throw err4 }
+              }
+            )
           })
         })
       })

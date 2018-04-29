@@ -182,7 +182,7 @@ paths:
       tags:
         - main
       description: Return a given message extracted from a list
-      operationId: messages_describe
+      operationId: message_describe
       parameters:
         - in: path
           name: message
