@@ -8,7 +8,7 @@ function usage() {
 }
 
 function version() {
-  echo "terraform-api version 0.1.9"
+  echo "terraform-api version 0.2.0"
   exit 0
 }
 

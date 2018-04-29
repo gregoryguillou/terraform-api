@@ -120,7 +120,7 @@ and configuring it. Below is an example of such a configuration.
 
 ```shell
 export RELEASES=https://github.com/gregoryguillou/terraform-api/releases
-export VERSION=v0.1.9
+export VERSION=v0.2.0
 export OS=linux
 curl -L ${RELEASES}/download/${VERSION}/terraforn-cli-${OS}-amd64 -o terraforn-cli
 
@@ -131,6 +131,6 @@ Terraform API API Key: [Enter and API Key]
 SUCCESS: You are connected as gregory...
 
 ./terraforn-cli version
-client: v0.1.9
-server: v0.1.9
+client: v0.2.0
+server: v0.2.0
 ```

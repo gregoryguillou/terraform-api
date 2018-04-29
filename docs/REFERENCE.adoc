@@ -6,7 +6,7 @@
 
 === Version information
 [%hardbreaks]
-__Version__ : 0.1.9
+__Version__ : 0.2.0
 
 
 === URI scheme
@@ -75,7 +75,7 @@ __required__|Channel to get.|string
 [options="header", cols=".^2,.^14,.^4"]
 |===
 |HTTP Code|Description|Schema
-|**200**|Success|<<_channeldescription,ChannelDescription>>
+|**200**|Success|<<_channel,Channel>>
 |**default**|Error|<<_errorresponse,ErrorResponse>>
 |===
 
@@ -100,7 +100,7 @@ Creates a new Channel
 |**Path**|**channel** +
 __required__|Channel to create or update.|string
 |**Body**|**content** +
-__optional__|Channel properties|<<_channeldescription,ChannelDescription>>
+__optional__|Channel properties|<<_channel,Channel>>
 |===
 
 
@@ -109,7 +109,7 @@ __optional__|Channel properties|<<_channeldescription,ChannelDescription>>
 [options="header", cols=".^2,.^14,.^4"]
 |===
 |HTTP Code|Description|Schema
-|**201**|Success|<<_channeldescription,ChannelDescription>>
+|**201**|Success|<<_channel,Channel>>
 |===
 
 
@@ -235,6 +235,91 @@ Returns the JWT token to the caller
 ==== Tags
 
 * auth
+
+
+[[_messages_list]]
+=== GET /messages
+
+==== Description
+Return a list of messages for a given user
+
+
+==== Responses
+
+[options="header", cols=".^2,.^14,.^4"]
+|===
+|HTTP Code|Description|Schema
+|**200**|Success|<<_messages,Messages>>
+|**default**|Error|<<_errorresponse,ErrorResponse>>
+|===
+
+
+==== Tags
+
+* main
+
+
+[[_message_describe]]
+=== GET /messages/{message}
+
+==== Description
+Return a given message extracted from a list
+
+
+==== Parameters
+
+[options="header", cols=".^2,.^3,.^9,.^4"]
+|===
+|Type|Name|Description|Schema
+|**Path**|**message** +
+__required__|Event to get.|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2,.^14,.^4"]
+|===
+|HTTP Code|Description|Schema
+|**200**|Success|<<_message,Message>>
+|**default**|Error|<<_errorresponse,ErrorResponse>>
+|===
+
+
+==== Tags
+
+* main
+
+
+[[_message_delete]]
+=== DELETE /messages/{message}
+
+==== Description
+Deletes a message
+
+
+==== Parameters
+
+[options="header", cols=".^2,.^3,.^9,.^4"]
+|===
+|Type|Name|Description|Schema
+|**Path**|**message** +
+__required__|Message to delete.|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2,.^14,.^4"]
+|===
+|HTTP Code|Description|Schema
+|**default**|Error|<<_errorresponse,ErrorResponse>>
+|===
+
+
+==== Tags
+
+* main
 
 
 [[_projects_list]]
@@ -407,11 +492,13 @@ Returns a list of tags associated with a given project
 
 ==== Parameters
 
-[options="header", cols=".^2,.^3,.^9,.^4"]
+[options="header", cols=".^2,.^3,.^9,.^4,.^2"]
 |===
-|Type|Name|Description|Schema
+|Type|Name|Description|Schema|Default
+|**Header**|**channel** +
+__optional__|The current channel used by the client|string|`"default"`
 |**Path**|**project** +
-__required__|Project to get workspaces from.|string
+__required__|Project to get workspaces from.|string|
 |===
 
 
@@ -439,15 +526,17 @@ Send an action to a given workspace
 
 ==== Parameters
 
-[options="header", cols=".^2,.^3,.^9,.^4"]
+[options="header", cols=".^2,.^3,.^9,.^4,.^2"]
 |===
-|Type|Name|Description|Schema
+|Type|Name|Description|Schema|Default
+|**Header**|**channel** +
+__optional__|The current channel used by the client|string|`"default"`
 |**Path**|**project** +
-__required__|Project to get the workspace from.|string
+__required__|Project to get the workspace from.|string|
 |**Path**|**workspace** +
-__required__|Workspace to get|string
+__required__|Workspace to get|string|
 |**Body**|**action** +
-__required__|The action to execute|<<_workspace_action_action,action>>
+__required__|The action to execute|<<_workspace_action_action,action>>|
 |===
 
 [[_workspace_action_action]]
@@ -457,9 +546,35 @@ __required__|The action to execute|<<_workspace_action_action,action>>
 |===
 |Name|Schema
 |**action** +
-__required__|enum (apply, check, clean, destroy, update)
+__required__|enum (apply, check, clean, destroy, update, promote)
+|**channels** +
+__optional__|<<_projects_project_workspaces_workspace_post_channels,channels>>
 |**ref** +
 __optional__|string
+|===
+
+[[_projects_project_workspaces_workspace_post_channels]]
+**channels**
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**duration** +
+__optional__|enum (always, lease, request)
+|**requester** +
+__optional__|<<_projects_project_workspaces_workspace_post_channels_requester,requester>>
+|===
+
+[[_projects_project_workspaces_workspace_post_channels_requester]]
+**requester**
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**channel** +
+__required__|string
+|**user** +
+__required__|string
 |===
 
 
@@ -487,13 +602,15 @@ Returns the description of a given project/workspace
 
 ==== Parameters
 
-[options="header", cols=".^2,.^3,.^9,.^4"]
+[options="header", cols=".^2,.^3,.^9,.^4,.^2"]
 |===
-|Type|Name|Description|Schema
+|Type|Name|Description|Schema|Default
+|**Header**|**channel** +
+__optional__|The current channel used by the client|string|`"default"`
 |**Path**|**project** +
-__required__|Project to get the workspace from.|string
+__required__|Project to get the workspace from.|string|
 |**Path**|**workspace** +
-__required__|Workspace to get|string
+__required__|Workspace to get|string|
 |===
 
 
@@ -521,13 +638,15 @@ Returns the description of a given project/workspace
 
 ==== Parameters
 
-[options="header", cols=".^2,.^3,.^9,.^4"]
+[options="header", cols=".^2,.^3,.^9,.^4,.^2"]
 |===
-|Type|Name|Description|Schema
+|Type|Name|Description|Schema|Default
+|**Header**|**channel** +
+__optional__|The current channel used by the client|string|`"default"`
 |**Path**|**project** +
-__required__|Project to get the workspace from.|string
+__required__|Project to get the workspace from.|string|
 |**Path**|**workspace** +
-__required__|Workspace to get|string
+__required__|Workspace to get|string|
 |===
 
 
@@ -556,13 +675,15 @@ Returns the current version of a given project/workspace
 
 ==== Parameters
 
-[options="header", cols=".^2,.^3,.^9,.^4"]
+[options="header", cols=".^2,.^3,.^9,.^4,.^2"]
 |===
-|Type|Name|Description|Schema
+|Type|Name|Description|Schema|Default
+|**Header**|**channel** +
+__optional__|The current channel used by the client|string|`"default"`
 |**Path**|**project** +
-__required__|Project to get the workspace from.|string
+__required__|Project to get the workspace from.|string|
 |**Path**|**workspace** +
-__required__|Workspace to get|string
+__required__|Workspace to get|string|
 |===
 
 
@@ -674,13 +795,17 @@ __required__|string
 |===
 
 
-[[_channeldescription]]
-=== ChannelDescription
+[[_channel]]
+=== Channel
 
 [options="header", cols=".^3,.^4"]
 |===
 |Name|Schema
+|**appliedFor** +
+__optional__|enum (lease)
 |**project** +
+__optional__|string
+|**until** +
 __optional__|string
 |**workspace** +
 __optional__|string
@@ -785,6 +910,44 @@ __optional__|string
 |**line** +
 __required__|integer
 |**text** +
+__required__|string
+|===
+
+
+[[_message]]
+=== Message
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**channel** +
+__required__|string
+|**id** +
+__required__|string
+|**text** +
+__required__|string
+|===
+
+
+[[_messages]]
+=== Messages
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**messages** +
+__required__|< <<_messages_messages,messages>> > array
+|===
+
+[[_messages_messages]]
+**messages**
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**channel** +
+__required__|string
+|**id** +
 __required__|string
 |===
 
@@ -968,9 +1131,13 @@ __required__|string
 __optional__|string
 |**request** +
 __optional__|<<_workspace_request,request>>
+|**schedules** +
+__optional__|< <<_workspace_schedules,schedules>> > array
 |**state** +
 __required__|string
 |**type** +
+__optional__|string
+|**until** +
 __optional__|string
 |**workspace** +
 __required__|string
@@ -987,8 +1154,6 @@ __optional__||enum (always, lease, request)
 |**leaders** +
 __optional__|List the channels that have been accepted as leaders for `always`
 or `lease` duration that require an `approval`.|< <<_workspace_leaders,leaders>> > array
-|**managementType** +
-__optional__||enum (approved, shared)
 |**requesters** +
 __optional__||< <<_workspace_requesters,requesters>> > array
 |===
@@ -1044,6 +1209,18 @@ __optional__|integer
 |**event** +
 __optional__|string
 |**ref** +
+__optional__|string
+|===
+
+[[_workspace_schedules]]
+**schedules**
+
+[options="header", cols=".^3,.^4"]
+|===
+|Name|Schema
+|**frequency** +
+__optional__|string
+|**operation** +
 __optional__|string
 |===
 

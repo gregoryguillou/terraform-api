@@ -19,8 +19,8 @@ mkdir -p /mnt/data/redis
 mkdir -p /opt/terraform-api/api
 
 
-docker pull gregoryguillou/terraform-api:v0.1.9
-docker pull gregoryguillou/terraform-api:v0.1.9-runtime
+docker pull gregoryguillou/terraform-api:v0.2.0
+docker pull gregoryguillou/terraform-api:v0.2.0-runtime
 docker pull consul:1.0.7
 docker pull couchbase:community-5.0.1
 
