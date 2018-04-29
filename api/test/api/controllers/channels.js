@@ -40,7 +40,8 @@ function queryWorkspace4DeletedChannel (callback) {
 
 describe('channels', function () {
   this.timeout(90000)
-  before((done) => {
+  before(function (done) {
+    if (process.env.SKIP === 'TRUE' && process.env.TEST_CHANNEL !== 'TRUE') { this.skip() }
     request(server)
       .get('/login')
       .set('Accept', 'application/json')
@@ -323,6 +324,51 @@ describe('channels', function () {
     queryWorkspace4DeletedChannel(() => {
       done()
     })
+  })
+
+  let messageId = ''
+
+  it('GET /messages Verify there is a message for the user', (done) => {
+    request(server)
+      .get('/messages')
+      .set('Accept', 'application/json')
+      .set('Authorization', token)
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err, res) => {
+        should.not.exist(err)
+        messageId = res.body.messages[0].id
+        done()
+      })
+  })
+
+  it('GET /messages/{message} Verify the message', (done) => {
+    request(server)
+      .get(`/messages/${messageId}`)
+      .set('Accept', 'application/json')
+      .set('Authorization', token)
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err, res) => {
+        should.not.exist(err)
+        res.body.should.containEql({
+          channel: 'channel1',
+          text: 'ws:demonstration/staging has been deleted as requested' }
+        )
+        done()
+      })
+  })
+
+  it('DELETE /messages/{message} for messageId', (done) => {
+    request(server)
+      .del(`/messages/${messageId}`)
+      .set('Accept', 'application/json')
+      .set('Authorization', token)
+      .expect(204)
+      .end((err, res) => {
+        should.not.exist(err)
+        done()
+      })
   })
 
   it('GET on /projects/{project}/workspaces/{workspaces} to review workspace', (done) => {
