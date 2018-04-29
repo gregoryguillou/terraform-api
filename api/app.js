@@ -57,6 +57,7 @@ app.use('/user', jwtAuth(), goNext)
 app.use('/events', jwtAuth(), goNext)
 app.use('/projects', jwtAuth(), goNext)
 app.use('/channels', jwtAuth(), goNext)
+app.use('/messages', jwtAuth(), goNext)
 app.use('/version', jwtAuth(), goNext)
 
 if (scheduler) {

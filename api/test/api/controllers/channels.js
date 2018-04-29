@@ -40,7 +40,8 @@ function queryWorkspace4DeletedChannel (callback) {
 
 describe('channels', function () {
   this.timeout(90000)
-  before((done) => {
+  before(function (done) {
+    if (process.env.SKIP === 'TRUE') { this.skip() }
     request(server)
       .get('/login')
       .set('Accept', 'application/json')

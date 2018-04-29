@@ -12,7 +12,8 @@ let token = ''
 describe('events', function () {
   this.timeout(10000)
 
-  before((done) => {
+  before(function (done) {
+    if (process.env.SKIP === 'TRUE') { this.skip() }
     request(server)
       .get('/login')
       .set('Accept', 'application/json')

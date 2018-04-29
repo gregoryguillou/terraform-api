@@ -7,6 +7,12 @@ const { version, apply, check, destroy } = require('../../../api/models/docker')
 describe('models', () => {
   describe('docker', function () {
     this.timeout(60000)
+
+    before(function (done) {
+      if (process.env.SKIP === 'TRUE') { this.skip() }
+      done()
+    })
+
     it('Make sure the docker terraform-api container can display a version', (done) => {
       version('demonstration', (err, data) => {
         if (!err) {

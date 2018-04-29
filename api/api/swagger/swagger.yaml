@@ -160,6 +160,60 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /messages:
+    x-swagger-router-controller: messages
+    get:
+      tags:
+        - main
+      description: Return a list of messages for a given user
+      operationId: messages_list
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Messages"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /messages/{message}:
+    x-swagger-router-controller: messages
+    get:
+      tags:
+        - main
+      description: Return a given message extracted from a list
+      operationId: messages_describe
+      parameters:
+        - in: path
+          name: message
+          type: string
+          required: true
+          description: Event to get.
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Message"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    delete:
+      tags:
+        - main
+      description: Deletes a message
+      operationId: message_delete
+      parameters:
+        - in: path
+          name: message
+          type: string
+          required: true
+          description: Message to delete.
+      responses:
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
   /projects:
     x-swagger-router-controller: projects
     get:
@@ -612,6 +666,34 @@ definitions:
               type: string
       type:
         type: string
+  Message:
+    required:
+      - id
+      - channel
+      - text
+    properties:
+      id:
+        type: string
+      channel:
+        type: string
+      text:
+        type: string
+  Messages:
+    required:
+      - messages
+    properties:
+      messages:
+        type: array
+        items:
+          type: object
+          required:
+            - id
+            - channel
+          properties:
+            id:
+              type: string
+            channel:
+              type: string
   Projects:
     required:
       - projects

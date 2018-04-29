@@ -529,6 +529,108 @@ function deleteWorkspace (workspace, callback) {
   })
 }
 
+function messageAdd (user, message, callback) {
+  bucket.get(`messages:${user}`, (err1, data1) => {
+    if (err1) {
+      callback(err1, null)
+    } else {
+      let messages = []
+      if (data1 && data1[`messages:${user}`]) {
+        messages = data1[`messages:${user}`]
+      }
+      const uuid = uuidv4()
+      messages.push({id: uuid, channel: `channels:${user}/${message.channel}`})
+      bucket.upsert({[`messages:${user}`]: messages}, (err2, data2) => {
+        if (err2) {
+          callback(err2, null)
+        } else {
+          const storedMessage = {channel: `channels:${user}/${message.channel}`, text: message.text}
+          const displayeddMessage = {id: uuid, channel: message.channel, text: message.text}
+          bucket.upsert({[`message:${uuid}`]: storedMessage}, (err3, data3) => {
+            if (err3) {
+              callback(err3, null)
+            } else {
+              callback(null, displayeddMessage)
+            }
+          })
+        }
+      })
+    }
+  })
+}
+
+function messageDelete (id, callback) {
+  bucket.get(`message:${id}`, (err1, data1) => {
+    if (err1) {
+      callback(err1, null)
+    } else {
+      if (data1 && data1[`message:${id}`]) {
+        const channel = data1[`message:${id}`].channel
+        const user = channel.slice(channel.search(/:/) + 1, channel.search(/\//))
+        bucket.get(`messages:${user}`, (err2, data2) => {
+          if (err2) {
+            callback(err2, null)
+          } else {
+            let messages = []
+            if (data2 && data2[`messages:${user}`]) {
+              messages = data2[`messages:${user}`].filter(element => element.id !== id)
+            }
+            bucket.upsert({[`messages:${user}`]: messages}, (err3, data3) => {
+              if (err3) {
+                callback(err3, null)
+              } else {
+                bucket.remove(`message:${id}`, (err4, cas4, misses4) => {
+                  if (err4) {
+                    callback(err4, null)
+                  } else {
+                    callback(null, {id: id})
+                  }
+                })
+              }
+            })
+          }
+        })
+      } else {
+        callback(null, null)
+      }
+    }
+  })
+}
+
+function messageDescribe (id, callback) {
+  bucket.get(`message:${id}`, (err1, data1) => {
+    if (err1) {
+      callback(err1, null)
+    } else {
+      if (data1 && data1[`message:${id}`]) {
+        let message = {
+          id: id,
+          channel: data1[`message:${id}`].channel.slice(data1[`message:${id}`].channel.search(/\//) + 1),
+          text: data1[`message:${id}`].text
+        }
+        callback(null, message)
+      } else {
+        callback(null, null)
+      }
+    }
+  })
+}
+
+function messageList (user, callback) {
+  bucket.get(`messages:${user}`, (err1, data1) => {
+    if (err1) {
+      throw err1
+    }
+    let messages = []
+    if (data1 && data1[`messages:${user}`]) {
+      data1[`messages:${user}`].forEach((element) => {
+        messages.push({id: element.id, channel: element.channel.slice(`channels:${user}`.length + 1)})
+      })
+    }
+    callback(null, {messages})
+  })
+}
+
 function showEvent (event, callback) {
   const key = `evt:${event}`
   bucket.get(key, (err, results, cas, misses) => {
@@ -795,6 +897,10 @@ module.exports = {
   EchoStream,
   feedWorkspace,
   getUsers,
+  messageAdd,
+  messageDescribe,
+  messageDelete,
+  messageList,
   showEvent,
   showLogs,
   showWorkspace,
