@@ -2,6 +2,11 @@
 
 ## Architecture overview
 
+The @next release of `terraform-api` is a reboot. Its goal is to revisit 
+the concepts in many ways to provide a cleaner stack. It also aim to make it
+more reliable and easier to manage and diagnose. The @next release will be
+written with Go and run on Kubernetes.
+
 Terraform API is able to create/update and destroy several set of 
 resources in parallel. It can run the `terraform` commands in the same
 `directory` of the same project but with different `workspace` and at

@@ -1,0 +1,54 @@
+consumes:
+- application/com.resetlogs.terraform-api.v2+json
+info:
+  description: A rewrite of the Terraform API with Go
+  title: Terraform API v2.x
+  version: 2.0.0
+produces:
+- application/com.resetlogs.terraform-api.v2+json
+schemes:
+- http
+- https
+swagger: "2.0"
+paths:
+  /projects:
+    x-swagger-router-controller: projects
+    get:
+      tags:
+        - app
+      description: Return a list of projects managed by the API
+      operationId: projects_list
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Projects"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/Error"
+definitions:
+  Error:
+    required:
+      - message
+    properties:
+      message:
+        type: string
+  Projects:
+    required:
+      - projects
+    properties:
+      projects:
+        type: array
+        items:
+          type: object
+          required:
+            - name
+            - type
+          properties:
+            name:
+              type: string
+            description:
+              type: string
+            type:
+              type: string
